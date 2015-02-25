@@ -437,7 +437,7 @@ Copyright (C) 2012 Free Software Foundation, Inc.
 This config.status script is free software; the Free Software Foundation
 gives unlimited permission to copy, distribute and modify it."
 
-ac_pwd='/v/filer4b/v38q001/crb2847/GameTech/1'
+ac_pwd='/v/filer4b/v38q001/crb2847/GameTech/2/code'
 srcdir='.'
 INSTALL='/usr/bin/install -c'
 MKDIR_P='/bin/mkdir -p'
@@ -948,12 +948,12 @@ S["mkdir_p"]="$(MKDIR_P)"
 S["MKDIR_P"]="/bin/mkdir -p"
 S["INSTALL_STRIP_PROGRAM"]="$(install_sh) -c -s"
 S["STRIP"]="strip"
-S["install_sh"]="${SHELL} /v/filer4b/v38q001/crb2847/GameTech/1/install-sh"
-S["MAKEINFO"]="${SHELL} /v/filer4b/v38q001/crb2847/GameTech/1/missing makeinfo"
-S["AUTOHEADER"]="${SHELL} /v/filer4b/v38q001/crb2847/GameTech/1/missing autoheader"
-S["AUTOMAKE"]="${SHELL} /v/filer4b/v38q001/crb2847/GameTech/1/missing automake-1.14"
-S["AUTOCONF"]="${SHELL} /v/filer4b/v38q001/crb2847/GameTech/1/missing autoconf"
-S["ACLOCAL"]="${SHELL} /v/filer4b/v38q001/crb2847/GameTech/1/missing aclocal-1.14"
+S["install_sh"]="${SHELL} /v/filer4b/v38q001/crb2847/GameTech/2/code/install-sh"
+S["MAKEINFO"]="${SHELL} /v/filer4b/v38q001/crb2847/GameTech/2/code/missing makeinfo"
+S["AUTOHEADER"]="${SHELL} /v/filer4b/v38q001/crb2847/GameTech/2/code/missing autoheader"
+S["AUTOMAKE"]="${SHELL} /v/filer4b/v38q001/crb2847/GameTech/2/code/missing automake-1.14"
+S["AUTOCONF"]="${SHELL} /v/filer4b/v38q001/crb2847/GameTech/2/code/missing autoconf"
+S["ACLOCAL"]="${SHELL} /v/filer4b/v38q001/crb2847/GameTech/2/code/missing aclocal-1.14"
 S["VERSION"]="0.1"
 S["PACKAGE"]="SampleApp"
 S["CYGPATH_W"]="echo"

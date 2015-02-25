@@ -1,5 +1,9 @@
 #include "Game.h"
 
+Game::Game(){}
+
+Game::~Game(){}
+
 void Game::createScene(void){
 	// Set the scene's ambient light
     mSceneMgr->setAmbientLight(Ogre::ColourValue(0, 0, 0));
@@ -57,7 +61,7 @@ void Game::createScene(void){
     light->setPosition(90.0f, 90.0f, 70.0f);
 }
 
-bool Game::frameRenderingQueued(const Ogre::FrrameEvent& evt){
+bool Game::frameRenderingQueued(const Ogre::FrameEvent& evt){
 	if(mWindow->isClosed())
         return false;
 

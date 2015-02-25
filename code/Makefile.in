@@ -83,7 +83,7 @@ bin_PROGRAMS = OgreApp$(EXEEXT)
 subdir = .
 DIST_COMMON = $(srcdir)/Makefile.in $(srcdir)/Makefile.am \
 	$(top_srcdir)/configure $(am__configure_deps) \
-	$(srcdir)/config.h.in depcomp $(noinst_HEADERS) README compile \
+	$(srcdir)/config.h.in depcomp $(noinst_HEADERS) compile \
 	config.guess config.sub install-sh missing ltmain.sh
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/m4/libtool.m4 \
@@ -101,7 +101,7 @@ CONFIG_CLEAN_VPATH_FILES =
 am__installdirs = "$(DESTDIR)$(bindir)"
 PROGRAMS = $(bin_PROGRAMS)
 am_OgreApp_OBJECTS = OgreApp-BaseApplication.$(OBJEXT) \
-	OgreApp-TutorialApplication.$(OBJEXT) OgreApp-Ball.$(OBJEXT)
+	OgreApp-Game.$(OBJEXT) OgreApp-Entity.$(OBJEXT)
 OgreApp_OBJECTS = $(am_OgreApp_OBJECTS)
 am__DEPENDENCIES_1 =
 OgreApp_DEPENDENCIES = $(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1)
@@ -320,9 +320,9 @@ top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 ACLOCAL_AMFLAGS = -I m4
-noinst_HEADERS = BaseApplication.h TutorialApplication.h Ball.h
+noinst_HEADERS = BaseApplication.h Game.h Entity.h
 OgreApp_CPPFLAGS = -I$(top_srcdir)
-OgreApp_SOURCES = BaseApplication.cpp TutorialApplication.cpp Ball.cpp
+OgreApp_SOURCES = BaseApplication.cpp Game.cpp Entity.cpp
 OgreApp_CXXFLAGS = $(OGRE_CFLAGS) $(OIS_CFLAGS)
 OgreApp_LDADD = $(OGRE_LIBS) $(OIS_LIBS)
 OgreApp_LDFLAGS = -lOgreOverlay -lboost_system
@@ -442,9 +442,9 @@ mostlyclean-compile:
 distclean-compile:
 	-rm -f *.tab.c
 
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/OgreApp-Ball.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/OgreApp-BaseApplication.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/OgreApp-TutorialApplication.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/OgreApp-Entity.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/OgreApp-Game.Po@am__quote@
 
 .cpp.o:
 @am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXXCOMPILE) -MT $@ -MD -MP -MF $(DEPDIR)/$*.Tpo -c -o $@ $<
@@ -481,33 +481,33 @@ OgreApp-BaseApplication.obj: BaseApplication.cpp
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(OgreApp_CPPFLAGS) $(CPPFLAGS) $(OgreApp_CXXFLAGS) $(CXXFLAGS) -c -o OgreApp-BaseApplication.obj `if test -f 'BaseApplication.cpp'; then $(CYGPATH_W) 'BaseApplication.cpp'; else $(CYGPATH_W) '$(srcdir)/BaseApplication.cpp'; fi`
 
-OgreApp-TutorialApplication.o: TutorialApplication.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(OgreApp_CPPFLAGS) $(CPPFLAGS) $(OgreApp_CXXFLAGS) $(CXXFLAGS) -MT OgreApp-TutorialApplication.o -MD -MP -MF $(DEPDIR)/OgreApp-TutorialApplication.Tpo -c -o OgreApp-TutorialApplication.o `test -f 'TutorialApplication.cpp' || echo '$(srcdir)/'`TutorialApplication.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/OgreApp-TutorialApplication.Tpo $(DEPDIR)/OgreApp-TutorialApplication.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='TutorialApplication.cpp' object='OgreApp-TutorialApplication.o' libtool=no @AMDEPBACKSLASH@
+OgreApp-Game.o: Game.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(OgreApp_CPPFLAGS) $(CPPFLAGS) $(OgreApp_CXXFLAGS) $(CXXFLAGS) -MT OgreApp-Game.o -MD -MP -MF $(DEPDIR)/OgreApp-Game.Tpo -c -o OgreApp-Game.o `test -f 'Game.cpp' || echo '$(srcdir)/'`Game.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/OgreApp-Game.Tpo $(DEPDIR)/OgreApp-Game.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='Game.cpp' object='OgreApp-Game.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(OgreApp_CPPFLAGS) $(CPPFLAGS) $(OgreApp_CXXFLAGS) $(CXXFLAGS) -c -o OgreApp-TutorialApplication.o `test -f 'TutorialApplication.cpp' || echo '$(srcdir)/'`TutorialApplication.cpp
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(OgreApp_CPPFLAGS) $(CPPFLAGS) $(OgreApp_CXXFLAGS) $(CXXFLAGS) -c -o OgreApp-Game.o `test -f 'Game.cpp' || echo '$(srcdir)/'`Game.cpp
 
-OgreApp-TutorialApplication.obj: TutorialApplication.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(OgreApp_CPPFLAGS) $(CPPFLAGS) $(OgreApp_CXXFLAGS) $(CXXFLAGS) -MT OgreApp-TutorialApplication.obj -MD -MP -MF $(DEPDIR)/OgreApp-TutorialApplication.Tpo -c -o OgreApp-TutorialApplication.obj `if test -f 'TutorialApplication.cpp'; then $(CYGPATH_W) 'TutorialApplication.cpp'; else $(CYGPATH_W) '$(srcdir)/TutorialApplication.cpp'; fi`
-@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/OgreApp-TutorialApplication.Tpo $(DEPDIR)/OgreApp-TutorialApplication.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='TutorialApplication.cpp' object='OgreApp-TutorialApplication.obj' libtool=no @AMDEPBACKSLASH@
+OgreApp-Game.obj: Game.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(OgreApp_CPPFLAGS) $(CPPFLAGS) $(OgreApp_CXXFLAGS) $(CXXFLAGS) -MT OgreApp-Game.obj -MD -MP -MF $(DEPDIR)/OgreApp-Game.Tpo -c -o OgreApp-Game.obj `if test -f 'Game.cpp'; then $(CYGPATH_W) 'Game.cpp'; else $(CYGPATH_W) '$(srcdir)/Game.cpp'; fi`
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/OgreApp-Game.Tpo $(DEPDIR)/OgreApp-Game.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='Game.cpp' object='OgreApp-Game.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(OgreApp_CPPFLAGS) $(CPPFLAGS) $(OgreApp_CXXFLAGS) $(CXXFLAGS) -c -o OgreApp-TutorialApplication.obj `if test -f 'TutorialApplication.cpp'; then $(CYGPATH_W) 'TutorialApplication.cpp'; else $(CYGPATH_W) '$(srcdir)/TutorialApplication.cpp'; fi`
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(OgreApp_CPPFLAGS) $(CPPFLAGS) $(OgreApp_CXXFLAGS) $(CXXFLAGS) -c -o OgreApp-Game.obj `if test -f 'Game.cpp'; then $(CYGPATH_W) 'Game.cpp'; else $(CYGPATH_W) '$(srcdir)/Game.cpp'; fi`
 
-OgreApp-Ball.o: Ball.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(OgreApp_CPPFLAGS) $(CPPFLAGS) $(OgreApp_CXXFLAGS) $(CXXFLAGS) -MT OgreApp-Ball.o -MD -MP -MF $(DEPDIR)/OgreApp-Ball.Tpo -c -o OgreApp-Ball.o `test -f 'Ball.cpp' || echo '$(srcdir)/'`Ball.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/OgreApp-Ball.Tpo $(DEPDIR)/OgreApp-Ball.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='Ball.cpp' object='OgreApp-Ball.o' libtool=no @AMDEPBACKSLASH@
+OgreApp-Entity.o: Entity.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(OgreApp_CPPFLAGS) $(CPPFLAGS) $(OgreApp_CXXFLAGS) $(CXXFLAGS) -MT OgreApp-Entity.o -MD -MP -MF $(DEPDIR)/OgreApp-Entity.Tpo -c -o OgreApp-Entity.o `test -f 'Entity.cpp' || echo '$(srcdir)/'`Entity.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/OgreApp-Entity.Tpo $(DEPDIR)/OgreApp-Entity.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='Entity.cpp' object='OgreApp-Entity.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(OgreApp_CPPFLAGS) $(CPPFLAGS) $(OgreApp_CXXFLAGS) $(CXXFLAGS) -c -o OgreApp-Ball.o `test -f 'Ball.cpp' || echo '$(srcdir)/'`Ball.cpp
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(OgreApp_CPPFLAGS) $(CPPFLAGS) $(OgreApp_CXXFLAGS) $(CXXFLAGS) -c -o OgreApp-Entity.o `test -f 'Entity.cpp' || echo '$(srcdir)/'`Entity.cpp
 
-OgreApp-Ball.obj: Ball.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(OgreApp_CPPFLAGS) $(CPPFLAGS) $(OgreApp_CXXFLAGS) $(CXXFLAGS) -MT OgreApp-Ball.obj -MD -MP -MF $(DEPDIR)/OgreApp-Ball.Tpo -c -o OgreApp-Ball.obj `if test -f 'Ball.cpp'; then $(CYGPATH_W) 'Ball.cpp'; else $(CYGPATH_W) '$(srcdir)/Ball.cpp'; fi`
-@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/OgreApp-Ball.Tpo $(DEPDIR)/OgreApp-Ball.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='Ball.cpp' object='OgreApp-Ball.obj' libtool=no @AMDEPBACKSLASH@
+OgreApp-Entity.obj: Entity.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(OgreApp_CPPFLAGS) $(CPPFLAGS) $(OgreApp_CXXFLAGS) $(CXXFLAGS) -MT OgreApp-Entity.obj -MD -MP -MF $(DEPDIR)/OgreApp-Entity.Tpo -c -o OgreApp-Entity.obj `if test -f 'Entity.cpp'; then $(CYGPATH_W) 'Entity.cpp'; else $(CYGPATH_W) '$(srcdir)/Entity.cpp'; fi`
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/OgreApp-Entity.Tpo $(DEPDIR)/OgreApp-Entity.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='Entity.cpp' object='OgreApp-Entity.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(OgreApp_CPPFLAGS) $(CPPFLAGS) $(OgreApp_CXXFLAGS) $(CXXFLAGS) -c -o OgreApp-Ball.obj `if test -f 'Ball.cpp'; then $(CYGPATH_W) 'Ball.cpp'; else $(CYGPATH_W) '$(srcdir)/Ball.cpp'; fi`
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(OgreApp_CPPFLAGS) $(CPPFLAGS) $(OgreApp_CXXFLAGS) $(CXXFLAGS) -c -o OgreApp-Entity.obj `if test -f 'Entity.cpp'; then $(CYGPATH_W) 'Entity.cpp'; else $(CYGPATH_W) '$(srcdir)/Entity.cpp'; fi`
 
 mostlyclean-libtool:
 	-rm -f *.lo
