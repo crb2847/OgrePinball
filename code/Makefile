@@ -79,7 +79,7 @@ PRE_UNINSTALL = :
 POST_UNINSTALL = :
 build_triplet = x86_64-unknown-linux-gnu
 host_triplet = x86_64-unknown-linux-gnu
-bin_PROGRAMS = OgreApp$(EXEEXT)
+bin_PROGRAMS = OgrePinball$(EXEEXT)
 subdir = .
 DIST_COMMON = $(srcdir)/Makefile.in $(srcdir)/Makefile.am \
 	$(top_srcdir)/configure $(am__configure_deps) \
@@ -100,18 +100,18 @@ CONFIG_CLEAN_FILES =
 CONFIG_CLEAN_VPATH_FILES =
 am__installdirs = "$(DESTDIR)$(bindir)"
 PROGRAMS = $(bin_PROGRAMS)
-am_OgreApp_OBJECTS = OgreApp-BaseApplication.$(OBJEXT) \
-	OgreApp-Game.$(OBJEXT) OgreApp-Entity.$(OBJEXT)
-OgreApp_OBJECTS = $(am_OgreApp_OBJECTS)
+am_OgrePinball_OBJECTS = OgrePinball-BaseApplication.$(OBJEXT) \
+	OgrePinball-Game.$(OBJEXT) OgrePinball-Entity.$(OBJEXT)
+OgrePinball_OBJECTS = $(am_OgrePinball_OBJECTS)
 am__DEPENDENCIES_1 =
-OgreApp_DEPENDENCIES = $(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1)
+OgrePinball_DEPENDENCIES = $(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1)
 AM_V_lt = $(am__v_lt_$(V))
 am__v_lt_ = $(am__v_lt_$(AM_DEFAULT_VERBOSITY))
 am__v_lt_0 = --silent
 am__v_lt_1 = 
-OgreApp_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) \
-	$(LIBTOOLFLAGS) --mode=link $(CXXLD) $(OgreApp_CXXFLAGS) \
-	$(CXXFLAGS) $(OgreApp_LDFLAGS) $(LDFLAGS) -o $@
+OgrePinball_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) \
+	$(LIBTOOLFLAGS) --mode=link $(CXXLD) $(OgrePinball_CXXFLAGS) \
+	$(CXXFLAGS) $(OgrePinball_LDFLAGS) $(LDFLAGS) -o $@
 AM_V_P = $(am__v_P_$(V))
 am__v_P_ = $(am__v_P_$(AM_DEFAULT_VERBOSITY))
 am__v_P_0 = false
@@ -146,8 +146,8 @@ AM_V_CXXLD = $(am__v_CXXLD_$(V))
 am__v_CXXLD_ = $(am__v_CXXLD_$(AM_DEFAULT_VERBOSITY))
 am__v_CXXLD_0 = @echo "  CXXLD   " $@;
 am__v_CXXLD_1 = 
-SOURCES = $(OgreApp_SOURCES)
-DIST_SOURCES = $(OgreApp_SOURCES)
+SOURCES = $(OgrePinball_SOURCES)
+DIST_SOURCES = $(OgrePinball_SOURCES)
 am__can_run_installinfo = \
   case $$AM_UPDATE_INFO_DIR in \
     n|no|NO) false;; \
@@ -321,11 +321,11 @@ top_builddir = .
 top_srcdir = .
 ACLOCAL_AMFLAGS = -I m4
 noinst_HEADERS = BaseApplication.h Game.h Entity.h
-OgreApp_CPPFLAGS = -I$(top_srcdir)
-OgreApp_SOURCES = BaseApplication.cpp Game.cpp Entity.cpp
-OgreApp_CXXFLAGS = $(OGRE_CFLAGS) $(OIS_CFLAGS)
-OgreApp_LDADD = $(OGRE_LIBS) $(OIS_LIBS)
-OgreApp_LDFLAGS = -lOgreOverlay -lboost_system
+OgrePinball_CPPFLAGS = -I$(top_srcdir)
+OgrePinball_SOURCES = BaseApplication.cpp Game.cpp Entity.cpp
+OgrePinball_CXXFLAGS = $(OGRE_CFLAGS) $(OIS_CFLAGS)
+OgrePinball_LDADD = $(OGRE_LIBS) $(OIS_LIBS)
+OgrePinball_LDFLAGS = -lOgreOverlay -lboost_system
 EXTRA_DIST = buildit makeit
 AUTOMAKE_OPTIONS = foreign
 all: config.h
@@ -432,9 +432,9 @@ clean-binPROGRAMS:
 	echo " rm -f" $$list; \
 	rm -f $$list
 
-OgreApp$(EXEEXT): $(OgreApp_OBJECTS) $(OgreApp_DEPENDENCIES) $(EXTRA_OgreApp_DEPENDENCIES) 
-	@rm -f OgreApp$(EXEEXT)
-	$(AM_V_CXXLD)$(OgreApp_LINK) $(OgreApp_OBJECTS) $(OgreApp_LDADD) $(LIBS)
+OgrePinball$(EXEEXT): $(OgrePinball_OBJECTS) $(OgrePinball_DEPENDENCIES) $(EXTRA_OgrePinball_DEPENDENCIES) 
+	@rm -f OgrePinball$(EXEEXT)
+	$(AM_V_CXXLD)$(OgrePinball_LINK) $(OgrePinball_OBJECTS) $(OgrePinball_LDADD) $(LIBS)
 
 mostlyclean-compile:
 	-rm -f *.$(OBJEXT)
@@ -442,9 +442,9 @@ mostlyclean-compile:
 distclean-compile:
 	-rm -f *.tab.c
 
-include ./$(DEPDIR)/OgreApp-BaseApplication.Po
-include ./$(DEPDIR)/OgreApp-Entity.Po
-include ./$(DEPDIR)/OgreApp-Game.Po
+include ./$(DEPDIR)/OgrePinball-BaseApplication.Po
+include ./$(DEPDIR)/OgrePinball-Entity.Po
+include ./$(DEPDIR)/OgrePinball-Game.Po
 
 .cpp.o:
 	$(AM_V_CXX)$(CXXCOMPILE) -MT $@ -MD -MP -MF $(DEPDIR)/$*.Tpo -c -o $@ $<
@@ -467,47 +467,47 @@ include ./$(DEPDIR)/OgreApp-Game.Po
 #	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) \
 #	$(AM_V_CXX_no)$(LTCXXCOMPILE) -c -o $@ $<
 
-OgreApp-BaseApplication.o: BaseApplication.cpp
-	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(OgreApp_CPPFLAGS) $(CPPFLAGS) $(OgreApp_CXXFLAGS) $(CXXFLAGS) -MT OgreApp-BaseApplication.o -MD -MP -MF $(DEPDIR)/OgreApp-BaseApplication.Tpo -c -o OgreApp-BaseApplication.o `test -f 'BaseApplication.cpp' || echo '$(srcdir)/'`BaseApplication.cpp
-	$(AM_V_at)$(am__mv) $(DEPDIR)/OgreApp-BaseApplication.Tpo $(DEPDIR)/OgreApp-BaseApplication.Po
-#	$(AM_V_CXX)source='BaseApplication.cpp' object='OgreApp-BaseApplication.o' libtool=no \
+OgrePinball-BaseApplication.o: BaseApplication.cpp
+	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(OgrePinball_CPPFLAGS) $(CPPFLAGS) $(OgrePinball_CXXFLAGS) $(CXXFLAGS) -MT OgrePinball-BaseApplication.o -MD -MP -MF $(DEPDIR)/OgrePinball-BaseApplication.Tpo -c -o OgrePinball-BaseApplication.o `test -f 'BaseApplication.cpp' || echo '$(srcdir)/'`BaseApplication.cpp
+	$(AM_V_at)$(am__mv) $(DEPDIR)/OgrePinball-BaseApplication.Tpo $(DEPDIR)/OgrePinball-BaseApplication.Po
+#	$(AM_V_CXX)source='BaseApplication.cpp' object='OgrePinball-BaseApplication.o' libtool=no \
 #	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) \
-#	$(AM_V_CXX_no)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(OgreApp_CPPFLAGS) $(CPPFLAGS) $(OgreApp_CXXFLAGS) $(CXXFLAGS) -c -o OgreApp-BaseApplication.o `test -f 'BaseApplication.cpp' || echo '$(srcdir)/'`BaseApplication.cpp
+#	$(AM_V_CXX_no)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(OgrePinball_CPPFLAGS) $(CPPFLAGS) $(OgrePinball_CXXFLAGS) $(CXXFLAGS) -c -o OgrePinball-BaseApplication.o `test -f 'BaseApplication.cpp' || echo '$(srcdir)/'`BaseApplication.cpp
 
-OgreApp-BaseApplication.obj: BaseApplication.cpp
-	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(OgreApp_CPPFLAGS) $(CPPFLAGS) $(OgreApp_CXXFLAGS) $(CXXFLAGS) -MT OgreApp-BaseApplication.obj -MD -MP -MF $(DEPDIR)/OgreApp-BaseApplication.Tpo -c -o OgreApp-BaseApplication.obj `if test -f 'BaseApplication.cpp'; then $(CYGPATH_W) 'BaseApplication.cpp'; else $(CYGPATH_W) '$(srcdir)/BaseApplication.cpp'; fi`
-	$(AM_V_at)$(am__mv) $(DEPDIR)/OgreApp-BaseApplication.Tpo $(DEPDIR)/OgreApp-BaseApplication.Po
-#	$(AM_V_CXX)source='BaseApplication.cpp' object='OgreApp-BaseApplication.obj' libtool=no \
+OgrePinball-BaseApplication.obj: BaseApplication.cpp
+	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(OgrePinball_CPPFLAGS) $(CPPFLAGS) $(OgrePinball_CXXFLAGS) $(CXXFLAGS) -MT OgrePinball-BaseApplication.obj -MD -MP -MF $(DEPDIR)/OgrePinball-BaseApplication.Tpo -c -o OgrePinball-BaseApplication.obj `if test -f 'BaseApplication.cpp'; then $(CYGPATH_W) 'BaseApplication.cpp'; else $(CYGPATH_W) '$(srcdir)/BaseApplication.cpp'; fi`
+	$(AM_V_at)$(am__mv) $(DEPDIR)/OgrePinball-BaseApplication.Tpo $(DEPDIR)/OgrePinball-BaseApplication.Po
+#	$(AM_V_CXX)source='BaseApplication.cpp' object='OgrePinball-BaseApplication.obj' libtool=no \
 #	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) \
-#	$(AM_V_CXX_no)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(OgreApp_CPPFLAGS) $(CPPFLAGS) $(OgreApp_CXXFLAGS) $(CXXFLAGS) -c -o OgreApp-BaseApplication.obj `if test -f 'BaseApplication.cpp'; then $(CYGPATH_W) 'BaseApplication.cpp'; else $(CYGPATH_W) '$(srcdir)/BaseApplication.cpp'; fi`
+#	$(AM_V_CXX_no)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(OgrePinball_CPPFLAGS) $(CPPFLAGS) $(OgrePinball_CXXFLAGS) $(CXXFLAGS) -c -o OgrePinball-BaseApplication.obj `if test -f 'BaseApplication.cpp'; then $(CYGPATH_W) 'BaseApplication.cpp'; else $(CYGPATH_W) '$(srcdir)/BaseApplication.cpp'; fi`
 
-OgreApp-Game.o: Game.cpp
-	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(OgreApp_CPPFLAGS) $(CPPFLAGS) $(OgreApp_CXXFLAGS) $(CXXFLAGS) -MT OgreApp-Game.o -MD -MP -MF $(DEPDIR)/OgreApp-Game.Tpo -c -o OgreApp-Game.o `test -f 'Game.cpp' || echo '$(srcdir)/'`Game.cpp
-	$(AM_V_at)$(am__mv) $(DEPDIR)/OgreApp-Game.Tpo $(DEPDIR)/OgreApp-Game.Po
-#	$(AM_V_CXX)source='Game.cpp' object='OgreApp-Game.o' libtool=no \
+OgrePinball-Game.o: Game.cpp
+	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(OgrePinball_CPPFLAGS) $(CPPFLAGS) $(OgrePinball_CXXFLAGS) $(CXXFLAGS) -MT OgrePinball-Game.o -MD -MP -MF $(DEPDIR)/OgrePinball-Game.Tpo -c -o OgrePinball-Game.o `test -f 'Game.cpp' || echo '$(srcdir)/'`Game.cpp
+	$(AM_V_at)$(am__mv) $(DEPDIR)/OgrePinball-Game.Tpo $(DEPDIR)/OgrePinball-Game.Po
+#	$(AM_V_CXX)source='Game.cpp' object='OgrePinball-Game.o' libtool=no \
 #	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) \
-#	$(AM_V_CXX_no)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(OgreApp_CPPFLAGS) $(CPPFLAGS) $(OgreApp_CXXFLAGS) $(CXXFLAGS) -c -o OgreApp-Game.o `test -f 'Game.cpp' || echo '$(srcdir)/'`Game.cpp
+#	$(AM_V_CXX_no)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(OgrePinball_CPPFLAGS) $(CPPFLAGS) $(OgrePinball_CXXFLAGS) $(CXXFLAGS) -c -o OgrePinball-Game.o `test -f 'Game.cpp' || echo '$(srcdir)/'`Game.cpp
 
-OgreApp-Game.obj: Game.cpp
-	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(OgreApp_CPPFLAGS) $(CPPFLAGS) $(OgreApp_CXXFLAGS) $(CXXFLAGS) -MT OgreApp-Game.obj -MD -MP -MF $(DEPDIR)/OgreApp-Game.Tpo -c -o OgreApp-Game.obj `if test -f 'Game.cpp'; then $(CYGPATH_W) 'Game.cpp'; else $(CYGPATH_W) '$(srcdir)/Game.cpp'; fi`
-	$(AM_V_at)$(am__mv) $(DEPDIR)/OgreApp-Game.Tpo $(DEPDIR)/OgreApp-Game.Po
-#	$(AM_V_CXX)source='Game.cpp' object='OgreApp-Game.obj' libtool=no \
+OgrePinball-Game.obj: Game.cpp
+	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(OgrePinball_CPPFLAGS) $(CPPFLAGS) $(OgrePinball_CXXFLAGS) $(CXXFLAGS) -MT OgrePinball-Game.obj -MD -MP -MF $(DEPDIR)/OgrePinball-Game.Tpo -c -o OgrePinball-Game.obj `if test -f 'Game.cpp'; then $(CYGPATH_W) 'Game.cpp'; else $(CYGPATH_W) '$(srcdir)/Game.cpp'; fi`
+	$(AM_V_at)$(am__mv) $(DEPDIR)/OgrePinball-Game.Tpo $(DEPDIR)/OgrePinball-Game.Po
+#	$(AM_V_CXX)source='Game.cpp' object='OgrePinball-Game.obj' libtool=no \
 #	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) \
-#	$(AM_V_CXX_no)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(OgreApp_CPPFLAGS) $(CPPFLAGS) $(OgreApp_CXXFLAGS) $(CXXFLAGS) -c -o OgreApp-Game.obj `if test -f 'Game.cpp'; then $(CYGPATH_W) 'Game.cpp'; else $(CYGPATH_W) '$(srcdir)/Game.cpp'; fi`
+#	$(AM_V_CXX_no)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(OgrePinball_CPPFLAGS) $(CPPFLAGS) $(OgrePinball_CXXFLAGS) $(CXXFLAGS) -c -o OgrePinball-Game.obj `if test -f 'Game.cpp'; then $(CYGPATH_W) 'Game.cpp'; else $(CYGPATH_W) '$(srcdir)/Game.cpp'; fi`
 
-OgreApp-Entity.o: Entity.cpp
-	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(OgreApp_CPPFLAGS) $(CPPFLAGS) $(OgreApp_CXXFLAGS) $(CXXFLAGS) -MT OgreApp-Entity.o -MD -MP -MF $(DEPDIR)/OgreApp-Entity.Tpo -c -o OgreApp-Entity.o `test -f 'Entity.cpp' || echo '$(srcdir)/'`Entity.cpp
-	$(AM_V_at)$(am__mv) $(DEPDIR)/OgreApp-Entity.Tpo $(DEPDIR)/OgreApp-Entity.Po
-#	$(AM_V_CXX)source='Entity.cpp' object='OgreApp-Entity.o' libtool=no \
+OgrePinball-Entity.o: Entity.cpp
+	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(OgrePinball_CPPFLAGS) $(CPPFLAGS) $(OgrePinball_CXXFLAGS) $(CXXFLAGS) -MT OgrePinball-Entity.o -MD -MP -MF $(DEPDIR)/OgrePinball-Entity.Tpo -c -o OgrePinball-Entity.o `test -f 'Entity.cpp' || echo '$(srcdir)/'`Entity.cpp
+	$(AM_V_at)$(am__mv) $(DEPDIR)/OgrePinball-Entity.Tpo $(DEPDIR)/OgrePinball-Entity.Po
+#	$(AM_V_CXX)source='Entity.cpp' object='OgrePinball-Entity.o' libtool=no \
 #	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) \
-#	$(AM_V_CXX_no)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(OgreApp_CPPFLAGS) $(CPPFLAGS) $(OgreApp_CXXFLAGS) $(CXXFLAGS) -c -o OgreApp-Entity.o `test -f 'Entity.cpp' || echo '$(srcdir)/'`Entity.cpp
+#	$(AM_V_CXX_no)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(OgrePinball_CPPFLAGS) $(CPPFLAGS) $(OgrePinball_CXXFLAGS) $(CXXFLAGS) -c -o OgrePinball-Entity.o `test -f 'Entity.cpp' || echo '$(srcdir)/'`Entity.cpp
 
-OgreApp-Entity.obj: Entity.cpp
-	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(OgreApp_CPPFLAGS) $(CPPFLAGS) $(OgreApp_CXXFLAGS) $(CXXFLAGS) -MT OgreApp-Entity.obj -MD -MP -MF $(DEPDIR)/OgreApp-Entity.Tpo -c -o OgreApp-Entity.obj `if test -f 'Entity.cpp'; then $(CYGPATH_W) 'Entity.cpp'; else $(CYGPATH_W) '$(srcdir)/Entity.cpp'; fi`
-	$(AM_V_at)$(am__mv) $(DEPDIR)/OgreApp-Entity.Tpo $(DEPDIR)/OgreApp-Entity.Po
-#	$(AM_V_CXX)source='Entity.cpp' object='OgreApp-Entity.obj' libtool=no \
+OgrePinball-Entity.obj: Entity.cpp
+	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(OgrePinball_CPPFLAGS) $(CPPFLAGS) $(OgrePinball_CXXFLAGS) $(CXXFLAGS) -MT OgrePinball-Entity.obj -MD -MP -MF $(DEPDIR)/OgrePinball-Entity.Tpo -c -o OgrePinball-Entity.obj `if test -f 'Entity.cpp'; then $(CYGPATH_W) 'Entity.cpp'; else $(CYGPATH_W) '$(srcdir)/Entity.cpp'; fi`
+	$(AM_V_at)$(am__mv) $(DEPDIR)/OgrePinball-Entity.Tpo $(DEPDIR)/OgrePinball-Entity.Po
+#	$(AM_V_CXX)source='Entity.cpp' object='OgrePinball-Entity.obj' libtool=no \
 #	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) \
-#	$(AM_V_CXX_no)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(OgreApp_CPPFLAGS) $(CPPFLAGS) $(OgreApp_CXXFLAGS) $(CXXFLAGS) -c -o OgreApp-Entity.obj `if test -f 'Entity.cpp'; then $(CYGPATH_W) 'Entity.cpp'; else $(CYGPATH_W) '$(srcdir)/Entity.cpp'; fi`
+#	$(AM_V_CXX_no)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(OgrePinball_CPPFLAGS) $(CPPFLAGS) $(OgrePinball_CXXFLAGS) $(CXXFLAGS) -c -o OgrePinball-Entity.obj `if test -f 'Entity.cpp'; then $(CYGPATH_W) 'Entity.cpp'; else $(CYGPATH_W) '$(srcdir)/Entity.cpp'; fi`
 
 mostlyclean-libtool:
 	-rm -f *.lo
