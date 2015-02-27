@@ -1,14 +1,17 @@
 #include "Game.h"
 
+using namespace Ogre;
+
 Game::Game(){}
 
 Game::~Game(){}
 
 void Game::createScene(void){
 	// Set the scene's ambient light
-    mSceneMgr->setAmbientLight(Ogre::ColourValue(0, 0, 0));
+    mSceneMgr->setAmbientLight(Ogre::ColourValue(0.5, 0.5, 0.5));
     mSceneMgr->setShadowTechnique(Ogre::SHADOWTYPE_STENCIL_ADDITIVE);
 
+    /*
     //Create 6 walls
     Ogre::Plane plane(Ogre::Vector3::UNIT_Y, -700);
     Ogre::MeshManager::getSingleton().createPlane("ground", Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME,
@@ -55,6 +58,22 @@ void Game::createScene(void){
     Ogre::SceneNode* wall6 = mSceneMgr->getRootSceneNode()->createChildSceneNode("GroundEntity6");
     wall6->attachObject(entGround6);
     wall6->rotate(Ogre::Vector3::UNIT_Z, Ogre::Radian(Ogre::Degree(90)));
+	*/
+
+    Ogre::Entity *entity = mSceneMgr->createEntity("Gamefield", "opencube.mesh");
+    entity->setCastShadows(false);
+    entity->setMaterialName("Examples/Rockwall");
+    SceneNode *node = mSceneMgr->getRootSceneNode()->createChildSceneNode("Gamefield");
+    node->attachObject(entity);
+    node->setPosition(0, 0, 0);
+
+    entity = mSceneMgr->createEntity("Obs1", "cube.mesh");
+    entity->setCastShadows(false);
+    entity->setMaterialName("Obstacle");
+    node = mSceneMgr->getRootSceneNode()->createChildSceneNode("Obs1");
+    node->attachObject(entity);
+    node->setPosition(0, 0, 0);
+    node->setScale(0.1, 0.2, 0.4);
 
     // Create a Light and set its position
     Ogre::Light* light = mSceneMgr->createLight("OutsideLight");
