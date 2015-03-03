@@ -2,15 +2,15 @@
 #define __Game_h_
 
 #include "BaseApplication.h"
-#include "Entity.h"
+#include "GameObject.h"
 
 class Game : public BaseApplication
 {
 	public:
-	std::vector<Entity> entities;
+	std::vector<GameObject> entities;
 	Game(void);
 	virtual ~Game(void);
-	::Entity* ball;
+	GameObject* ball;
 	std::vector<Ogre::SceneNode *> coins;
 
 	protected:

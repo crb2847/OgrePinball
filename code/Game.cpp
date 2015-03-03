@@ -18,10 +18,10 @@ void Game::createScene(void){
     * This is how you add a new entity, after you add a new entity they will be facing the same direction so you need to change the vector attribute of e before you push it to the list
     */
 
-    Entity d(mSceneMgr, 0);
+    GameObject d(mSceneMgr, 0);
     entities.push_back(d);
 
-    Entity e(mSceneMgr, 1);
+    GameObject e(mSceneMgr, 1);
     entities.push_back(e);
 
 
