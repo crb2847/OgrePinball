@@ -2,9 +2,9 @@
 #include <OgreSceneManager.h>
 #include "Ball.h"
 
-Ball::Ball(Ogre::SceneManager* scnMgr, int x) : GameObject(scnMgr, x){
-	
-	Ogre::Entity* entity = scnMgr->createEntity("Sphere"+x, "sphere.mesh");
+Ball::Ball(Game *game, int x) : GameObject(game, x){
+	Ogre::String name  = "Sphere" + Ogre::StringConverter::toString(x);
+	Ogre::Entity* entity = scnMgr->createEntity(name, "sphere.mesh");
 	entity->setCastShadows(true);
 	rootNode = scnMgr->getRootSceneNode()->createChildSceneNode();
 	rootNode->attachObject(entity);
@@ -14,9 +14,21 @@ Ball::Ball(Ogre::SceneManager* scnMgr, int x) : GameObject(scnMgr, x){
 	bDirection = Ogre::Vector3(1.0f, 2.0f, 0.0f);
 	bDirection.normalise();
 	bSpeed = 250.0f;
+
+	collShape = new OgreBulletCollisions::SphereCollisionShape(bRadius * 0.95);
+	rigidBody = new OgreBulletDynamics::RigidBody("bt"+name, mWorld);
+	rigidBody->setShape(rootNode, collShape,
+			1, 0.1, 1.0, // restitution, friction, mass
+			Ogre::Vector3(0, 0, 0), Ogre::Quaternion());
+	rigidBody->setLinearVelocity(bDirection * bSpeed);
+
+	btCollisionObject *btObj = rigidBody->getBulletObject();
+	btObj->setCollisionFlags(btObj->getCollisionFlags() | btCollisionObject::CF_CUSTOM_MATERIAL_CALLBACK);
+	btObj->setUserPointer(game);
 }
 
 void Ball::update(const Ogre::FrameEvent& evt, std::vector<GameObject*> &e){
+	/*
 	Ogre::Vector3 bPosition = rootNode->getPosition();
 	if (bPosition.y < -1000/2.0f + bRadius && bDirection.y < 0.0f) bDirection.y = -bDirection.y;
 	if (bPosition.y > 1000/2.0f - bRadius && bDirection.y > 0.0f) bDirection.y = -bDirection.y;
@@ -25,4 +37,5 @@ void Ball::update(const Ogre::FrameEvent& evt, std::vector<GameObject*> &e){
 	if (bPosition.x < -775/2.0f + bRadius && bDirection.x < 0.0f) bDirection.x = -bDirection.x;
 	if (bPosition.x > 775/2.0f - bRadius && bDirection.x > 0.0f) bDirection.x = -bDirection.x;
 	rootNode->translate(bSpeed * evt.timeSinceLastFrame * bDirection);
+	*/
 }

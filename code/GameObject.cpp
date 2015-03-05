@@ -1,8 +1,13 @@
 #include <OgreEntity.h>
 #include <OgreSceneManager.h>
 #include "GameObject.h"
+#include "Game.h"
 
-GameObject::GameObject(Ogre::SceneManager* scnMgr, int x){
+GameObject::GameObject(Game *game, int x) {
+	this->game = game;
+	mWorld = game->mWorld;
+	scnMgr = game->mSceneMgr;
+
 	bRadius = 40.0f;
 	bDirection = Ogre::Vector3(1.0f, 0.0f, 0.0f);
 	bDirection.normalise();

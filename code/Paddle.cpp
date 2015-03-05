@@ -2,7 +2,7 @@
 #include <OgreSceneManager.h>
 #include "Paddle.h"
 
-Paddle::Paddle(Ogre::SceneManager* scnMgr, int x) : GameObject(scnMgr, x){
+Paddle::Paddle(Game *game, int x) : GameObject(game, x){
 	
 	Ogre::Entity* entity = scnMgr->createEntity("Ogre"+x, "ogrehead.mesh");
 	entity->setCastShadows(true);

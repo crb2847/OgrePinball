@@ -2,7 +2,7 @@
 #include <OgreSceneManager.h>
 #include "Coin.h"
 
-Coin::Coin(Ogre::SceneManager* scnMgr, int x) : GameObject(scnMgr, x){
+Coin::Coin(Game *game, int x) : GameObject(game, x){
 	
 	Ogre::Entity* entity = scnMgr->createEntity("Coin"+x, "sphere.mesh");
 	//ball->setMaterialName("BallColor/CubeMap");

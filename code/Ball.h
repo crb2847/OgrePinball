@@ -6,7 +6,7 @@
 class Ball : public virtual GameObject
 {
 	public:
-		Ball(Ogre::SceneManager* scnMgr, int);
+		Ball(Game *game, int);
 		void update(const Ogre::FrameEvent& evt, std::vector<GameObject*> &e);
 };
 

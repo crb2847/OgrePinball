@@ -6,7 +6,7 @@
 class Paddle : public virtual GameObject
 {
 	public:
-		Paddle(Ogre::SceneManager* scnMgr, int);
+		Paddle(Game *game, int);
 		void update(const Ogre::FrameEvent& evt, std::vector<GameObject*> &e);
 };
 

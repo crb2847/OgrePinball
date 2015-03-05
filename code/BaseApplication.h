@@ -89,6 +89,8 @@ protected:
     virtual void createResourceListener(void);
     virtual void loadResources(void);
     virtual bool frameRenderingQueued(const Ogre::FrameEvent& evt);
+    virtual bool frameStarted(const Ogre::FrameEvent& evt) = 0;
+    virtual bool frameEnded(const Ogre::FrameEvent& evt) = 0;
 
     virtual bool keyPressed(const OIS::KeyEvent &arg);
     virtual bool keyReleased(const OIS::KeyEvent &arg);

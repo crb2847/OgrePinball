@@ -1,61 +1,77 @@
 #include "Game.h"
 
+bool HandleContacts(btManifoldPoint& point, btCollisionObject* body0, btCollisionObject* body1) {
+   Game *g = (Game *) body0->getUserPointer();
+   g->collide(body0, body1);
+   return false;
+}
+
 Game::Game(){}
 
 Game::~Game(){}
 
+void Game::collide(btCollisionObject *b0, btCollisionObject *b1) {
+
+}
+
 void Game::createScene(void){
+	Ogre::Vector3 gravityVector(0,-9.81,0);
+	Ogre::AxisAlignedBox bounds (Ogre::Vector3 (-10000, -10000, -10000), Ogre::Vector3 (10000,  10000,  10000));
+	mWorld = new OgreBulletDynamics::DynamicsWorld(mSceneMgr, bounds, gravityVector);
+	gContactProcessedCallback = (ContactProcessedCallback) HandleContacts;
+
 	// Set the scene's ambient light
     mSceneMgr->setAmbientLight(Ogre::ColourValue(0, 0, 0));
     mSceneMgr->setShadowTechnique(Ogre::SHADOWTYPE_STENCIL_ADDITIVE);
 
-    Paddle* paddle = new Paddle(mSceneMgr, 0);
+    Paddle* paddle = new Paddle(this, 0);
     entities.push_back(paddle);
 
-    Ball* ball = new Ball(mSceneMgr, 0);
+    Ball* ball = new Ball(this, 0);
     entities.push_back(ball);
 
     //Create 6 walls
-    Ogre::Plane plane(Ogre::Vector3::UNIT_Y, -500);
+    Ogre::Plane plane(Ogre::Vector3::UNIT_Y, 0);
     Ogre::MeshManager::getSingleton().createPlane("ground", Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME,
         plane, 1000, 1000, 20, 20, true, 1, 5.0, 5.0, Ogre::Vector3::UNIT_X);
 
-    Wall* p = new Wall(mSceneMgr, 0);
-    p->getNode()->scale(0.75f,1.0f,0.2f);
-    entities.push_back(p);
-    
-    p = new Wall(mSceneMgr, 1);
-    p->rotate(mSceneMgr, Ogre::Vector3::UNIT_Z, Ogre::Radian(Ogre::Degree(180)));
-    p->getNode()->scale(0.75f,1.0f,0.2f);
-    entities.push_back(p);
- 
-    p = new Wall(mSceneMgr, 2);
-    p->rotate(mSceneMgr, Ogre::Vector3::UNIT_X, Ogre::Radian(Ogre::Degree(90)));
-	  p->getNode()->setPosition(0.0f,0.0f,400.0f);
-	  p->getNode()->scale(0.75f,1.0f,1.0f);
-    entities.push_back(p);
-    
-    p = new Wall(mSceneMgr, 3);
-    p->rotate(mSceneMgr, Ogre::Vector3::UNIT_X, Ogre::Radian(Ogre::Degree(270)));
-	  p->getNode()->setPosition(0.0f,0.0f,-400.0f);
-	  p->getNode()->scale(0.75f,1.0f,1.0f);
-    entities.push_back(p);
-    
-    p = new Wall(mSceneMgr, 4);
-    p->rotate(mSceneMgr, Ogre::Vector3::UNIT_Z, Ogre::Radian(Ogre::Degree(270)));
-	  p->getNode()->translate(125.0f,0.0f,0.0f);
-	  p->getNode()->scale(1.0f,1.0f,0.2f);
-    entities.push_back(p);
+    Wall* p = new Wall(this, 0, Ogre::Vector3(0.75f,1.0f,0.2f),
+    		Ogre::Quaternion(), Ogre::Vector3(0, -500, 0));
+    entities.push_back(p); // Bottom
 
-    p = new Wall(mSceneMgr, 5);
-    p->rotate(mSceneMgr, Ogre::Vector3::UNIT_Z, Ogre::Radian(Ogre::Degree(90)));
-	  p->getNode()->translate(-125.0f,0.0f,0.0f);
-	  p->getNode()->scale(1.0f,1.0f,0.2f);
-    entities.push_back(p);
+    p = new Wall(this, 1, Ogre::Vector3(0.75f,1.0f,0.2f),
+    		Ogre::Quaternion(Ogre::Degree(180), Ogre::Vector3::UNIT_Z), Ogre::Vector3(0, 500, 0));
+    entities.push_back(p); // Top
+
+    p = new Wall(this, 2, Ogre::Vector3(0.75f,1.0f,1.0f),
+    		Ogre::Quaternion(Ogre::Degree(90), Ogre::Vector3::UNIT_X), Ogre::Vector3(0, 0, -100));
+    entities.push_back(p); // Back
+
+    p = new Wall(this, 3, Ogre::Vector3(0.75f,1.0f,1.0f),
+    		Ogre::Quaternion(Ogre::Degree(270), Ogre::Vector3::UNIT_X), Ogre::Vector3(0, 0, 100));
+    entities.push_back(p); // Front
+    
+    p = new Wall(this, 4, Ogre::Vector3(1.0f,1.0f,0.2f),
+    		Ogre::Quaternion(Ogre::Degree(270), Ogre::Vector3::UNIT_Z),  Ogre::Vector3(-375, 0, 0));
+    entities.push_back(p); // Left
+
+    p = new Wall(this, 5, Ogre::Vector3(1.0f,1.0f,0.2f),
+    		Ogre::Quaternion(Ogre::Degree(90), Ogre::Vector3::UNIT_Z), Ogre::Vector3(375, 0, 0));
+    entities.push_back(p); // Right
 
     // Create a Light and set its position
     Ogre::Light* light = mSceneMgr->createLight("OutsideLight");
     light->setPosition(90.0f, 90.0f, 800.0f);
+}
+
+bool Game::frameStarted(const Ogre::FrameEvent& evt) {
+	mWorld->stepSimulation(evt.timeSinceLastFrame);	// update Bullet Physics animation
+	return true;
+}
+
+bool Game::frameEnded(const Ogre::FrameEvent& evt) {
+	mWorld->stepSimulation(evt.timeSinceLastFrame);	// update Bullet Physics animation
+	return true;
 }
 
 bool Game::frameRenderingQueued(const Ogre::FrameEvent& evt){

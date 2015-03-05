@@ -6,7 +6,7 @@
 class Coin : public virtual GameObject
 {
 	public:
-		Coin(Ogre::SceneManager* scnMgr, int);
+		Coin(Game *game, int);
 		void update(const Ogre::FrameEvent& evt, std::vector<GameObject*> &e);
 };
 
