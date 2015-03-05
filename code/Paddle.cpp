@@ -4,30 +4,46 @@
 
 Paddle::Paddle(Game *game, int x) : GameObject(game, x){
 	
-	Ogre::Entity* entity = scnMgr->createEntity("Ogre"+x, "ogrehead.mesh");
+	name = "Paddle@" + Ogre::StringConverter::toString(id);
+	Ogre::Entity* entity = scnMgr->createEntity("et"+name, "cube.mesh");
 	entity->setCastShadows(true);
-	rootNode = scnMgr->getRootSceneNode()->createChildSceneNode();
+	rootNode = scnMgr->getRootSceneNode()->createChildSceneNode("nd"+name);
 	rootNode->attachObject(entity);
-	rootNode->scale(0.4f,0.4f,0.4f);
 
-	// Ogre::Vector3 bPosition = rootNode->getPosition();
-	// bPosition.y = 0;
-	// bPosition.x = 0;
-	// bPosition.z = -650.0f;
+	rootNode->setScale(scale = Ogre::Vector3(2, 0.1, 2));
+	rootNode->setPosition(position = Ogre::Vector3(0, -490, 0));
+	rootNode->setOrientation(orientation = Ogre::Quaternion());
 
-	bRadius = 40.0f;
+	Ogre::Vector3 bSize = entity->getBoundingBox().getHalfSize() * 0.95 * scale;
+	collShape = new OgreBulletCollisions::BoxCollisionShape(bSize);
+	rigidBody = new OgreBulletDynamics::RigidBody("bt"+name, mWorld);
+	rigidBody->setStaticShape(rootNode, collShape,
+		1, 0.1, // restitution, friction
+		position, orientation);
+
+	btCollisionObject *btObj = rigidBody->getBulletObject();
+	btObj->setCollisionFlags(btObj->getCollisionFlags() | btCollisionObject::CF_CUSTOM_MATERIAL_CALLBACK);
+	btObj->setUserPointer(static_cast<GameObject*>(this));
+
+	bRadius = 100.0f;
 	bDirection = Ogre::Vector3(-1.0f, 0.0f, 0.0f);
 	bDirection.normalise();
 	bSpeed = 250.0f;
 }
 
+void Paddle::setPosition(Ogre::Vector3 pos) {
+	rootNode->setPosition(pos);
+	btTransform trans = rigidBody->getBulletObject()->getWorldTransform();
+	trans.setOrigin(OgreBulletCollisions::OgreBtConverter::to(pos));
+	rigidBody->getBulletObject()->setWorldTransform(trans);
+}
+
 void Paddle::update(const Ogre::FrameEvent& evt, std::vector<GameObject*> &e){
-	Ogre::Vector3 bPosition = rootNode->getPosition();
-	if (bPosition.y < -1400/2.0f + bRadius && bDirection.y < 0.0f) bDirection.y = -bDirection.y;
-	if (bPosition.y > 1400/2.0f - bRadius && bDirection.y > 0.0f) bDirection.y = -bDirection.y;
-	if (bPosition.z < -1400/2.0f + bRadius && bDirection.z < 0.0f) bDirection.z = -bDirection.z;
-	if (bPosition.z > 1400/2.0f - bRadius && bDirection.z > 0.0f) bDirection.z = -bDirection.z;
-	if (bPosition.x < -1400/2.0f + bRadius && bDirection.x < 0.0f) bDirection.x = -bDirection.x;
-	if (bPosition.x > 1400/2.0f - bRadius && bDirection.x > 0.0f) bDirection.x = -bDirection.x;
-	rootNode->translate(bSpeed * evt.timeSinceLastFrame * bDirection);
+	if (!motion) return;
+	Ogre::Vector3 pos = rootNode->getPosition();
+	pos += bSpeed * evt.timeSinceLastFrame * bDirection * ((motion == 1) ? 1 : -1);
+	float lim = 750/2.0f - bRadius;
+	if (pos.x < -lim) pos.x = -lim;
+	if (pos.x > lim) pos.x = lim;
+	setPosition(pos);
 }

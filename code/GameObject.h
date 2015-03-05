@@ -8,10 +8,14 @@
 
 class Game;
 
+namespace K {
+	enum Kind { WALL, PIT, BALL };
+}
+
 class GameObject
 {
 	public: 
-		GameObject(Game *game, int);
+		GameObject(Game *game, int kind);
 		void setBDirection(Ogre::Vector3);
 		void move(const Ogre::FrameEvent& evt);
 		virtual void update(const Ogre::FrameEvent& evt, std::vector<GameObject*> &e);
@@ -25,10 +29,17 @@ class GameObject
 		Ogre::Vector3 bDirection;
 		Ogre::Real bSpeed;
 
+		static int cur_id;
+		Ogre::String name;
+		int id, kind;
+
+		Ogre::Vector3 scale, position;
+		Ogre::Quaternion orientation;
+
 		Ogre::SceneManager *scnMgr;
-        Ogre::Entity* entity;
 		OgreBulletDynamics::DynamicsWorld *mWorld;
 
+		Ogre::Entity* entity;
 		OgreBulletCollisions::CollisionShape *collShape;
 		OgreBulletDynamics::RigidBody *rigidBody;
 };

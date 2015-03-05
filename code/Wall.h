@@ -7,13 +7,11 @@
 class Wall : public virtual GameObject
 {
 	public:
-		Wall(Game *game, int, Ogre::Vector3 scale = Ogre::Vector3(1,1,1),
-				Ogre::Quaternion orientation = Ogre::Quaternion(1,0,0,0), Ogre::Vector3 position = Ogre::Vector3(0,0,0));
+		Wall(Game *game, int, Ogre::Vector3 scale, Ogre::Quaternion orientation, Ogre::Vector3 position);
 		void update(const Ogre::FrameEvent& evt, std::vector<GameObject*> &e);
 		void attachObject(Ogre::SceneManager* scnMgr);
 	protected:
 		std::string myName;
 
 };
-
 #endif // #ifndef __Wall_h_

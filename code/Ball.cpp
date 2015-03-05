@@ -3,10 +3,11 @@
 #include "Ball.h"
 
 Ball::Ball(Game *game, int x) : GameObject(game, x){
-	Ogre::String name  = "Sphere" + Ogre::StringConverter::toString(x);
-	Ogre::Entity* entity = scnMgr->createEntity(name, "sphere.mesh");
+
+	name = "Ball@" + Ogre::StringConverter::toString(id);
+	Ogre::Entity* entity = scnMgr->createEntity("et"+name, "sphere.mesh");
 	entity->setCastShadows(true);
-	rootNode = scnMgr->getRootSceneNode()->createChildSceneNode();
+	rootNode = scnMgr->getRootSceneNode()->createChildSceneNode("nd"+name);
 	rootNode->attachObject(entity);
 	rootNode->scale(0.4f,0.4f,0.4f);
 	
@@ -24,7 +25,7 @@ Ball::Ball(Game *game, int x) : GameObject(game, x){
 
 	btCollisionObject *btObj = rigidBody->getBulletObject();
 	btObj->setCollisionFlags(btObj->getCollisionFlags() | btCollisionObject::CF_CUSTOM_MATERIAL_CALLBACK);
-	btObj->setUserPointer(game);
+	btObj->setUserPointer(static_cast<GameObject*>(this));
 }
 
 void Ball::update(const Ogre::FrameEvent& evt, std::vector<GameObject*> &e){

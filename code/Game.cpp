@@ -24,8 +24,8 @@ void Game::createScene(void){
     mSceneMgr->setAmbientLight(Ogre::ColourValue(0, 0, 0));
     mSceneMgr->setShadowTechnique(Ogre::SHADOWTYPE_STENCIL_ADDITIVE);
 
-    Paddle* paddle = new Paddle(this, 0);
-    entities.push_back(paddle);
+    mPaddle = new Paddle(this, 0);
+    entities.push_back(mPaddle);
 
     Ball* ball = new Ball(this, 0);
     entities.push_back(ball);
@@ -35,27 +35,26 @@ void Game::createScene(void){
     Ogre::MeshManager::getSingleton().createPlane("ground", Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME,
         plane, 1000, 1000, 20, 20, true, 1, 5.0, 5.0, Ogre::Vector3::UNIT_X);
 
-    Wall* p = new Wall(this, 0, Ogre::Vector3(0.75f,1.0f,0.2f),
-    		Ogre::Quaternion(), Ogre::Vector3(0, -500, 0));
-    entities.push_back(p); // Bottom
+    PitPlane* pp = new PitPlane(this, K::PIT, Ogre::Vector3::UNIT_Y, Ogre::Real(-600));
+    entities.push_back(pp); // Bottom
 
-    p = new Wall(this, 1, Ogre::Vector3(0.75f,1.0f,0.2f),
+    Wall *p = new Wall(this, K::WALL, Ogre::Vector3(0.75f,1.0f,0.2f),
     		Ogre::Quaternion(Ogre::Degree(180), Ogre::Vector3::UNIT_Z), Ogre::Vector3(0, 500, 0));
     entities.push_back(p); // Top
 
-    p = new Wall(this, 2, Ogre::Vector3(0.75f,1.0f,1.0f),
+    p = new Wall(this, K::WALL, Ogre::Vector3(0.75f,1.0f,1.0f),
     		Ogre::Quaternion(Ogre::Degree(90), Ogre::Vector3::UNIT_X), Ogre::Vector3(0, 0, -100));
     entities.push_back(p); // Back
 
-    p = new Wall(this, 3, Ogre::Vector3(0.75f,1.0f,1.0f),
+    p = new Wall(this, K::WALL, Ogre::Vector3(0.75f,1.0f,1.0f),
     		Ogre::Quaternion(Ogre::Degree(270), Ogre::Vector3::UNIT_X), Ogre::Vector3(0, 0, 100));
     entities.push_back(p); // Front
     
-    p = new Wall(this, 4, Ogre::Vector3(1.0f,1.0f,0.2f),
+    p = new Wall(this, K::WALL, Ogre::Vector3(1.0f,1.0f,0.2f),
     		Ogre::Quaternion(Ogre::Degree(270), Ogre::Vector3::UNIT_Z),  Ogre::Vector3(-375, 0, 0));
     entities.push_back(p); // Left
 
-    p = new Wall(this, 5, Ogre::Vector3(1.0f,1.0f,0.2f),
+    p = new Wall(this, K::WALL, Ogre::Vector3(1.0f,1.0f,0.2f),
     		Ogre::Quaternion(Ogre::Degree(90), Ogre::Vector3::UNIT_Z), Ogre::Vector3(375, 0, 0));
     entities.push_back(p); // Right
 
@@ -108,26 +107,20 @@ bool Game::frameRenderingQueued(const Ogre::FrameEvent& evt){
     return true;
 }
 
-/*
+
 bool Game::keyPressed( const OIS::KeyEvent& evt ){
-    switch (evt.key)
-    {
-    case OIS::KC_ESCAPE: 
-        mShutDown = true;
-        break;
-    case OIS::KC_DOWN:
-        entities[0]->setBDirection(Ogre::Vector3(-1.0f,0.0f,0.0f));
-        break;
-    case OIS::KC_UP:
-        entities[0]->setBDirection(Ogre::Vector3(1.0f,0.0f,0.0f));
-        break;
-    default:
-        break;
-    }
+	BaseApplication::keyPressed(evt);
+	if (evt.key == OIS::KC_COMMA) mPaddle->motion = 1;
+	if (evt.key == OIS::KC_PERIOD) mPaddle->motion = 2;
     return true;
 }
-bool Game::keyReleased( const OIS::KeyEvent& evt ){return true;}
-*/
+
+bool Game::keyReleased( const OIS::KeyEvent& evt ){
+	BaseApplication::keyReleased(evt);
+	mPaddle->motion = 0;
+	return true;
+}
+
 
 #if OGRE_PLATFORM == OGRE_PLATFORM_WIN32
 #define WIN32_LEAN_AND_MEAN

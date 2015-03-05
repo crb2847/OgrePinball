@@ -7,6 +7,7 @@
 #include "Wall.h"
 #include "Paddle.h"
 #include "Coin.h"
+#include "PitPlane.h"
 
 class GameObject;
 
@@ -26,8 +27,10 @@ class Game : public BaseApplication
     virtual bool frameStarted(const Ogre::FrameEvent& evt);
     virtual bool frameEnded(const Ogre::FrameEvent& evt);
     OgreBulletDynamics::DynamicsWorld *mWorld;
-	// virtual bool keyPressed( const OIS::KeyEvent& evt );
-    // virtual bool keyReleased( const OIS::KeyEvent& evt );
+	bool keyPressed(const OIS::KeyEvent& evt);
+	bool keyReleased(const OIS::KeyEvent& evt);
+
+	Paddle *mPaddle;
 };
 
 #endif // #ifndef __Game_h_
