@@ -35,8 +35,8 @@ void Game::createScene(void){
     Ogre::MeshManager::getSingleton().createPlane("ground", Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME,
         plane, 1000, 1000, 20, 20, true, 1, 5.0, 5.0, Ogre::Vector3::UNIT_X);
 
-    PitPlane* pp = new PitPlane(this, K::PIT, Ogre::Vector3::UNIT_Y, Ogre::Real(-600));
-    entities.push_back(pp); // Bottom
+    PitPlane* pit = new PitPlane(this, K::PIT, Ogre::Vector3::UNIT_Y, Ogre::Real(-510));
+    entities.push_back(pit); // Bottom
 
     Wall *p = new Wall(this, K::WALL, Ogre::Vector3(0.75f,1.0f,0.2f),
     		Ogre::Quaternion(Ogre::Degree(180), Ogre::Vector3::UNIT_Z), Ogre::Vector3(0, 500, 0));
@@ -57,6 +57,9 @@ void Game::createScene(void){
     p = new Wall(this, K::WALL, Ogre::Vector3(1.0f,1.0f,0.2f),
     		Ogre::Quaternion(Ogre::Degree(90), Ogre::Vector3::UNIT_Z), Ogre::Vector3(375, 0, 0));
     entities.push_back(p); // Right
+
+    Coin *coin = new Coin(this, K::COIN, Ogre::Vector3(0,0,0));
+    entities.push_back(coin);
 
     // Create a Light and set its position
     Ogre::Light* light = mSceneMgr->createLight("OutsideLight");
