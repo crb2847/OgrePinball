@@ -19,7 +19,7 @@ class Game : public BaseApplication
 	std::vector<GameObject*> entities;
 	Game(void);
 	virtual ~Game(void);
-	void collide(btCollisionObject *b0, btCollisionObject *b1);
+	void collission(GameObject *o0, GameObject *o1);
 
 	protected:
 	virtual void createScene();

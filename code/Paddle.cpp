@@ -2,7 +2,7 @@
 #include <OgreSceneManager.h>
 #include "Paddle.h"
 
-Paddle::Paddle(Game *game, int x) : GameObject(game, x){
+Paddle::Paddle(Game *game) : GameObject(game, K::PADDLE){
 	
 	name = "Paddle@" + Ogre::StringConverter::toString(id);
 	Ogre::Entity* entity = scnMgr->createEntity("et"+name, "cube.mesh");
@@ -39,9 +39,9 @@ void Paddle::setPosition(Ogre::Vector3 pos) {
 }
 
 void Paddle::update(const Ogre::FrameEvent& evt, std::vector<GameObject*> &e){
-	if (!motion) return;
+	if (!motion || motion == 3) return;
 	Ogre::Vector3 pos = rootNode->getPosition();
-	pos += bSpeed * evt.timeSinceLastFrame * bDirection * ((motion == 1) ? 1 : -1);
+	pos += bSpeed * evt.timeSinceLastFrame * bDirection * ((motion & 1) ? 1 : -1);
 	float lim = 750/2.0f - bRadius;
 	if (pos.x < -lim) pos.x = -lim;
 	if (pos.x > lim) pos.x = lim;

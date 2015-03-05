@@ -7,7 +7,7 @@
 class Wall : public virtual GameObject
 {
 	public:
-		Wall(Game *game, int, Ogre::Vector3 scale, Ogre::Quaternion orientation, Ogre::Vector3 position);
+		Wall(Game *game, Ogre::Vector3 scale, Ogre::Quaternion orientation, Ogre::Vector3 position);
 		void update(const Ogre::FrameEvent& evt, std::vector<GameObject*> &e);
 		void attachObject(Ogre::SceneManager* scnMgr);
 	protected:

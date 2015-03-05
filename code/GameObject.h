@@ -9,29 +9,31 @@
 class Game;
 
 namespace K {
-	enum Kind { WALL, PIT, BALL, COIN};
+	enum Kind {WALL, PIT, BALL, COIN, PADDLE};
 }
 
 class GameObject
 {
+	friend class Game;
 	public: 
 		GameObject(Game *game, int kind);
 		void setBDirection(Ogre::Vector3);
 		void move(const Ogre::FrameEvent& evt);
 		virtual void update(const Ogre::FrameEvent& evt, std::vector<GameObject*> &e);
 		Ogre::SceneNode* getNode() { return rootNode; }
+		Game *getGame() {return game;}
+
+		Ogre::String name;
+		int id, kind, subkind;
 
 	protected: 
+		static int cur_id;
 
 		Game *game;
 		Ogre::SceneNode* rootNode;
 		Ogre::Real bRadius;
 		Ogre::Vector3 bDirection;
 		Ogre::Real bSpeed;
-
-		static int cur_id;
-		Ogre::String name;
-		int id, kind;
 
 		Ogre::Vector3 scale, position;
 		Ogre::Quaternion orientation;

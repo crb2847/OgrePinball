@@ -2,7 +2,7 @@
 #include <OgreSceneManager.h>
 #include "PitPlane.h"
 
-PitPlane::PitPlane(Game *game, int x, Ogre::Vector3 normal, Ogre::Real distance) : GameObject(game, x){
+PitPlane::PitPlane(Game *game, Ogre::Vector3 normal, Ogre::Real distance) : GameObject(game, K::PIT){
 	name = "PitPlane@" + Ogre::StringConverter::toString(id);
 	collShape = new OgreBulletCollisions::StaticPlaneCollisionShape(normal, distance);
 

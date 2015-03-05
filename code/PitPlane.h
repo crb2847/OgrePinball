@@ -5,7 +5,7 @@
 
 class PitPlane : public virtual GameObject {
 	public:
-	PitPlane(Game *game, int, Ogre::Vector3 normal, Ogre::Real distance);
+	PitPlane(Game *game, Ogre::Vector3 normal, Ogre::Real distance);
 	void update(const Ogre::FrameEvent& evt, std::vector<GameObject*> &e);
 };
 

@@ -1,8 +1,9 @@
 #include "Game.h"
 
 bool HandleContacts(btManifoldPoint& point, btCollisionObject* body0, btCollisionObject* body1) {
-   Game *g = (Game *) body0->getUserPointer();
-   g->collide(body0, body1);
+   GameObject *o0 = (GameObject *) body0->getUserPointer();
+   GameObject *o1 = (GameObject *) body1->getUserPointer();
+   o0->getGame()->collission(o0, o1);
    return false;
 }
 
@@ -10,8 +11,13 @@ Game::Game(){}
 
 Game::~Game(){}
 
-void Game::collide(btCollisionObject *b0, btCollisionObject *b1) {
+void Game::collission(GameObject *o0, GameObject *o1) {
+	//OgreBulletCollisions::Object *o0 = nullptr, *o1 = nullptr;
 
+	//if (b0 && mWorld) o0 = mWorld->findObject(b0);
+	//if (b1) o1 = mWorld->findObject(b1);
+
+	std::cout << "o0=" << o0->name << ", o1=" << o1->name << "\n";
 }
 
 void Game::createScene(void){
@@ -24,10 +30,10 @@ void Game::createScene(void){
     mSceneMgr->setAmbientLight(Ogre::ColourValue(0, 0, 0));
     mSceneMgr->setShadowTechnique(Ogre::SHADOWTYPE_STENCIL_ADDITIVE);
 
-    mPaddle = new Paddle(this, 0);
+    mPaddle = new Paddle(this);
     entities.push_back(mPaddle);
 
-    Ball* ball = new Ball(this, 0);
+    Ball* ball = new Ball(this);
     entities.push_back(ball);
 
     //Create 6 walls
@@ -35,30 +41,30 @@ void Game::createScene(void){
     Ogre::MeshManager::getSingleton().createPlane("ground", Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME,
         plane, 1000, 1000, 20, 20, true, 1, 5.0, 5.0, Ogre::Vector3::UNIT_X);
 
-    PitPlane* pit = new PitPlane(this, K::PIT, Ogre::Vector3::UNIT_Y, Ogre::Real(-510));
+    PitPlane* pit = new PitPlane(this, Ogre::Vector3::UNIT_Y, Ogre::Real(-510));
     entities.push_back(pit); // Bottom
 
-    Wall *p = new Wall(this, K::WALL, Ogre::Vector3(0.75f,1.0f,0.2f),
+    Wall *p = new Wall(this, Ogre::Vector3(0.75f,1.0f,0.2f),
     		Ogre::Quaternion(Ogre::Degree(180), Ogre::Vector3::UNIT_Z), Ogre::Vector3(0, 500, 0));
     entities.push_back(p); // Top
 
-    p = new Wall(this, K::WALL, Ogre::Vector3(0.75f,1.0f,1.0f),
+    p = new Wall(this, Ogre::Vector3(0.75f,1.0f,1.0f),
     		Ogre::Quaternion(Ogre::Degree(90), Ogre::Vector3::UNIT_X), Ogre::Vector3(0, 0, -100));
     entities.push_back(p); // Back
 
-    p = new Wall(this, K::WALL, Ogre::Vector3(0.75f,1.0f,1.0f),
+    p = new Wall(this, Ogre::Vector3(0.75f,1.0f,1.0f),
     		Ogre::Quaternion(Ogre::Degree(270), Ogre::Vector3::UNIT_X), Ogre::Vector3(0, 0, 100));
     entities.push_back(p); // Front
     
-    p = new Wall(this, K::WALL, Ogre::Vector3(1.0f,1.0f,0.2f),
+    p = new Wall(this, Ogre::Vector3(1.0f,1.0f,0.2f),
     		Ogre::Quaternion(Ogre::Degree(270), Ogre::Vector3::UNIT_Z),  Ogre::Vector3(-375, 0, 0));
     entities.push_back(p); // Left
 
-    p = new Wall(this, K::WALL, Ogre::Vector3(1.0f,1.0f,0.2f),
+    p = new Wall(this, Ogre::Vector3(1.0f,1.0f,0.2f),
     		Ogre::Quaternion(Ogre::Degree(90), Ogre::Vector3::UNIT_Z), Ogre::Vector3(375, 0, 0));
     entities.push_back(p); // Right
 
-    Coin *coin = new Coin(this, K::COIN, Ogre::Vector3(0,0,0));
+    Coin *coin = new Coin(this, Ogre::Vector3(0,0,0));
     entities.push_back(coin);
 
     // Create a Light and set its position
@@ -113,14 +119,15 @@ bool Game::frameRenderingQueued(const Ogre::FrameEvent& evt){
 
 bool Game::keyPressed( const OIS::KeyEvent& evt ){
 	BaseApplication::keyPressed(evt);
-	if (evt.key == OIS::KC_COMMA) mPaddle->motion = 1;
-	if (evt.key == OIS::KC_PERIOD) mPaddle->motion = 2;
+	if (evt.key == OIS::KC_COMMA) mPaddle->motion |= 1;
+	if (evt.key == OIS::KC_PERIOD) mPaddle->motion |= 2;
     return true;
 }
 
 bool Game::keyReleased( const OIS::KeyEvent& evt ){
 	BaseApplication::keyReleased(evt);
-	mPaddle->motion = 0;
+	if (evt.key == OIS::KC_COMMA) mPaddle->motion &= ~1;
+	if (evt.key == OIS::KC_PERIOD) mPaddle->motion &= ~2;
 	return true;
 }
 

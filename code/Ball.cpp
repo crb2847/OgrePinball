@@ -2,7 +2,7 @@
 #include <OgreSceneManager.h>
 #include "Ball.h"
 
-Ball::Ball(Game *game, int x) : GameObject(game, x){
+Ball::Ball(Game *game) : GameObject(game, K::BALL){
 	name = "Ball@" + Ogre::StringConverter::toString(id);
 	Ogre::Entity* entity = scnMgr->createEntity("et"+name, "sphere.mesh");
 	entity->setCastShadows(true);

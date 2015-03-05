@@ -2,14 +2,13 @@
 #include <OgreSceneManager.h>
 #include "Coin.h"
 
-Coin::Coin(Game *game, int x, Ogre::Vector3 position) : GameObject(game, x){
+Coin::Coin(Game *game, Ogre::Vector3 position) : GameObject(game, K::COIN){
 	name = "Coin@" + Ogre::StringConverter::toString(id);
 	Ogre::Entity* entity = scnMgr->createEntity("et"+name, "disc.mesh");
 	entity->setCastShadows(true);
 	entity->setMaterialName("Coin");
 	rootNode = scnMgr->getRootSceneNode()->createChildSceneNode("nd"+name);
 	rootNode->attachObject(entity);
-
 
 	rootNode->setScale(scale = Ogre::Vector3(80, 80, 80));
 	//rootNode->setOrientation(orientation = Ogre::Quaternion(angle, Ogre::Vector3(1,1,1)));

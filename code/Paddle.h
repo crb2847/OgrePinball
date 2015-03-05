@@ -6,7 +6,7 @@
 class Paddle : public virtual GameObject
 {
 	public:
-		Paddle(Game *game, int);
+		Paddle(Game *game);
 		void setPosition(Ogre::Vector3 pos);
 		void update(const Ogre::FrameEvent& evt, std::vector<GameObject*> &e);
 		int motion = 0;

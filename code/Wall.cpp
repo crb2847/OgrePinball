@@ -3,8 +3,8 @@
 #include "Wall.h"
 #include <iostream>
 
-Wall::Wall(Game *game, int x, Ogre::Vector3 scale,
-		Ogre::Quaternion orientation, Ogre::Vector3 position) : GameObject(game, x){
+Wall::Wall(Game *game, Ogre::Vector3 scale,
+		Ogre::Quaternion orientation, Ogre::Vector3 position) : GameObject(game, K::WALL){
 
 	name = "Wall@" + Ogre::StringConverter::toString(id);
 	Ogre::Entity* entGround = scnMgr->createEntity("et"+name, "ground");
