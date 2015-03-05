@@ -13,6 +13,11 @@ elseif(EXISTS "/lusr/opt/ogre-1.9/lib/OGRE/cmake")
   set(CMAKE_MODULE_PATH "/lusr/opt/ogre-1.9/lib/OGRE/cmake/;${CMAKE_MODULE_PATH}")
 endif(EXISTS "/usr/local/lib/OGRE/cmake")
 
+# ogreoggsound stuff
+set(OGREOGGSOUND_DIR ${CMAKE_SOURCE_DIR}/ogreoggsound)
+set(OGREOGGSOUND_INCLUDE_DIRS ${OGREOGGSOUND_DIR}/include)
+set(OGREOGGSOUND_LIBRARIES ${OGREOGGSOUND_DIR}/lib/libOgreOggSound.so)
+  
 # OgreBullet stuff
 set(OGRE_BULLET_DIR ${CMAKE_SOURCE_DIR}/ogrebullet)
 set(OGRE_BULLET_INCLUDE_DIRS
@@ -57,6 +62,7 @@ add_definitions(-DBOOST_ALL_NO_LIB)
 set(OGRE_LIBRARIES ${OGRE_LIBRARIES} ${Boost_LIBRARIES})
 
 include_directories( 
+  ${OGREOGGSOUND_INCLUDE_DIRS}
   ${OGRE_BULLET_INCLUDE_DIRS}
   ${OIS_INCLUDE_DIRS}
 	${OGRE_INCLUDE_DIRS}
@@ -70,7 +76,7 @@ FILE(GLOB HDRS code/*.hpp)
  
 add_executable(OgrePinball WIN32 ${HDRS} ${SRCS})
 set_target_properties(OgrePinball PROPERTIES DEBUG_POSTFIX _d)
-target_link_libraries(OgrePinball ${OGRE_BULLET_LIBRARIES} ${BULLET_LIBRARIES} ${OGRE_LIBRARIES} ${OIS_LIBRARIES} ${OGRE_Overlay_LIBRARIES})
+target_link_libraries(OgrePinball ${OGREOGGSOUND_LIBRARIES} ${OGRE_BULLET_LIBRARIES} ${BULLET_LIBRARIES} ${OGRE_LIBRARIES} ${OIS_LIBRARIES} ${OGRE_Overlay_LIBRARIES})
 
 file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/media)
 set(EXECUTABLE_OUTPUT_PATH ${PROJECT_BINARY_DIR})

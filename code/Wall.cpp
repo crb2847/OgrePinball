@@ -22,7 +22,7 @@ Wall::Wall(Game *game, Ogre::Vector3 scale,
 
 	collShape = new OgreBulletCollisions::StaticPlaneCollisionShape(normal, distance);
 	rigidBody = new OgreBulletDynamics::RigidBody("bt"+name, mWorld);
-	rigidBody->setStaticShape(collShape, 1, 0.1); // .., restitution, friction
+	rigidBody->setStaticShape(collShape, 0.8, 0.2); // .., restitution, friction
 
 	btCollisionObject *btObj = rigidBody->getBulletObject();
 	btObj->setCollisionFlags(btObj->getCollisionFlags() | btCollisionObject::CF_CUSTOM_MATERIAL_CALLBACK);
@@ -34,7 +34,7 @@ Wall::Wall(Game *game, Ogre::Vector3 scale,
 	bSpeed = 0.0f;
 }
 
-void Wall::update(const Ogre::FrameEvent& evt, std::vector<GameObject*> &e){
+void Wall::update(const Ogre::FrameEvent& evt){
 	 //Ogre::Vector3 bPosition = rootNode->getPosition();
 	 
 	// for(int x=0; x<e.size(); x++){

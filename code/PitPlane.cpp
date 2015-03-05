@@ -15,4 +15,4 @@ PitPlane::PitPlane(Game *game, Ogre::Vector3 normal, Ogre::Real distance) : Game
 	btObj->setUserPointer(static_cast<GameObject*>(this));
 }
 
-void PitPlane::update(const Ogre::FrameEvent& evt, std::vector<GameObject*> &e) {}
+void PitPlane::update(const Ogre::FrameEvent& evt) {}

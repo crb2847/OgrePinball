@@ -7,7 +7,7 @@ class Coin : public virtual GameObject
 {
 	public:
 		Coin(Game *game, Ogre::Vector3 position);
-		void update(const Ogre::FrameEvent& evt, std::vector<GameObject*> &e);
+		void update(const Ogre::FrameEvent& evt);
 	protected:
 		Ogre::Degree angle;
 };

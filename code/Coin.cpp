@@ -33,7 +33,7 @@ Coin::Coin(Game *game, Ogre::Vector3 position) : GameObject(game, K::COIN){
 
 }
 
-void Coin::update(const Ogre::FrameEvent& evt, std::vector<GameObject*> &e){
+void Coin::update(const Ogre::FrameEvent& evt){
 	angle += Ogre::Degree(bSpeed * evt.timeSinceLastFrame);
 	orientation = Ogre::Quaternion(angle, Ogre::Vector3(1,1,1));
 

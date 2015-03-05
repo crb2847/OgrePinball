@@ -8,6 +8,7 @@
 #include "Paddle.h"
 #include "Coin.h"
 #include "PitPlane.h"
+#include <set>
 
 class GameObject;
 
@@ -16,7 +17,7 @@ class Game : public BaseApplication
 	friend class GameObject;
 
 	public:
-	std::vector<GameObject*> entities;
+	std::set<GameObject*> entities;
 	Game(void);
 	virtual ~Game(void);
 	void collission(GameObject *o0, GameObject *o1);
@@ -26,10 +27,10 @@ class Game : public BaseApplication
 	virtual bool frameRenderingQueued(const Ogre::FrameEvent& evt);
     virtual bool frameStarted(const Ogre::FrameEvent& evt);
     virtual bool frameEnded(const Ogre::FrameEvent& evt);
-    OgreBulletDynamics::DynamicsWorld *mWorld;
 	bool keyPressed(const OIS::KeyEvent& evt);
 	bool keyReleased(const OIS::KeyEvent& evt);
 
+	OgreBulletDynamics::DynamicsWorld *mWorld;
 	Paddle *mPaddle;
 };
 

@@ -9,7 +9,7 @@
 class Game;
 
 namespace K {
-	enum Kind {WALL, PIT, BALL, COIN, PADDLE};
+	enum Kind {BALL, WALL, PIT, COIN, PADDLE};
 }
 
 class GameObject
@@ -19,9 +19,10 @@ class GameObject
 		GameObject(Game *game, int kind);
 		void setBDirection(Ogre::Vector3);
 		void move(const Ogre::FrameEvent& evt);
-		virtual void update(const Ogre::FrameEvent& evt, std::vector<GameObject*> &e);
+		virtual void update(const Ogre::FrameEvent& evt);
 		Ogre::SceneNode* getNode() { return rootNode; }
 		Game *getGame() {return game;}
+		virtual void setPosition(Ogre::Vector3 pos);
 
 		Ogre::String name;
 		int id, kind, subkind;

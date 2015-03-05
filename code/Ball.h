@@ -7,7 +7,7 @@ class Ball : public virtual GameObject
 {
 	public:
 		Ball(Game *game);
-		void update(const Ogre::FrameEvent& evt, std::vector<GameObject*> &e);
+		void update(const Ogre::FrameEvent& evt);
 };
 
 #endif // #ifndef __Ball_h_
