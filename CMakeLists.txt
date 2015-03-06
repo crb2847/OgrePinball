@@ -17,6 +17,7 @@ endif(EXISTS "/usr/local/lib/OGRE/cmake")
 set(OGREOGGSOUND_DIR ${CMAKE_SOURCE_DIR}/ogreoggsound)
 set(OGREOGGSOUND_INCLUDE_DIRS ${OGREOGGSOUND_DIR}/include)
 set(OGREOGGSOUND_LIBRARIES ${OGREOGGSOUND_DIR}/lib/libOgreOggSound.so)
+link_directories(ogreoggsound/lib)
   
 # OgreBullet stuff
 set(OGRE_BULLET_DIR ${CMAKE_SOURCE_DIR}/ogrebullet)
@@ -24,8 +25,9 @@ set(OGRE_BULLET_INCLUDE_DIRS
   ${OGRE_BULLET_DIR}/include/Collisions
   ${OGRE_BULLET_DIR}/include/Dynamics)
 set(OGRE_BULLET_LIBRARIES
-  ${OGRE_BULLET_DIR}/lib/libOgreBulletCollisions.so
-  ${OGRE_BULLET_DIR}/lib/libOgreBulletDynamics.so)
+  ${OGRE_BULLET_DIR}/lib/libOgreBulletDynamics.so
+  ${OGRE_BULLET_DIR}/lib/libOgreBulletCollisions.so)
+link_directories(ogrebullet/lib)
 
 if (CMAKE_BUILD_TYPE STREQUAL "")
   # CMake defaults to leaving CMAKE_BUILD_TYPE empty. This screws up
@@ -41,15 +43,10 @@ find_package(OGRE REQUIRED)
 
 find_package(OIS REQUIRED)
 
-# find_package(Bullet REQUIRED)
-set(BULLET_DIR ${CMAKE_SOURCE_DIR}/bullet)
-set(BULLET_INCLUDE_DIRS ${BULLET_DIR}/include)
-set(BULLET_LIBRARIES
-  ${BULLET_DIR}/lib/libBulletCollision.so
-  ${BULLET_DIR}/lib/libBulletDynamics.so
-  ${BULLET_DIR}/lib/libBulletSoftBody.so
-  ${BULLET_DIR}/lib/libLinearMath.so)
- 
+set (CMAKE_INCLUDE_PATH /usr/include/bullet)
+find_package(Bullet REQUIRED)
+message(STATUS "BULLET_INCLUDE_DIR " ${BULLET_INCLUDE_DIR})
+
 # Find Boost
 set(Boost_USE_STATIC_LIBS ${OGRE_STATIC})
 set(Boost_ADDITIONAL_VERSIONS "1.44" "1.44.0" "1.42" "1.42.0" "1.41.0" "1.41" "1.40.0" "1.40" "1.39.0" "1.39" "1.38.0" "1.38" "1.37.0" "1.37" )
