@@ -10,6 +10,7 @@
 #include "Paddle.h"
 #include "Coin.h"
 #include "PitPlane.h"
+#include "Obstacle.h"
 #include <set>
 #include <ctime>
 #include <cstdint>

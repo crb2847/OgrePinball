@@ -37,6 +37,7 @@ void Game::collission(GameObject *o0, GameObject *o1) {
 
 	switch(o1->kind){
 	case K::WALL:
+	case K::OBSTACLE:
 		if((clock()-lastHit) > (CLOCKS_PER_SEC*0.15))
 			mSndMgr->getSound("sndHit")->play();
 		lastHit = clock();
@@ -118,10 +119,14 @@ void Game::createScene(void){
     entities.insert(p); // Right
 
 
-    std::vector<Ogre::Vector3> coinPos {Ogre::Vector3(100,100,0), Ogre::Vector3(-100,-100,0)};
-
+    std::vector<Ogre::Vector3> coinPos { Ogre::Vector3(100,100,0), Ogre::Vector3(-100,-100,0) };
     for (Ogre::Vector3 p : coinPos)
     	entities.insert(new Coin(this, p));
+
+    std::vector<Ogre::Vector3> obstaclePos { Ogre::Vector3(-375,-100,0), Ogre::Vector3(355,480,0),
+    	Ogre::Vector3(-100,100,0), Ogre::Vector3(100,-100,0) };
+    for (Ogre::Vector3 p : obstaclePos)
+    	entities.insert(new Obstacle(this, p));
 
     // Create a Light and set its position
     Ogre::Light* light = mSceneMgr->createLight("OutsideLight");
