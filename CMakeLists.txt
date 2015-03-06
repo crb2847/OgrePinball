@@ -41,7 +41,14 @@ find_package(OGRE REQUIRED)
 
 find_package(OIS REQUIRED)
 
-find_package(Bullet REQUIRED)
+# find_package(Bullet REQUIRED)
+set(BULLET_DIR ${CMAKE_SOURCE_DIR}/bullet)
+set(BULLET_INCLUDE_DIRS ${BULLET_DIR}/include)
+set(BULLET_LIBRARIES
+  ${BULLET_DIR}/lib/libBulletCollision.so
+  ${BULLET_DIR}/lib/libBulletDynamics.so
+  ${BULLET_DIR}/lib/libBulletSoftBody.so
+  ${BULLET_DIR}/lib/libLinearMath.so)
  
 # Find Boost
 set(Boost_USE_STATIC_LIBS ${OGRE_STATIC})
