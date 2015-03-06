@@ -30,7 +30,7 @@ Coin::Coin(Game *game, Ogre::Vector3 position) : GameObject(game, K::COIN){
 	bDirection.normalise();
 	angle = Ogre::Degree(25);
 	bSpeed = 250.0f;
-
+	taken = false;
 }
 
 void Coin::update(const Ogre::FrameEvent& evt){

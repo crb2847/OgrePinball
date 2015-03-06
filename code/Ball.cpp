@@ -18,9 +18,9 @@ Ball::Ball(Game *game) : GameObject(game, K::BALL){
 	collShape = new OgreBulletCollisions::SphereCollisionShape(bRadius * 0.95);
 	rigidBody = new OgreBulletDynamics::RigidBody("bt"+name, mWorld);
 	rigidBody->setShape(rootNode, collShape,
-			1.0, 0.2, 1.0, // restitution, friction, mass
+			1.0, 0.5, 1.0, // restitution, friction, mass
 			Ogre::Vector3(0, 0, 0), Ogre::Quaternion());
-	rigidBody->setLinearVelocity(bDirection * bSpeed);
+	//rigidBody->setLinearVelocity(bDirection * bSpeed);
 
 	btCollisionObject *btObj = rigidBody->getBulletObject();
 	btObj->setCollisionFlags(btObj->getCollisionFlags() | btCollisionObject::CF_CUSTOM_MATERIAL_CALLBACK);

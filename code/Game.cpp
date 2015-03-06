@@ -4,14 +4,32 @@ bool HandleContacts(btManifoldPoint& point, btCollisionObject* body0, btCollisio
    GameObject *o0 = (GameObject *) body0->getUserPointer();
    GameObject *o1 = (GameObject *) body1->getUserPointer();
    o0->getGame()->collission(o0, o1);
-   return false;
+   return true;
 }
 
-Game::Game(){
+Game::Game() : BaseApplication() {}
 
+Game::~Game()  {}
+
+void Game::reset(){
+	score = 0; lastHit = 0;
+	gameStart = clock();
+	for(GameObject *obj : entities) {
+		Coin *coin = dynamic_cast<Coin *>(obj);
+		if (coin) { coin->taken = false; coin->rootNode->setVisible(true); }
+	}
+	oBall->setPosition(Ogre::Vector3(0,0,0));
+	oBall->rigidBody->setLinearVelocity(oBall->bDirection * oBall->bSpeed);
 }
 
-Game::~Game(){}
+void Game::createFrameListener() {
+	BaseApplication::createFrameListener();
+	mTrayMgr->toggleAdvancedFrameStats();
+
+    mScorePanel = mTrayMgr->createParamsPanel(OgreBites::TL_TOPLEFT, "ScorePanel", 200,
+    	Ogre::StringVector {"Score", "Time"});
+    mScorePanel->show();
+}
 
 void Game::collission(GameObject *o0, GameObject *o1) {
 	if (o0->kind > o1->kind) {GameObject *tmp = o0; o0 = o1; o1 = tmp;}
@@ -19,38 +37,47 @@ void Game::collission(GameObject *o0, GameObject *o1) {
 
 	switch(o1->kind){
 	case K::WALL:
+		if((clock()-lastHit) > (CLOCKS_PER_SEC*0.15))
+			mSndMgr->getSound("sndHit")->play();
+		lastHit = clock();
 		break;
 	case K::PADDLE:
+		mSndMgr->getSound("sndPaddle")->play();
+		oBall->rigidBody->setLinearVelocity(
+				oBall->rigidBody->getLinearVelocity().normalisedCopy() * 250.0);
 		break;
 	case K::PIT:
-		o0->setPosition(Ogre::Vector3(0,0,0));
-		o0->rigidBody->setLinearVelocity(o0->bDirection * o0->bSpeed);
-
-		//o0->rigidBody->detachFromParent();
-		//delete o0->collShape;
-		//delete o0->rigidBody;
+		reset();
 		break;
 	case K::COIN:
-		entities.erase(o1);
-		o1->rigidBody->detachFromParent();
-		delete o1->collShape;
-		delete o1->rigidBody;
-		o1->rootNode->detachAllObjects();
+		Coin *coin = dynamic_cast<Coin *>(o1);
+		if (coin->taken) break;
+		mSndMgr->getSound("sndScore")->play();
+		coin->taken = true;
+		coin->rootNode->setVisible(false);
+		score++;
 		break;
 	}
-
-
-	//if (b0 && mWorld) o0 = mWorld->findObject(b0);
-	//if (b1) o1 = mWorld->findObject(b1);
-
 	std::cout << "o0=" << o0->name << ", o1=" << o1->name << "\n";
 }
 
 void Game::createScene(void){
+	// Init Bullet
 	Ogre::Vector3 gravityVector(0,-9.81,0);
 	Ogre::AxisAlignedBox bounds (Ogre::Vector3 (-10000, -10000, -10000), Ogre::Vector3 (10000,  10000,  10000));
 	mWorld = new OgreBulletDynamics::DynamicsWorld(mSceneMgr, bounds, gravityVector);
 	gContactProcessedCallback = (ContactProcessedCallback) HandleContacts;
+
+	// Init OgreOggSound
+	mOggSoundPlugin = new OgreOggSound::OgreOggSoundPlugin();
+	Ogre::Root::getSingleton().installPlugin(mOggSoundPlugin);
+	mSndMgr = OgreOggSound::OgreOggSoundManager::getSingletonPtr();
+	mSndMgr->setSceneManager(mSceneMgr);
+	mSndMgr->init();
+
+	mSndMgr->createSound("sndPaddle", "smash.wav", false, false, true);
+	mSndMgr->createSound("sndHit", "hit.wav", false, false, true);
+	mSndMgr->createSound("sndScore", "bell.wav", false, false, true);
 
 	// Set the scene's ambient light
     mSceneMgr->setAmbientLight(Ogre::ColourValue(0, 0, 0));
@@ -59,8 +86,8 @@ void Game::createScene(void){
     mPaddle = new Paddle(this);
     entities.insert(mPaddle);
 
-    Ball* ball = new Ball(this);
-    entities.insert(ball);
+    oBall = new Ball(this);
+    entities.insert(oBall);
 
     //Create 6 walls
     Ogre::Plane plane(Ogre::Vector3::UNIT_Y, 0);
@@ -90,12 +117,17 @@ void Game::createScene(void){
     		Ogre::Quaternion(Ogre::Degree(90), Ogre::Vector3::UNIT_Z), Ogre::Vector3(375, 0, 0));
     entities.insert(p); // Right
 
-    Coin *coin = new Coin(this, Ogre::Vector3(100,100,0));
-    entities.insert(coin);
+
+    std::vector<Ogre::Vector3> coinPos {Ogre::Vector3(100,100,0), Ogre::Vector3(-100,-100,0)};
+
+    for (Ogre::Vector3 p : coinPos)
+    	entities.insert(new Coin(this, p));
 
     // Create a Light and set its position
     Ogre::Light* light = mSceneMgr->createLight("OutsideLight");
     light->setPosition(90.0f, 90.0f, 800.0f);
+
+    reset();
 }
 
 bool Game::frameStarted(const Ogre::FrameEvent& evt) {
@@ -109,51 +141,30 @@ bool Game::frameEnded(const Ogre::FrameEvent& evt) {
 }
 
 bool Game::frameRenderingQueued(const Ogre::FrameEvent& evt){
-	if(mWindow->isClosed())
-        return false;
+	if(!BaseApplication::frameRenderingQueued(evt)) return false;
+	if (mTrayMgr->isDialogVisible()) return true;
 
-    if(mShutDown)
-        return false;
-
-    // Need to capture/update each device
-    mKeyboard->capture();
-    mMouse->capture();
-
-    mTrayMgr->frameRenderingQueued(evt);
-
-    if (!mTrayMgr->isDialogVisible())
-    {
-        mCameraMan->frameRenderingQueued(evt);   // If dialog isn't up, then update the camera
-        if (mDetailsPanel->isVisible())          // If details panel is visible, then update its contents
-        {
-            mDetailsPanel->setParamValue(0, Ogre::StringConverter::toString(mCamera->getDerivedPosition().x));
-            mDetailsPanel->setParamValue(1, Ogre::StringConverter::toString(mCamera->getDerivedPosition().y));
-            mDetailsPanel->setParamValue(2, Ogre::StringConverter::toString(mCamera->getDerivedPosition().z));
-            mDetailsPanel->setParamValue(4, Ogre::StringConverter::toString(mCamera->getDerivedOrientation().w));
-            mDetailsPanel->setParamValue(5, Ogre::StringConverter::toString(mCamera->getDerivedOrientation().x));
-            mDetailsPanel->setParamValue(6, Ogre::StringConverter::toString(mCamera->getDerivedOrientation().y));
-            mDetailsPanel->setParamValue(7, Ogre::StringConverter::toString(mCamera->getDerivedOrientation().z));
-        }
-        for(GameObject *obj : entities) {
-        	obj->update(evt);
-        }
-    }
-
+	int elapsedSec = (clock()-gameStart)/CLOCKS_PER_SEC;
+	mScorePanel->setParamValue(0, Ogre::StringConverter::toString(score));
+	mScorePanel->setParamValue(1, Ogre::StringConverter::toString(elapsedSec));
+	for(GameObject *obj : entities) {
+		obj->update(evt);
+	}
     return true;
 }
 
 
 bool Game::keyPressed( const OIS::KeyEvent& evt ){
-	BaseApplication::keyPressed(evt);
-	if (evt.key == OIS::KC_COMMA) mPaddle->motion |= 1;
-	if (evt.key == OIS::KC_PERIOD) mPaddle->motion |= 2;
+	if (evt.key == OIS::KC_LEFT) mPaddle->motion |= 1;
+	else if (evt.key == OIS::KC_RIGHT) mPaddle->motion |= 2;
+	else BaseApplication::keyPressed(evt);
     return true;
 }
 
 bool Game::keyReleased( const OIS::KeyEvent& evt ){
-	BaseApplication::keyReleased(evt);
-	if (evt.key == OIS::KC_COMMA) mPaddle->motion &= ~1;
-	if (evt.key == OIS::KC_PERIOD) mPaddle->motion &= ~2;
+	if (evt.key == OIS::KC_LEFT) mPaddle->motion &= ~1;
+	else if (evt.key == OIS::KC_RIGHT) mPaddle->motion &= ~2;
+	else BaseApplication::keyReleased(evt);
 	return true;
 }
 

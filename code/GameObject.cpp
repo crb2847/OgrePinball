@@ -6,11 +6,11 @@
 int GameObject::cur_id = 0;
 
 GameObject::GameObject(Game *game, int kind) {
-	this->game = game;
+	GameObject::game = game;
 	mWorld = game->mWorld;
 	scnMgr = game->mSceneMgr;
 	id = cur_id++;
-	this->kind = kind;
+	GameObject::kind = kind;
 
 	bRadius = 40.0f;
 	bDirection = Ogre::Vector3(1.0f, 0.0f, 0.0f);
