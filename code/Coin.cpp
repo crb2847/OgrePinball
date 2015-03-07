@@ -10,7 +10,7 @@ Coin::Coin(Game *game, Ogre::Vector3 position) : GameObject(game, K::COIN){
 	rootNode = scnMgr->getRootSceneNode()->createChildSceneNode("nd"+name);
 	rootNode->attachObject(entity);
 
-	rootNode->setScale(scale = Ogre::Vector3(80, 80, 80));
+	rootNode->setScale(scale = Ogre::Vector3(40, 40, 40));
 	//rootNode->setOrientation(orientation = Ogre::Quaternion(angle, Ogre::Vector3(1,1,1)));
 	rootNode->setPosition(Coin::position = position);
 

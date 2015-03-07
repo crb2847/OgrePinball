@@ -39,11 +39,11 @@ void Game::collission(GameObject *o0, GameObject *o1) {
 	case K::WALL:
 	case K::OBSTACLE:
 		if((clock()-lastHit) > (CLOCKS_PER_SEC*0.15))
-			mSndMgr->getSound("sndHit")->play();
+			if (soundOn) mSndMgr->getSound("sndHit")->play();
 		lastHit = clock();
 		break;
 	case K::PADDLE:
-		mSndMgr->getSound("sndPaddle")->play();
+		if (soundOn) mSndMgr->getSound("sndPaddle")->play();
 		oBall->rigidBody->setLinearVelocity(
 				oBall->rigidBody->getLinearVelocity().normalisedCopy() * 250.0);
 		break;
@@ -53,7 +53,7 @@ void Game::collission(GameObject *o0, GameObject *o1) {
 	case K::COIN:
 		Coin *coin = dynamic_cast<Coin *>(o1);
 		if (coin->taken) break;
-		mSndMgr->getSound("sndScore")->play();
+		if (soundOn) mSndMgr->getSound("sndScore")->play();
 		coin->taken = true;
 		coin->rootNode->setVisible(false);
 		score++;
@@ -64,7 +64,7 @@ void Game::collission(GameObject *o0, GameObject *o1) {
 
 void Game::createScene(void){
 	// Init Bullet
-	Ogre::Vector3 gravityVector(0,-9.81,0);
+	Ogre::Vector3 gravityVector(0,-30.81,0);
 	Ogre::AxisAlignedBox bounds (Ogre::Vector3 (-10000, -10000, -10000), Ogre::Vector3 (10000,  10000,  10000));
 	mWorld = new OgreBulletDynamics::DynamicsWorld(mSceneMgr, bounds, gravityVector);
 	gContactProcessedCallback = (ContactProcessedCallback) HandleContacts;
@@ -119,12 +119,12 @@ void Game::createScene(void){
     entities.insert(p); // Right
 
 
-    std::vector<Ogre::Vector3> coinPos { Ogre::Vector3(100,100,0), Ogre::Vector3(-100,-100,0) };
+    std::vector<Ogre::Vector3> coinPos { Ogre::Vector3(100,100,0), Ogre::Vector3(-100,400,0), Ogre::Vector3(-100,150,0), Ogre::Vector3(-50,200,0), Ogre::Vector3(-250,300,0), Ogre::Vector3(280,400,0), Ogre::Vector3(-250,0,0), Ogre::Vector3(-300,100,0), Ogre::Vector3(-300,-400,0), Ogre::Vector3(-100,-300,0), Ogre::Vector3(0,-350,0), Ogre::Vector3(100,-270,0), Ogre::Vector3(200,-340,0)};
     for (Ogre::Vector3 p : coinPos)
     	entities.insert(new Coin(this, p));
 
-    std::vector<Ogre::Vector3> obstaclePos { Ogre::Vector3(-375,-100,0), Ogre::Vector3(355,480,0),
-    	Ogre::Vector3(-100,100,0), Ogre::Vector3(100,-100,0) };
+    std::vector<Ogre::Vector3> obstaclePos { Ogre::Vector3(-350,-250,0), Ogre::Vector3(355,480,0),
+    	Ogre::Vector3(-100,50,0), Ogre::Vector3(100,-150,0) };
     for (Ogre::Vector3 p : obstaclePos)
     	entities.insert(new Obstacle(this, p));
 
@@ -162,6 +162,10 @@ bool Game::frameRenderingQueued(const Ogre::FrameEvent& evt){
 bool Game::keyPressed( const OIS::KeyEvent& evt ){
 	if (evt.key == OIS::KC_LEFT) mPaddle->motion |= 1;
 	else if (evt.key == OIS::KC_RIGHT) mPaddle->motion |= 2;
+	else if (evt.key == OIS::KC_M){
+		if (!soundOn) soundOn = true;
+		else if (soundOn) soundOn = false;
+	}
 	else BaseApplication::keyPressed(evt);
     return true;
 }

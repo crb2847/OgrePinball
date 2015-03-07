@@ -4,18 +4,18 @@
 
 Ball::Ball(Game *game) : GameObject(game, K::BALL){
 	name = "Ball@" + Ogre::StringConverter::toString(id);
-	Ogre::Entity* entity = scnMgr->createEntity("et"+name, "sphere.mesh");
+	Ogre::Entity* entity = scnMgr->createEntity("et"+name, "ogrehead.mesh");
 	entity->setCastShadows(true);
 	rootNode = scnMgr->getRootSceneNode()->createChildSceneNode("nd"+name);
 	rootNode->attachObject(entity);
-	rootNode->scale(0.4f,0.4f,0.4f);
+	rootNode->scale(0.5f,0.5f,0.5f);
 	
 	bRadius = 40.0f;
 	bDirection = Ogre::Vector3(1.0f, 2.0f, 0.0f);
 	bDirection.normalise();
 	bSpeed = 250.0f;
 
-	collShape = new OgreBulletCollisions::SphereCollisionShape(bRadius * 0.95);
+	collShape = new OgreBulletCollisions::SphereCollisionShape(bRadius * 0.45);
 	rigidBody = new OgreBulletDynamics::RigidBody("bt"+name, mWorld);
 	rigidBody->setShape(rootNode, collShape,
 			1.0, 0.5, 1.0, // restitution, friction, mass
