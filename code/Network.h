@@ -6,20 +6,16 @@
 #include <sys/types.h>
 #include <netinet/in.h>
 
-struct NetworkIn_t {
-	uint32_t paddlePos;
-};
-
-struct NetworkOut_t {
-	uint32_t paddlePos;
+struct NetworkData_t {
+	int32_t paddlePos;
 };
 
 class Network {
 public:
 	Network(bool server);
 	virtual ~Network();
-	bool read(NetworkIn_t *in);
-	void write(NetworkOut_t *out);
+	bool read(NetworkData_t *in);
+	void write(NetworkData_t *out);
 private:
 	struct sockaddr_in clientAddr;
 	bool server;

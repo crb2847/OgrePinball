@@ -7,7 +7,8 @@ bool HandleContacts(btManifoldPoint& point, btCollisionObject* body0, btCollisio
    return true;
 }
 
-Game::Game(bool server) : BaseApplication(), net(server), remPaddlePos(0) {}
+Game::Game(bool server) : BaseApplication(), net(server), server(server),
+		remPaddlePos(0) {}
 
 Game::~Game() {}
 
@@ -157,9 +158,9 @@ bool Game::frameRenderingQueued(const Ogre::FrameEvent& evt){
 		obj->update(evt);
 	}
 
-	NetworkOut_t netout; NetworkIn_t netin;
+	NetworkData_t netout, netin;
 	if ((clock()-lastSend) > (CLOCKS_PER_SEC/30)) {
-		netout.paddlePos = (uint32_t) mPaddle->rootNode->getPosition().x;
+		netout.paddlePos = (int32_t) mPaddle->rootNode->getPosition().x;
 		net.write(&netout);
 		lastSend = clock();
 	}

@@ -25,14 +25,14 @@ Network::Network(bool server) {
 	}
 }
 
-bool Network::read(NetworkIn_t *in) {
+bool Network::read(NetworkData_t *in) {
 	unsigned int addrLen = sizeof(clientAddr);
-	int n = recvfrom(sd, in, sizeof(NetworkIn_t), 0, (struct sockaddr *) &clientAddr, &addrLen);
-	return (n == sizeof(NetworkIn_t));
+	int n = recvfrom(sd, in, sizeof(NetworkData_t), 0, (struct sockaddr *) &clientAddr, &addrLen);
+	return (n == sizeof(NetworkData_t));
 }
 
-void Network::write(NetworkOut_t *out){
-	sendto(sd, out, sizeof(NetworkOut_t), 0, (struct sockaddr *) &clientAddr, sizeof(clientAddr));
+void Network::write(NetworkData_t *out){
+	sendto(sd, out, sizeof(NetworkData_t), 0, (struct sockaddr *) &clientAddr, sizeof(clientAddr));
 }
 
 Network::~Network() { }
