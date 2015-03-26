@@ -37,7 +37,7 @@ class Game : public BaseApplication
 	bool keyReleased(const OIS::KeyEvent& evt);
 	void createFrameListener(void);
 
-	bool soundOn;
+	bool soundOn, server;
 	OgreBulletDynamics::DynamicsWorld *mWorld;
 	Paddle *mPaddle;
 	Ball *oBall;

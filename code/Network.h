@@ -7,11 +7,11 @@
 #include <netinet/in.h>
 
 struct NetworkIn_t {
-	uint32_t paddlePos;
+	int32_t paddlePos;
 };
 
 struct NetworkOut_t {
-	uint32_t paddlePos;
+	int32_t paddlePos;
 };
 
 class Network {
