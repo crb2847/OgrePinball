@@ -11,6 +11,7 @@
 #include "Coin.h"
 #include "PitPlane.h"
 #include "Obstacle.h"
+#include "Network.h"
 #include <set>
 #include <ctime>
 #include <cstdint>
@@ -23,7 +24,7 @@ class Game : public BaseApplication
 
 	public:
 	std::set<GameObject*> entities;
-	Game(void);
+	Game(bool server);
 	virtual ~Game(void);
 	void collission(GameObject *o0, GameObject *o1);
 
@@ -45,9 +46,11 @@ class Game : public BaseApplication
 	OgreBites::ParamsPanel* mScorePanel;
 	int score;
 	void reset();
+	Network net;
+	int remPaddlePos;
 
 	private:
-	uint64_t lastHit, gameStart;
+	uint64_t lastHit, gameStart, lastSend;
 };
 
 #endif // #ifndef __Game_h_

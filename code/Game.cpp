@@ -7,9 +7,9 @@ bool HandleContacts(btManifoldPoint& point, btCollisionObject* body0, btCollisio
    return true;
 }
 
-Game::Game() : BaseApplication() {}
+Game::Game(bool server) : BaseApplication(), net(server), remPaddlePos(0) {}
 
-Game::~Game()  {}
+Game::~Game() {}
 
 void Game::reset(){
 	score = 0; lastHit = 0;
@@ -27,7 +27,7 @@ void Game::createFrameListener() {
 	mTrayMgr->toggleAdvancedFrameStats();
 
     mScorePanel = mTrayMgr->createParamsPanel(OgreBites::TL_TOPLEFT, "ScorePanel", 200,
-    	Ogre::StringVector {"Score", "Time"});
+    	Ogre::StringVector {"Score", "Time", "Remote paddle"});
     mScorePanel->show();
 }
 
@@ -59,7 +59,7 @@ void Game::collission(GameObject *o0, GameObject *o1) {
 		score++;
 		break;
 	}
-	std::cout << "o0=" << o0->name << ", o1=" << o1->name << "\n";
+	//std::cout << "o0=" << o0->name << ", o1=" << o1->name << "\n";
 }
 
 void Game::createScene(void){
@@ -152,12 +152,21 @@ bool Game::frameRenderingQueued(const Ogre::FrameEvent& evt){
 	int elapsedSec = (clock()-gameStart)/CLOCKS_PER_SEC;
 	mScorePanel->setParamValue(0, Ogre::StringConverter::toString(score));
 	mScorePanel->setParamValue(1, Ogre::StringConverter::toString(elapsedSec));
+	mScorePanel->setParamValue(2, Ogre::StringConverter::toString(remPaddlePos));
 	for(GameObject *obj : entities) {
 		obj->update(evt);
 	}
+
+	NetworkOut_t netout; NetworkIn_t netin;
+	if ((clock()-lastSend) > (CLOCKS_PER_SEC/30)) {
+		netout.paddlePos = (uint32_t) mPaddle->rootNode->getPosition().x;
+		net.write(&netout);
+		lastSend = clock();
+	}
+	if (net.read(&netin)) { remPaddlePos = netin.paddlePos; }
+
     return true;
 }
-
 
 bool Game::keyPressed( const OIS::KeyEvent& evt ){
 	if (evt.key == OIS::KC_LEFT) mPaddle->motion |= 1;
@@ -177,38 +186,21 @@ bool Game::keyReleased( const OIS::KeyEvent& evt ){
 	return true;
 }
 
-
-#if OGRE_PLATFORM == OGRE_PLATFORM_WIN32
-#define WIN32_LEAN_AND_MEAN
-#include "windows.h"
-#endif
  
 #ifdef __cplusplus
 extern "C" {
 #endif
  
-#if OGRE_PLATFORM == OGRE_PLATFORM_WIN32
-    INT WINAPI WinMain( HINSTANCE hInst, HINSTANCE, LPSTR strCmdLine, INT )
-#else
-    int main(int argc, char *argv[])
-#endif
-    {
-        // Create application object
-        Game app;
- 
-        try 
-        {
-            app.go();
-        } catch( Ogre::Exception& e ) {
-#if OGRE_PLATFORM == OGRE_PLATFORM_WIN32
-            MessageBox( NULL, e.getFullDescription().c_str(), "An exception has occured!", MB_OK | MB_ICONERROR| MB_TASKMODAL);
-#else
-            std::cerr << "An exception has occured: " << e.getFullDescription().c_str() << std::endl;
-#endif
-        }
- 
-        return 0;
-    }
+int main(int argc, char *argv[]) {
+	bool server = (argc > 1) ? atoi(argv[1]) : false;
+	Game app(server);
+	try  {
+		app.go();
+	} catch( Ogre::Exception& e ) {
+		std::cerr << "An exception has occured: " << e.getFullDescription().c_str() << std::endl;
+	}
+	return 0;
+}
  
 #ifdef __cplusplus
 }
