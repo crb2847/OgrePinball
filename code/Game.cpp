@@ -85,8 +85,13 @@ void Game::createScene(void){
     mSceneMgr->setAmbientLight(Ogre::ColourValue(0, 0, 0));
     mSceneMgr->setShadowTechnique(Ogre::SHADOWTYPE_STENCIL_ADDITIVE);
 
-    mPaddle = new Paddle(this);
-    entities.insert(mPaddle);
+    mPaddle1 = new Paddle(this,1);
+    entities.insert(mPaddle1);
+
+    mPaddle2 = new Paddle(this,2);
+    entities.insert(mPaddle2);
+
+    mMyPaddle = server ? mPaddle1 : mPaddle2;
 
     oBall = new Ball(this);
     entities.insert(oBall);
@@ -159,19 +164,31 @@ bool Game::frameRenderingQueued(const Ogre::FrameEvent& evt){
 	}
 
 	NetworkData_t netout, netin;
-	if ((clock()-lastSend) > (CLOCKS_PER_SEC/30)) {
-		netout.paddlePos = (int32_t) mPaddle->rootNode->getPosition().x;
+	if ((clock()-lastSend) > (CLOCKS_PER_SEC/60)) {
+		netout.paddle1Pos = mPaddle1->rootNode->getPosition().x;
+		netout.paddle2Pos = mPaddle2->rootNode->getPosition().x;
+		//netout.score1 = score1;
+		//netout.score2 = score2;
+		netout.ballX = oBall->rootNode->getPosition().x;
+		netout.ballY = oBall->rootNode->getPosition().y;
 		net.write(&netout);
 		lastSend = clock();
 	}
-	if (net.read(&netin)) { remPaddlePos = netin.paddlePos; }
+	if (net.read(&netin)) {
+		if (server) {
+			mPaddle2->setPosition(Ogre::Vector3(netin.paddle2Pos, 0.0, 0.0));
+		} else {
+			mPaddle1->setPosition(Ogre::Vector3(netin.paddle1Pos, 0.0, 0.0));
+		}
+
+	}
 
     return true;
 }
 
 bool Game::keyPressed( const OIS::KeyEvent& evt ){
-	if (evt.key == OIS::KC_LEFT) mPaddle->motion |= 1;
-	else if (evt.key == OIS::KC_RIGHT) mPaddle->motion |= 2;
+	if (evt.key == OIS::KC_LEFT) mMyPaddle->motion |= 1;
+	else if (evt.key == OIS::KC_RIGHT) mMyPaddle->motion |= 2;
 	else if (evt.key == OIS::KC_M){
 		if (!soundOn) soundOn = true;
 		else if (soundOn) soundOn = false;
@@ -181,8 +198,8 @@ bool Game::keyPressed( const OIS::KeyEvent& evt ){
 }
 
 bool Game::keyReleased( const OIS::KeyEvent& evt ){
-	if (evt.key == OIS::KC_LEFT) mPaddle->motion &= ~1;
-	else if (evt.key == OIS::KC_RIGHT) mPaddle->motion &= ~2;
+	if (evt.key == OIS::KC_LEFT) mMyPaddle->motion &= ~1;
+	else if (evt.key == OIS::KC_RIGHT) mMyPaddle->motion &= ~2;
 	else BaseApplication::keyReleased(evt);
 	return true;
 }

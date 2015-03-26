@@ -39,7 +39,9 @@ class Game : public BaseApplication
 
 	bool soundOn, server;
 	OgreBulletDynamics::DynamicsWorld *mWorld;
-	Paddle *mPaddle;
+	Paddle *mPaddle1;
+	Paddle *mPaddle2;
+	Paddle *mMyPaddle;
 	Ball *oBall;
 	OgreOggSound::OgreOggSoundManager* mSndMgr;
 	OgreOggSound::OgreOggSoundPlugin *mOggSoundPlugin;

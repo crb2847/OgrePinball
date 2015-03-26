@@ -7,7 +7,11 @@
 #include <netinet/in.h>
 
 struct NetworkData_t {
-	int32_t paddlePos;
+	float paddle1Pos;
+	float paddle2Pos;
+	uint32_t score1;
+	uint32_t score2;
+	float ballX, ballY; 
 };
 
 class Network {
