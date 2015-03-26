@@ -6,7 +6,15 @@
 #include <sys/types.h>
 #include <netinet/in.h>
 
+<<<<<<< HEAD
 struct NetworkData_t {
+=======
+struct NetworkIn_t {
+	int32_t paddlePos;
+};
+
+struct NetworkOut_t {
+>>>>>>> cc8ed3762bb35903d6035bcc6082063ada535f32
 	int32_t paddlePos;
 };
 
