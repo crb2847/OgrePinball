@@ -29,6 +29,14 @@ set(OGRE_BULLET_LIBRARIES
   ${OGRE_BULLET_DIR}/lib/libOgreBulletCollisions.so)
 link_directories(ogrebullet/lib)
 
+# CEGUI stuff
+if(EXISTS "/usr/local/include/cegui-0")
+  set(CEGUI_INCLUDE_DIRS /usr/local/include/cegui-0)
+elseif(EXISTS "/lusr/opt/cegui-0.8.4/include")
+  set(CEGUI_INCLUDE_DIRS /lusr/opt/cegui-0.8.4/include/cegui-0)
+endif(EXISTS "/usr/local/include/cegui-0")
+set(CEGUI_LIBRARIES CEGUIOgreRenderer-0 CEGUIBase-0)
+
 if (CMAKE_BUILD_TYPE STREQUAL "")
   # CMake defaults to leaving CMAKE_BUILD_TYPE empty. This screws up
   # differentiation between debug and release builds.
@@ -70,6 +78,7 @@ include_directories(
   ${OGRE_BULLET_INCLUDE_DIRS}
   ${OIS_INCLUDE_DIRS}
 	${OGRE_INCLUDE_DIRS}
+  ${CEGUI_INCLUDE_DIRS}
 	${BULLET_INCLUDE_DIRS}
 	${OGRE_SAMPLES_INCLUDEPATH}
 	${OGRE_Overlay_INCLUDE_DIRS}
@@ -80,7 +89,7 @@ FILE(GLOB HDRS code/*.hpp)
  
 add_executable(OgrePinball WIN32 ${HDRS} ${SRCS})
 set_target_properties(OgrePinball PROPERTIES DEBUG_POSTFIX _d)
-target_link_libraries(OgrePinball ${OGREOGGSOUND_LIBRARIES} ${OGRE_BULLET_LIBRARIES} ${BULLET_LIBRARIES} ${OGRE_LIBRARIES} ${OIS_LIBRARIES} ${OGRE_Overlay_LIBRARIES})
+target_link_libraries(OgrePinball ${OGREOGGSOUND_LIBRARIES} ${OGRE_BULLET_LIBRARIES} ${BULLET_LIBRARIES} ${OGRE_LIBRARIES} ${CEGUI_LIBRARIES} ${OIS_LIBRARIES} ${OGRE_Overlay_LIBRARIES})
 
 file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/media)
 set(EXECUTABLE_OUTPUT_PATH ${PROJECT_BINARY_DIR})
