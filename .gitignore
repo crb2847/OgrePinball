@@ -2,4 +2,6 @@ CMakeFiles/
 CMakeCache.txt
 Makefile
 *.cmake
+Ogre.log
+OgrePinball
 
