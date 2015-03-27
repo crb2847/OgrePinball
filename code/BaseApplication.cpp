@@ -119,7 +119,7 @@ void BaseApplication::createFrameListener(void)
     mKeyboard = static_cast<OIS::Keyboard*>(mInputManager->createInputObject(OIS::OISKeyboard, true));
     mMouse = static_cast<OIS::Mouse*>(mInputManager->createInputObject(OIS::OISMouse, true));
 
-    mMouse->setEventCallback(this);
+    if (mMouse) mMouse->setEventCallback(this);
     mKeyboard->setEventCallback(this);
 
     // Set initial mouse clipping size
@@ -282,7 +282,7 @@ bool BaseApplication::frameRenderingQueued(const Ogre::FrameEvent& evt)
 
     // Need to capture/update each device
     mKeyboard->capture();
-    mMouse->capture();
+    if (mMouse) mMouse->capture();
 
     mTrayMgr->frameRenderingQueued(evt);
 
@@ -432,9 +432,11 @@ void BaseApplication::windowResized(Ogre::RenderWindow* rw)
     int left, top;
     rw->getMetrics(width, height, depth, left, top);
 
-    const OIS::MouseState &ms = mMouse->getMouseState();
-    ms.width = width;
-    ms.height = height;
+    if (mMouse) {
+		const OIS::MouseState &ms = mMouse->getMouseState();
+		ms.width = width;
+		ms.height = height;
+    }
 }
 //---------------------------------------------------------------------------
 // Unattach OIS before window shutdown (very important under Linux)
@@ -445,7 +447,7 @@ void BaseApplication::windowClosed(Ogre::RenderWindow* rw)
     {
         if(mInputManager)
         {
-            mInputManager->destroyInputObject(mMouse);
+            if (mMouse) mInputManager->destroyInputObject(mMouse);
             mInputManager->destroyInputObject(mKeyboard);
 
             OIS::InputManager::destroyInputSystem(mInputManager);

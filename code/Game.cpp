@@ -142,11 +142,13 @@ void Game::createScene(void){
 }
 
 bool Game::frameStarted(const Ogre::FrameEvent& evt) {
+	if (!server) return true;
 	mWorld->stepSimulation(evt.timeSinceLastFrame);	// update Bullet Physics animation
 	return true;
 }
 
 bool Game::frameEnded(const Ogre::FrameEvent& evt) {
+	if (!server) return true;
 	mWorld->stepSimulation(evt.timeSinceLastFrame);	// update Bullet Physics animation
 	return true;
 }
@@ -176,9 +178,10 @@ bool Game::frameRenderingQueued(const Ogre::FrameEvent& evt){
 	}
 	if (net.read(&netin)) {
 		if (server) {
-			mPaddle2->setPosition(Ogre::Vector3(netin.paddle2Pos, 0.0, 0.0));
+			mPaddle2->setPosition(Ogre::Vector3(netin.paddle2Pos, -490, 0.0));
 		} else {
-			mPaddle1->setPosition(Ogre::Vector3(netin.paddle1Pos, 0.0, 0.0));
+			mPaddle1->setPosition(Ogre::Vector3(netin.paddle1Pos, -490, 0.0));
+			oBall->setPosition(Ogre::Vector3(netin.ballX, netin.ballY,0));
 		}
 
 	}
