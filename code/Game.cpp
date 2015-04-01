@@ -7,8 +7,10 @@ bool HandleContacts(btManifoldPoint& point, btCollisionObject* body0, btCollisio
    return true;
 }
 
-Game::Game(bool server) : BaseApplication(), net(server), server(server),
-		remPaddlePos(0) {}
+Game::Game(void) : BaseApplication(), net() {
+	remPaddlePos = 0;
+	state = GAMEST_WAIT;
+}
 
 Game::~Game() {}
 
@@ -28,7 +30,7 @@ void Game::createFrameListener() {
 	mTrayMgr->toggleAdvancedFrameStats();
 
     mScorePanel = mTrayMgr->createParamsPanel(OgreBites::TL_TOPLEFT, "ScorePanel", 200,
-    	Ogre::StringVector {"Score", "Time", "Remote paddle"});
+    	Ogre::StringVector {"Score", "Time", "State"});
     mScorePanel->show();
 }
 
@@ -91,7 +93,7 @@ void Game::createScene(void){
     mPaddle2 = new Paddle(this,2);
     entities.insert(mPaddle2);
 
-    mMyPaddle = server ? mPaddle1 : mPaddle2;
+    //mMyPaddle = server ? mPaddle1 : mPaddle2;
 
     oBall = new Ball(this);
     entities.insert(oBall);
@@ -142,13 +144,13 @@ void Game::createScene(void){
 }
 
 bool Game::frameStarted(const Ogre::FrameEvent& evt) {
-	if (!server) return true;
+	if (state != GAMEST_SERVER) return true;
 	mWorld->stepSimulation(evt.timeSinceLastFrame);	// update Bullet Physics animation
 	return true;
 }
 
 bool Game::frameEnded(const Ogre::FrameEvent& evt) {
-	if (!server) return true;
+	if (state != GAMEST_SERVER) return true;
 	mWorld->stepSimulation(evt.timeSinceLastFrame);	// update Bullet Physics animation
 	return true;
 }
@@ -160,38 +162,47 @@ bool Game::frameRenderingQueued(const Ogre::FrameEvent& evt){
 	int elapsedSec = (clock()-gameStart)/CLOCKS_PER_SEC;
 	mScorePanel->setParamValue(0, Ogre::StringConverter::toString(score));
 	mScorePanel->setParamValue(1, Ogre::StringConverter::toString(elapsedSec));
-	mScorePanel->setParamValue(2, Ogre::StringConverter::toString(remPaddlePos));
+	mScorePanel->setParamValue(2, Ogre::StringConverter::toString(state));
+
+	if (state == GAMEST_WAIT) {
+		bool r_server;
+		if (net.connect(&r_server))
+			state = r_server ? GAMEST_SERVER : GAMEST_CLIENT;
+		return true;
+	}
+
 	for(GameObject *obj : entities) {
 		obj->update(evt);
 	}
 
 	NetworkData_t netout, netin;
-	if ((clock()-lastSend) > (CLOCKS_PER_SEC/60)) {
-		netout.paddle1Pos = mPaddle1->rootNode->getPosition().x;
-		netout.paddle2Pos = mPaddle2->rootNode->getPosition().x;
-		//netout.score1 = score1;
-		//netout.score2 = score2;
-		netout.ballX = oBall->rootNode->getPosition().x;
-		netout.ballY = oBall->rootNode->getPosition().y;
-		net.write(&netout);
-		lastSend = clock();
-	}
-	if (net.read(&netin)) {
-		if (server) {
+	netout.paddle1Pos = mPaddle1->rootNode->getPosition().x;
+	netout.paddle2Pos = mPaddle2->rootNode->getPosition().x;
+	//netout.score1 = score1;
+	//netout.score2 = score2;
+	netout.ballX = oBall->rootNode->getPosition().x;
+	netout.ballY = oBall->rootNode->getPosition().y;
+	netout.type = NET_UPDATE;
+	net.write(&netout);
+
+	while (net.read(&netin)) {
+		if (netin.type != NET_UPDATE) continue;
+		if (state == GAMEST_SERVER) {
 			mPaddle2->setPosition(Ogre::Vector3(netin.paddle2Pos, -490, 0.0));
 		} else {
 			mPaddle1->setPosition(Ogre::Vector3(netin.paddle1Pos, -490, 0.0));
 			oBall->setPosition(Ogre::Vector3(netin.ballX, netin.ballY,0));
 		}
-
 	}
 
     return true;
 }
 
 bool Game::keyPressed( const OIS::KeyEvent& evt ){
-	if (evt.key == OIS::KC_LEFT) mMyPaddle->motion |= 1;
-	else if (evt.key == OIS::KC_RIGHT) mMyPaddle->motion |= 2;
+	if (state == GAMEST_SERVER && evt.key == OIS::KC_LEFT) mPaddle1->motion |= 1;
+	else if (state == GAMEST_CLIENT && evt.key == OIS::KC_LEFT) mPaddle2->motion |= 1;
+	else if (state == GAMEST_SERVER && evt.key == OIS::KC_RIGHT) mPaddle1->motion |= 2;
+	else if (state == GAMEST_CLIENT && evt.key == OIS::KC_RIGHT) mPaddle2->motion |= 2;
 	else if (evt.key == OIS::KC_M){
 		if (!soundOn) soundOn = true;
 		else if (soundOn) soundOn = false;
@@ -201,8 +212,10 @@ bool Game::keyPressed( const OIS::KeyEvent& evt ){
 }
 
 bool Game::keyReleased( const OIS::KeyEvent& evt ){
-	if (evt.key == OIS::KC_LEFT) mMyPaddle->motion &= ~1;
-	else if (evt.key == OIS::KC_RIGHT) mMyPaddle->motion &= ~2;
+	if (state == GAMEST_SERVER && evt.key == OIS::KC_LEFT) mPaddle1->motion &= ~1;
+	else if (state == GAMEST_CLIENT && evt.key == OIS::KC_LEFT) mPaddle2->motion &= ~1;
+	else if (state == GAMEST_SERVER && evt.key == OIS::KC_RIGHT) mPaddle1->motion &= ~2;
+	else if (state == GAMEST_CLIENT && evt.key == OIS::KC_RIGHT) mPaddle2->motion &= ~2;
 	else BaseApplication::keyReleased(evt);
 	return true;
 }
@@ -214,7 +227,7 @@ extern "C" {
  
 int main(int argc, char *argv[]) {
 	bool server = (argc > 1) ? atoi(argv[1]) : false;
-	Game app(server);
+	Game app;
 	try  {
 		app.go();
 	} catch( Ogre::Exception& e ) {

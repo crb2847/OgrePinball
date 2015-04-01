@@ -18,13 +18,16 @@
 
 class GameObject;
 
+enum GameState_t {GAMEST_WAIT = 0, GAMEST_SERVER, GAMEST_CLIENT};
+
+
 class Game : public BaseApplication
 {
 	friend class GameObject;
 
 	public:
 	std::set<GameObject*> entities;
-	Game(bool server);
+	Game(void);
 	virtual ~Game(void);
 	void collission(GameObject *o0, GameObject *o1);
 
@@ -37,7 +40,8 @@ class Game : public BaseApplication
 	bool keyReleased(const OIS::KeyEvent& evt);
 	void createFrameListener(void);
 
-	bool soundOn, server;
+	int state;
+	bool soundOn;
 	OgreBulletDynamics::DynamicsWorld *mWorld;
 	Paddle *mPaddle1;
 	Paddle *mPaddle2;
