@@ -31,3 +31,10 @@ void GameObject::setPosition(Ogre::Vector3 pos) {
 	trans.setOrigin(OgreBulletCollisions::OgreBtConverter::to(pos));
 	rigidBody->getBulletObject()->setWorldTransform(trans);
 }
+
+void GameObject::setRotation(Ogre::Quaternion orientation) {
+	rootNode->setOrientation(orientation);
+	btTransform trans = rigidBody->getBulletObject()->getWorldTransform();
+	trans.setRotation(OgreBulletCollisions::OgreBtConverter::to(orientation));
+	rigidBody->getBulletObject()->setWorldTransform(trans);
+}

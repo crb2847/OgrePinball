@@ -5,6 +5,7 @@
 #include <sys/socket.h>
 #include <sys/types.h>
 #include <netinet/in.h>
+#include "OgreQuaternion.h"
 
 enum PacketType_t {NET_UPDATE, NET_DISCOVER};
 
@@ -13,9 +14,11 @@ struct NetworkData_t {
 	uint32_t rndId;
 	float paddle1Pos;
 	float paddle2Pos;
-	uint32_t score1;
-	uint32_t score2;
+	uint32_t score;
+	uint32_t time;
 	float ballX, ballY; 
+	Ogre::Quaternion ballRotation;
+	unsigned char coins[32];
 };
 
 class Network {

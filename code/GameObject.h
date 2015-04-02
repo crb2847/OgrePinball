@@ -23,6 +23,7 @@ class GameObject
 		Ogre::SceneNode* getNode() { return rootNode; }
 		Game *getGame() {return game;}
 		virtual void setPosition(Ogre::Vector3 pos);
+		virtual void setRotation(Ogre::Quaternion orientation);
 
 		Ogre::String name;
 		int id, kind, subkind;

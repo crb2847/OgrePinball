@@ -15,6 +15,7 @@ Game::Game(void) : BaseApplication(), net() {
 Game::~Game() {}
 
 void Game::reset(){
+	elapsedSec = 0;
 	score = 0; lastHit = 0;
 	gameStart = clock();
 	for(GameObject *obj : entities) {
@@ -159,30 +160,39 @@ bool Game::frameRenderingQueued(const Ogre::FrameEvent& evt){
 	if(!BaseApplication::frameRenderingQueued(evt)) return false;
 	if (mTrayMgr->isDialogVisible()) return true;
 
-	int elapsedSec = (clock()-gameStart)/CLOCKS_PER_SEC;
+	if (state == GAMEST_SERVER) elapsedSec = (clock()-gameStart)/CLOCKS_PER_SEC;
 	mScorePanel->setParamValue(0, Ogre::StringConverter::toString(score));
 	mScorePanel->setParamValue(1, Ogre::StringConverter::toString(elapsedSec));
 	mScorePanel->setParamValue(2, Ogre::StringConverter::toString(state));
 
 	if (state == GAMEST_WAIT) {
 		bool r_server;
-		if (net.connect(&r_server))
+		if (net.connect(&r_server)) {
 			state = r_server ? GAMEST_SERVER : GAMEST_CLIENT;
-		return true;
-	}
-
-	for(GameObject *obj : entities) {
-		obj->update(evt);
+			reset();
+		} else {
+			return true;
+		}
 	}
 
 	NetworkData_t netout, netin;
+	int ci = 0;
+
+	for(GameObject *obj : entities) {
+		obj->update(evt);
+		Coin *coin = dynamic_cast<Coin *>(obj);
+		if (coin) netout.coins[ci++] = coin->taken;
+	}
+
 	netout.paddle1Pos = mPaddle1->rootNode->getPosition().x;
 	netout.paddle2Pos = mPaddle2->rootNode->getPosition().x;
-	//netout.score1 = score1;
+	netout.score = score;
 	//netout.score2 = score2;
 	netout.ballX = oBall->rootNode->getPosition().x;
 	netout.ballY = oBall->rootNode->getPosition().y;
+	netout.ballRotation = oBall->rootNode->getOrientation();
 	netout.type = NET_UPDATE;
+	netout.time = elapsedSec;
 	net.write(&netout);
 
 	while (net.read(&netin)) {
@@ -192,6 +202,17 @@ bool Game::frameRenderingQueued(const Ogre::FrameEvent& evt){
 		} else {
 			mPaddle1->setPosition(Ogre::Vector3(netin.paddle1Pos, -490, 0.0));
 			oBall->setPosition(Ogre::Vector3(netin.ballX, netin.ballY,0));
+			oBall->setRotation(netin.ballRotation);
+			score = netin.score;
+			elapsedSec = netin.time;
+			ci = 0;
+			for(GameObject *obj : entities) {
+				Coin *coin = dynamic_cast<Coin *>(obj);
+				if (!coin) continue;
+				coin->taken = netin.coins[ci];
+				coin->rootNode->setVisible(!netin.coins[ci]);
+				ci++;
+			}
 		}
 	}
 

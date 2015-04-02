@@ -50,7 +50,7 @@ class Game : public BaseApplication
 	OgreOggSound::OgreOggSoundManager* mSndMgr;
 	OgreOggSound::OgreOggSoundPlugin *mOggSoundPlugin;
 	OgreBites::ParamsPanel* mScorePanel;
-	int score;
+	int score, elapsedSec;
 	void reset();
 	Network net;
 	int remPaddlePos;
