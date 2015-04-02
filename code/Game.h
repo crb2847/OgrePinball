@@ -15,6 +15,7 @@
 #include <set>
 #include <ctime>
 #include <cstdint>
+#include "SdkTrays.h"
 
 class GameObject;
 
@@ -50,6 +51,7 @@ class Game : public BaseApplication
 	OgreOggSound::OgreOggSoundManager* mSndMgr;
 	OgreOggSound::OgreOggSoundPlugin *mOggSoundPlugin;
 	OgreBites::ParamsPanel* mScorePanel;
+	OgreBites::TextBox* mControlPanel;
 	int score;
 	void reset();
 	Network net;

@@ -31,6 +31,10 @@ void Game::createFrameListener() {
 
     mScorePanel = mTrayMgr->createParamsPanel(OgreBites::TL_TOPLEFT, "ScorePanel", 200,
     	Ogre::StringVector {"Score", "Time", "State"});
+
+    mControlPanel = mTrayMgr->createTextBox(OgreBites::TL_TOPRIGHT, "ControlPanel", "Mode Controls",  200, 110);
+    mControlPanel->setText("1:Single2:Multi");
+
     mScorePanel->show();
 }
 
@@ -97,6 +101,7 @@ void Game::createScene(void){
 
     oBall = new Ball(this);
     entities.insert(oBall);
+
 
     //Create 6 walls
     Ogre::Plane plane(Ogre::Vector3::UNIT_Y, 0);
