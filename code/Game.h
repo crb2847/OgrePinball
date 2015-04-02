@@ -19,7 +19,7 @@
 
 class GameObject;
 
-enum GameState_t {GAMEST_WAIT = 0, GAMEST_SERVER, GAMEST_CLIENT};
+enum GameState_t {GAMEST_MENU, GAMEST_CONNECT, GAMEST_SINGLE, GAMEST_CLIENT, GAMEST_SERVER};
 
 
 class Game : public BaseApplication

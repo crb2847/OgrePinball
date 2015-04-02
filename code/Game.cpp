@@ -9,7 +9,7 @@ bool HandleContacts(btManifoldPoint& point, btCollisionObject* body0, btCollisio
 
 Game::Game(void) : BaseApplication(), net() {
 	remPaddlePos = 0;
-	state = GAMEST_WAIT;
+	state = GAMEST_MENU;
 }
 
 Game::~Game() {}
@@ -33,8 +33,7 @@ void Game::createFrameListener() {
     mScorePanel = mTrayMgr->createParamsPanel(OgreBites::TL_TOPLEFT, "ScorePanel", 200,
     	Ogre::StringVector {"Score", "Time", "State"});
 
-    mControlPanel = mTrayMgr->createTextBox(OgreBites::TL_TOPRIGHT, "ControlPanel", "Mode Controls",  200, 110);
-    mControlPanel->setText("1:Single2:Multi");
+    mControlPanel = mTrayMgr->createTextBox(OgreBites::TL_CENTER, "ControlPanel", "Mode Controls",  200, 110);
 
     mScorePanel->show();
 }
@@ -150,13 +149,13 @@ void Game::createScene(void){
 }
 
 bool Game::frameStarted(const Ogre::FrameEvent& evt) {
-	if (state != GAMEST_SERVER) return true;
+	if (state != GAMEST_SERVER && state != GAMEST_SINGLE) return true;
 	mWorld->stepSimulation(evt.timeSinceLastFrame);	// update Bullet Physics animation
 	return true;
 }
 
 bool Game::frameEnded(const Ogre::FrameEvent& evt) {
-	if (state != GAMEST_SERVER) return true;
+	if (state != GAMEST_SERVER && state != GAMEST_SINGLE) return true;
 	mWorld->stepSimulation(evt.timeSinceLastFrame);	// update Bullet Physics animation
 	return true;
 }
@@ -170,7 +169,13 @@ bool Game::frameRenderingQueued(const Ogre::FrameEvent& evt){
 	mScorePanel->setParamValue(1, Ogre::StringConverter::toString(elapsedSec));
 	mScorePanel->setParamValue(2, Ogre::StringConverter::toString(state));
 
-	if (state == GAMEST_WAIT) {
+	if (state == GAMEST_MENU) {
+		mControlPanel->setText("1:Single2:Multi");
+		mControlPanel->show();
+		return true;
+	} else if (state == GAMEST_CONNECT) {
+		mControlPanel->setText("Connecting");
+		mControlPanel->show();
 		bool r_server;
 		if (net.connect(&r_server)) {
 			state = r_server ? GAMEST_SERVER : GAMEST_CLIENT;
@@ -178,6 +183,9 @@ bool Game::frameRenderingQueued(const Ogre::FrameEvent& evt){
 		} else {
 			return true;
 		}
+	} else {
+		if(mTrayMgr->getWidget("ControlPanel"))
+			mTrayMgr->destroyWidget("ControlPanel");
 	}
 
 	NetworkData_t netout, netin;
@@ -188,6 +196,8 @@ bool Game::frameRenderingQueued(const Ogre::FrameEvent& evt){
 		Coin *coin = dynamic_cast<Coin *>(obj);
 		if (coin) netout.coins[ci++] = coin->taken;
 	}
+
+	if (state == GAMEST_SINGLE) return true;
 
 	netout.paddle1Pos = mPaddle1->rootNode->getPosition().x;
 	netout.paddle2Pos = mPaddle2->rootNode->getPosition().x;
@@ -225,10 +235,14 @@ bool Game::frameRenderingQueued(const Ogre::FrameEvent& evt){
 }
 
 bool Game::keyPressed( const OIS::KeyEvent& evt ){
-	if (state == GAMEST_SERVER && evt.key == OIS::KC_LEFT) mPaddle1->motion |= 1;
+	if (state == GAMEST_MENU && (evt.key == OIS::KC_1 || evt.key == OIS::KC_NUMPAD1)) state = GAMEST_SINGLE;
+	else if (state == GAMEST_MENU && (evt.key == OIS::KC_2 || evt.key == OIS::KC_NUMPAD2)) state = GAMEST_CONNECT;
+	else if (state == GAMEST_SERVER && evt.key == OIS::KC_LEFT) mPaddle1->motion |= 1;
 	else if (state == GAMEST_CLIENT && evt.key == OIS::KC_LEFT) mPaddle2->motion |= 1;
 	else if (state == GAMEST_SERVER && evt.key == OIS::KC_RIGHT) mPaddle1->motion |= 2;
 	else if (state == GAMEST_CLIENT && evt.key == OIS::KC_RIGHT) mPaddle2->motion |= 2;
+	else if (state == GAMEST_SINGLE && evt.key == OIS::KC_LEFT) { mPaddle1->motion |= 1; mPaddle2->motion |= 1; }
+	else if (state == GAMEST_SINGLE && evt.key == OIS::KC_RIGHT) { mPaddle1->motion |= 2; mPaddle2->motion |= 2; }
 	else if (evt.key == OIS::KC_M){
 		if (!soundOn) soundOn = true;
 		else if (soundOn) soundOn = false;
@@ -242,6 +256,8 @@ bool Game::keyReleased( const OIS::KeyEvent& evt ){
 	else if (state == GAMEST_CLIENT && evt.key == OIS::KC_LEFT) mPaddle2->motion &= ~1;
 	else if (state == GAMEST_SERVER && evt.key == OIS::KC_RIGHT) mPaddle1->motion &= ~2;
 	else if (state == GAMEST_CLIENT && evt.key == OIS::KC_RIGHT) mPaddle2->motion &= ~2;
+	else if (state == GAMEST_SINGLE && evt.key == OIS::KC_LEFT) { mPaddle1->motion &= ~1; mPaddle2->motion &= ~1; }
+	else if (state == GAMEST_SINGLE && evt.key == OIS::KC_RIGHT) { mPaddle1->motion &= ~2; mPaddle2->motion &= ~2; }
 	else BaseApplication::keyReleased(evt);
 	return true;
 }
