@@ -9,6 +9,7 @@ bool HandleContacts(btManifoldPoint& point, btCollisionObject* body0, btCollisio
 
 Game::Game(void) : BaseApplication(), net() {
 	remPaddlePos = 0;
+	soundOn = true;
 	state = GAMEST_MENU;
 }
 
@@ -145,7 +146,7 @@ void Game::createScene(void){
     Ogre::Light* light = mSceneMgr->createLight("OutsideLight");
     light->setPosition(90.0f, 90.0f, 800.0f);
 
-    reset();
+    elapsedSec = 0; score = 0;
 }
 
 bool Game::frameStarted(const Ogre::FrameEvent& evt) {
@@ -164,7 +165,8 @@ bool Game::frameRenderingQueued(const Ogre::FrameEvent& evt){
 	if(!BaseApplication::frameRenderingQueued(evt)) return false;
 	if (mTrayMgr->isDialogVisible()) return true;
 
-	if (state == GAMEST_SERVER) elapsedSec = (clock()-gameStart)/CLOCKS_PER_SEC;
+	if (state == GAMEST_SERVER || state == GAMEST_SINGLE)
+		elapsedSec = (clock()-gameStart)/CLOCKS_PER_SEC;
 	mScorePanel->setParamValue(0, Ogre::StringConverter::toString(score));
 	mScorePanel->setParamValue(1, Ogre::StringConverter::toString(elapsedSec));
 	mScorePanel->setParamValue(2, Ogre::StringConverter::toString(state));
@@ -235,7 +237,7 @@ bool Game::frameRenderingQueued(const Ogre::FrameEvent& evt){
 }
 
 bool Game::keyPressed( const OIS::KeyEvent& evt ){
-	if (state == GAMEST_MENU && (evt.key == OIS::KC_1 || evt.key == OIS::KC_NUMPAD1)) state = GAMEST_SINGLE;
+	if (state == GAMEST_MENU && (evt.key == OIS::KC_1 || evt.key == OIS::KC_NUMPAD1)) { state = GAMEST_SINGLE; reset(); }
 	else if (state == GAMEST_MENU && (evt.key == OIS::KC_2 || evt.key == OIS::KC_NUMPAD2)) state = GAMEST_CONNECT;
 	else if (state == GAMEST_SERVER && evt.key == OIS::KC_LEFT) mPaddle1->motion |= 1;
 	else if (state == GAMEST_CLIENT && evt.key == OIS::KC_LEFT) mPaddle2->motion |= 1;
