@@ -25,6 +25,8 @@ void Game::reset(){
 	}
 	oBall->setPosition(Ogre::Vector3(0,0,0));
 	oBall->rigidBody->setLinearVelocity(oBall->bDirection * oBall->bSpeed);
+	sounds[0] = sounds[1] = sounds[2] = 0;
+	if (soundOn) mSndMgr->getSound("sndBg")->play();
 }
 
 void Game::createFrameListener() {
@@ -47,11 +49,12 @@ void Game::collission(GameObject *o0, GameObject *o1) {
 	case K::WALL:
 	case K::OBSTACLE:
 		if((clock()-lastHit) > (CLOCKS_PER_SEC*0.15))
-			if (soundOn) mSndMgr->getSound("sndHit")->play();
+			{sounds[0]++; if (soundOn) mSndMgr->getSound("sndHit")->play();}
 		lastHit = clock();
 		break;
 	case K::PADDLE:
 		if (soundOn) mSndMgr->getSound("sndPaddle")->play();
+		sounds[1]++;
 		oBall->rigidBody->setLinearVelocity(
 				oBall->rigidBody->getLinearVelocity().normalisedCopy() * 250.0);
 		break;
@@ -62,6 +65,7 @@ void Game::collission(GameObject *o0, GameObject *o1) {
 		Coin *coin = dynamic_cast<Coin *>(o1);
 		if (coin->taken) break;
 		if (soundOn) mSndMgr->getSound("sndScore")->play();
+		sounds[2]++;
 		coin->taken = true;
 		coin->rootNode->setVisible(false);
 		score++;
@@ -87,6 +91,9 @@ void Game::createScene(void){
 	mSndMgr->createSound("sndPaddle", "smash.wav", false, false, true);
 	mSndMgr->createSound("sndHit", "hit.wav", false, false, true);
 	mSndMgr->createSound("sndScore", "bell.wav", false, false, true);
+	// https://www.freesound.org/people/sirplus/sounds/104831/ (CC license)
+	mSndMgr->createSound("sndBg", "slowspyk.ogg", false, true, true);
+	mSndMgr->getSound("sndBg")->setVolume(0.2);
 
 	// Set the scene's ambient light
     mSceneMgr->setAmbientLight(Ogre::ColourValue(0, 0, 0));
@@ -210,6 +217,7 @@ bool Game::frameRenderingQueued(const Ogre::FrameEvent& evt){
 	netout.ballRotation = oBall->rootNode->getOrientation();
 	netout.type = NET_UPDATE;
 	netout.time = elapsedSec;
+	netout.sounds[0] = sounds[0]; netout.sounds[1] = sounds[1]; netout.sounds[2] = sounds[2];
 	net.write(&netout);
 
 	while (net.read(&netin)) {
@@ -217,6 +225,10 @@ bool Game::frameRenderingQueued(const Ogre::FrameEvent& evt){
 		if (state == GAMEST_SERVER) {
 			mPaddle2->setPosition(Ogre::Vector3(netin.paddle2Pos, -490, 0.0));
 		} else {
+			if (soundOn && netin.sounds[0] != sounds[0]) mSndMgr->getSound("sndHit")->play();
+			if (soundOn && netin.sounds[1] != sounds[1]) mSndMgr->getSound("sndPaddle")->play();
+			if (soundOn && netin.sounds[2] != sounds[2]) mSndMgr->getSound("sndScore")->play();
+			sounds[0] = netin.sounds[0]; sounds[1] = netin.sounds[1]; sounds[2] = netin.sounds[2];
 			mPaddle1->setPosition(Ogre::Vector3(netin.paddle1Pos, -490, 0.0));
 			oBall->setPosition(Ogre::Vector3(netin.ballX, netin.ballY,0));
 			oBall->setRotation(netin.ballRotation);
@@ -246,8 +258,8 @@ bool Game::keyPressed( const OIS::KeyEvent& evt ){
 	else if (state == GAMEST_SINGLE && evt.key == OIS::KC_LEFT) { mPaddle1->motion |= 1; mPaddle2->motion |= 1; }
 	else if (state == GAMEST_SINGLE && evt.key == OIS::KC_RIGHT) { mPaddle1->motion |= 2; mPaddle2->motion |= 2; }
 	else if (evt.key == OIS::KC_M){
-		if (!soundOn) soundOn = true;
-		else if (soundOn) soundOn = false;
+		if (!soundOn) { soundOn = true; mSndMgr->getSound("sndBg")->play(); }
+		else if (soundOn) { soundOn = false; mSndMgr->getSound("sndBg")->pause(); }
 	}
 	else BaseApplication::keyPressed(evt);
     return true;

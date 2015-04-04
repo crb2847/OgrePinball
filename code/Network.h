@@ -19,6 +19,7 @@ struct NetworkData_t {
 	float ballX, ballY; 
 	Ogre::Quaternion ballRotation;
 	unsigned char coins[32];
+	unsigned char sounds[3];
 };
 
 class Network {

@@ -56,6 +56,7 @@ class Game : public BaseApplication
 	void reset();
 	Network net;
 	int remPaddlePos;
+	unsigned char sounds[3];
 
 	private:
 	uint64_t lastHit, gameStart, lastSend;
