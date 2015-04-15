@@ -31,14 +31,7 @@ void Game::reset(){
 
 void Game::createFrameListener() {
 	BaseApplication::createFrameListener();
-	mTrayMgr->toggleAdvancedFrameStats();
 
-    mScorePanel = mTrayMgr->createParamsPanel(OgreBites::TL_TOPLEFT, "ScorePanel", 200,
-    	Ogre::StringVector {"Score", "Time", "State"});
-
-    mControlPanel = mTrayMgr->createTextBox(OgreBites::TL_CENTER, "ControlPanel", "Mode Controls",  200, 110);
-
-    mScorePanel->show();
 }
 
 void Game::collission(GameObject *o0, GameObject *o1) {
@@ -170,21 +163,18 @@ bool Game::frameEnded(const Ogre::FrameEvent& evt) {
 
 bool Game::frameRenderingQueued(const Ogre::FrameEvent& evt){
 	if(!BaseApplication::frameRenderingQueued(evt)) return false;
-	if (mTrayMgr->isDialogVisible()) return true;
+	// if (mTrayMgr->isDialogVisible()) return true;
 
 	if (state == GAMEST_SERVER || state == GAMEST_SINGLE)
 		elapsedSec = (clock()-gameStart)/CLOCKS_PER_SEC;
-	mScorePanel->setParamValue(0, Ogre::StringConverter::toString(score));
-	mScorePanel->setParamValue(1, Ogre::StringConverter::toString(elapsedSec));
-	mScorePanel->setParamValue(2, Ogre::StringConverter::toString(state));
+
 
 	if (state == GAMEST_MENU) {
-		mControlPanel->setText("1:Single2:Multi");
-		mControlPanel->show();
+
+
 		return true;
 	} else if (state == GAMEST_CONNECT) {
-		mControlPanel->setText("Connecting");
-		mControlPanel->show();
+
 		bool r_server;
 		if (net.connect(&r_server)) {
 			state = r_server ? GAMEST_SERVER : GAMEST_CLIENT;
@@ -193,8 +183,7 @@ bool Game::frameRenderingQueued(const Ogre::FrameEvent& evt){
 			return true;
 		}
 	} else {
-		if(mTrayMgr->getWidget("ControlPanel"))
-			mTrayMgr->destroyWidget("ControlPanel");
+
 	}
 
 	NetworkData_t netout, netin;
