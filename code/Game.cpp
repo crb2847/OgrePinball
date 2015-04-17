@@ -113,6 +113,9 @@ void Game::createScene(void){
 
     mPaddle1 = new Paddle(this,1);
     entities.insert(mPaddle1);
+    SinglePlayerState* sp = new SinglePlayerState(mPaddle1);
+    gamestates.push_back(sp);
+    
 
     mPaddle2 = new Paddle(this,2);
     entities.insert(mPaddle2);
@@ -267,14 +270,15 @@ bool Game::frameRenderingQueued(const Ogre::FrameEvent& evt){
 }
 
 bool Game::keyPressed( const OIS::KeyEvent& evt ){
+	gamestates[0]->keyPressedState(evt);
 	if (state == GAMEST_MENU && (evt.key == OIS::KC_1 || evt.key == OIS::KC_NUMPAD1)) { state = GAMEST_SINGLE; reset(); }
 	else if (state == GAMEST_MENU && (evt.key == OIS::KC_2 || evt.key == OIS::KC_NUMPAD2)) state = GAMEST_CONNECT;
 	else if (state == GAMEST_SERVER && evt.key == OIS::KC_LEFT) mPaddle1->motion |= 1;
 	else if (state == GAMEST_CLIENT && evt.key == OIS::KC_LEFT) mPaddle2->motion |= 1;
 	else if (state == GAMEST_SERVER && evt.key == OIS::KC_RIGHT) mPaddle1->motion |= 2;
 	else if (state == GAMEST_CLIENT && evt.key == OIS::KC_RIGHT) mPaddle2->motion |= 2;
-	else if (state == GAMEST_SINGLE && evt.key == OIS::KC_LEFT) { mPaddle1->motion |= 1; mPaddle2->motion |= 1; }
-	else if (state == GAMEST_SINGLE && evt.key == OIS::KC_RIGHT) { mPaddle1->motion |= 2; mPaddle2->motion |= 2; }
+	// else if (state == GAMEST_SINGLE && evt.key == OIS::KC_LEFT) { mPaddle1->motion |= 1; mPaddle2->motion |= 1; }
+	// else if (state == GAMEST_SINGLE && evt.key == OIS::KC_RIGHT) { mPaddle1->motion |= 2; mPaddle2->motion |= 2; }
 	else if (evt.key == OIS::KC_M){
 		if (!soundOn) { soundOn = true; mSndMgr->getSound("sndBg")->play(); }
 		else if (soundOn) { soundOn = false; mSndMgr->getSound("sndBg")->pause(); }
@@ -284,12 +288,13 @@ bool Game::keyPressed( const OIS::KeyEvent& evt ){
 }
 
 bool Game::keyReleased( const OIS::KeyEvent& evt ){
+	gamestates[0]->keyReleasedState(evt);
 	if (state == GAMEST_SERVER && evt.key == OIS::KC_LEFT) mPaddle1->motion &= ~1;
 	else if (state == GAMEST_CLIENT && evt.key == OIS::KC_LEFT) mPaddle2->motion &= ~1;
 	else if (state == GAMEST_SERVER && evt.key == OIS::KC_RIGHT) mPaddle1->motion &= ~2;
 	else if (state == GAMEST_CLIENT && evt.key == OIS::KC_RIGHT) mPaddle2->motion &= ~2;
-	else if (state == GAMEST_SINGLE && evt.key == OIS::KC_LEFT) { mPaddle1->motion &= ~1; mPaddle2->motion &= ~1; }
-	else if (state == GAMEST_SINGLE && evt.key == OIS::KC_RIGHT) { mPaddle1->motion &= ~2; mPaddle2->motion &= ~2; }
+	// else if (state == GAMEST_SINGLE && evt.key == OIS::KC_LEFT) { mPaddle1->motion &= ~1; mPaddle2->motion &= ~1; }
+	// else if (state == GAMEST_SINGLE && evt.key == OIS::KC_RIGHT) { mPaddle1->motion &= ~2; mPaddle2->motion &= ~2; }
 	else BaseApplication::keyReleased(evt);
 	return true;
 }

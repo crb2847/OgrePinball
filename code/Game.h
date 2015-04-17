@@ -12,6 +12,8 @@
 #include "PitPlane.h"
 #include "Obstacle.h"
 #include "Network.h"
+#include "GameState.h"
+#include "SinglePlayerState.h"
 #include <set>
 #include <ctime>
 #include <cstdint>
@@ -58,6 +60,7 @@ class Game : public BaseApplication
 	int remPaddlePos;
 	unsigned char sounds[3];
 	int maxScore;
+	std::vector<GameState*> gamestates;
 	private:
 	uint64_t lastHit, gameStart, lastSend;
 };
