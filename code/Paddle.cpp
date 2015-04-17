@@ -27,7 +27,7 @@ Paddle::Paddle(Game *game, int pID) : GameObject(game, K::PADDLE){
 	bRadius = 50.0f;
 	bDirection = Ogre::Vector3(-1.0f, 0.0f, 0.0f);
 	bDirection.normalise();
-	bSpeed = 250.0f;
+	bSpeed = 500.0f;
 	playerID = pID;
 }
 

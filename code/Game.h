@@ -57,7 +57,7 @@ class Game : public BaseApplication
 	Network net;
 	int remPaddlePos;
 	unsigned char sounds[3];
-
+	int maxScore;
 	private:
 	uint64_t lastHit, gameStart, lastSend;
 };

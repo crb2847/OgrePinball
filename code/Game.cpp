@@ -25,7 +25,7 @@ void Game::reset(){
 	}
 	oBall->setPosition(Ogre::Vector3(0,0,0));
 	oBall->rigidBody->setLinearVelocity(oBall->bDirection * oBall->bSpeed);
-	sounds[0] = sounds[1] = sounds[2] = 0;
+	sounds[0] = sounds[1] = sounds[2] = sounds[3] = 0;
 	if (soundOn) mSndMgr->getSound("sndBg")->play();
 }
 
@@ -51,12 +51,18 @@ void Game::collission(GameObject *o0, GameObject *o1) {
 		if((clock()-lastHit) > (CLOCKS_PER_SEC*0.15))
 			{sounds[0]++; if (soundOn) mSndMgr->getSound("sndHit")->play();}
 		lastHit = clock();
+		if (oBall->rigidBody->getLinearVelocity().length() > 500.0){
+			oBall->rigidBody->setLinearVelocity(oBall->rigidBody->getLinearVelocity());
+		}
+		else oBall->rigidBody->setLinearVelocity(oBall->rigidBody->getLinearVelocity() * 1.1);
+		oBall->rigidBody->setLinearVelocity(oBall->rigidBody->getLinearVelocity()); // just do this if you want it easy
 		break;
 	case K::PADDLE:
 		if (soundOn) mSndMgr->getSound("sndPaddle")->play();
 		sounds[1]++;
 		oBall->rigidBody->setLinearVelocity(
-				oBall->rigidBody->getLinearVelocity().normalisedCopy() * 250.0);
+				oBall->rigidBody->getLinearVelocity().normalisedCopy() * 450.0); 
+		// should check here which direction the paddle is moving then move the ball accordingly
 		break;
 	case K::PIT:
 		reset();
@@ -64,11 +70,17 @@ void Game::collission(GameObject *o0, GameObject *o1) {
 	case K::COIN:
 		Coin *coin = dynamic_cast<Coin *>(o1);
 		if (coin->taken) break;
-		if (soundOn) mSndMgr->getSound("sndScore")->play();
-		sounds[2]++;
+		score++;
+		if (score == maxScore){
+			sounds[3]++;
+			// if (soundOn) mSndMgr->getSound("sndScore")->play();
+		}
+		else {
+			sounds[2]++;
+			if (soundOn) mSndMgr->getSound("sndScore")->play();
+		}
 		coin->taken = true;
 		coin->rootNode->setVisible(false);
-		score++;
 		break;
 	}
 	//std::cout << "o0=" << o0->name << ", o1=" << o1->name << "\n";
@@ -76,7 +88,7 @@ void Game::collission(GameObject *o0, GameObject *o1) {
 
 void Game::createScene(void){
 	// Init Bullet
-	Ogre::Vector3 gravityVector(0,-30.81,0);
+	Ogre::Vector3 gravityVector(0,-70,0);
 	Ogre::AxisAlignedBox bounds (Ogre::Vector3 (-10000, -10000, -10000), Ogre::Vector3 (10000,  10000,  10000));
 	mWorld = new OgreBulletDynamics::DynamicsWorld(mSceneMgr, bounds, gravityVector);
 	gContactProcessedCallback = (ContactProcessedCallback) HandleContacts;
@@ -143,6 +155,9 @@ void Game::createScene(void){
     std::vector<Ogre::Vector3> coinPos { Ogre::Vector3(100,100,0), Ogre::Vector3(-100,400,0), Ogre::Vector3(-100,150,0), Ogre::Vector3(-50,200,0), Ogre::Vector3(-250,300,0), Ogre::Vector3(280,400,0), Ogre::Vector3(-250,0,0), Ogre::Vector3(-300,100,0), Ogre::Vector3(-300,-400,0), Ogre::Vector3(-100,-300,0), Ogre::Vector3(0,-350,0), Ogre::Vector3(100,-270,0), Ogre::Vector3(200,-340,0)};
     for (Ogre::Vector3 p : coinPos)
     	entities.insert(new Coin(this, p));
+
+    // Make sure to set this to the # of coins being made here. Will have to change this if we add versus mode
+    maxScore = 13;
 
     std::vector<Ogre::Vector3> obstaclePos { Ogre::Vector3(-350,-250,0), Ogre::Vector3(355,480,0),
     	Ogre::Vector3(-100,50,0), Ogre::Vector3(100,-150,0) };
@@ -218,6 +233,7 @@ bool Game::frameRenderingQueued(const Ogre::FrameEvent& evt){
 	netout.type = NET_UPDATE;
 	netout.time = elapsedSec;
 	netout.sounds[0] = sounds[0]; netout.sounds[1] = sounds[1]; netout.sounds[2] = sounds[2];
+	netout.sounds[3] = sounds[3];
 	net.write(&netout);
 
 	while (net.read(&netin)) {
@@ -228,7 +244,9 @@ bool Game::frameRenderingQueued(const Ogre::FrameEvent& evt){
 			if (soundOn && netin.sounds[0] != sounds[0]) mSndMgr->getSound("sndHit")->play();
 			if (soundOn && netin.sounds[1] != sounds[1]) mSndMgr->getSound("sndPaddle")->play();
 			if (soundOn && netin.sounds[2] != sounds[2]) mSndMgr->getSound("sndScore")->play();
+			if (soundOn && netin.sounds[3] != sounds[3]) mSndMgr->getSound("sndScore")->play();
 			sounds[0] = netin.sounds[0]; sounds[1] = netin.sounds[1]; sounds[2] = netin.sounds[2];
+			sounds[3] = netin.sounds[3];
 			mPaddle1->setPosition(Ogre::Vector3(netin.paddle1Pos, -490, 0.0));
 			oBall->setPosition(Ogre::Vector3(netin.ballX, netin.ballY,0));
 			oBall->setRotation(netin.ballRotation);
