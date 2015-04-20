@@ -15,6 +15,8 @@
 #include <set>
 #include <ctime>
 #include <cstdint>
+#include <CEGUI/CEGUI.h>
+#include <CEGUI/RendererModules/Ogre/Renderer.h>
 
 class GameObject;
 
@@ -40,6 +42,7 @@ class Game : public BaseApplication
 	bool keyReleased(const OIS::KeyEvent& evt);
 	void createFrameListener(void);
 
+	CEGUI::OgreRenderer* mRenderer;
 	int state;
 	bool soundOn;
 	OgreBulletDynamics::DynamicsWorld *mWorld;
@@ -54,6 +57,10 @@ class Game : public BaseApplication
 	Network net;
 	int remPaddlePos;
 	unsigned char sounds[3];
+
+	//CEGUI globals
+    CEGUI::Window *sheet;
+    CEGUI::Window *menu;
 
 	private:
 	uint64_t lastHit, gameStart, lastSend;

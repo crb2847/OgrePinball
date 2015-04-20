@@ -30,8 +30,30 @@ void Game::reset(){
 }
 
 void Game::createFrameListener() {
-	BaseApplication::createFrameListener();
+  Ogre::LogManager::getSingletonPtr()->logMessage("*** Initializing OIS ***");
+  OIS::ParamList pl;
+  size_t windowHnd = 0;
+  std::ostringstream windowHndStr;
 
+  mWindow->getCustomAttribute("WINDOW", &windowHnd);
+  windowHndStr << windowHnd;
+  pl.insert(std::make_pair(std::string("WINDOW"), windowHndStr.str()));
+
+  mInputManager = OIS::InputManager::createInputSystem( pl );
+
+  mKeyboard = static_cast<OIS::Keyboard*>(mInputManager->createInputObject( OIS::OISKeyboard, true ));
+  mMouse = static_cast<OIS::Mouse*>(mInputManager->createInputObject( OIS::OISMouse, true ));
+
+  mMouse->setEventCallback(this);
+  mKeyboard->setEventCallback(this);
+
+  //Set initial mouse clipping size
+  windowResized(mWindow);
+
+  //Register as a Window listener
+  Ogre::WindowEventUtilities::addWindowEventListener(mWindow, this);
+
+  mRoot->addFrameListener(this);
 }
 
 void Game::collission(GameObject *o0, GameObject *o1) {
@@ -147,6 +169,67 @@ void Game::createScene(void){
     light->setPosition(90.0f, 90.0f, 800.0f);
 
     elapsedSec = 0; score = 0;
+
+    //initalize CEGUI components
+    {
+	    mRenderer = &CEGUI::OgreRenderer::bootstrapSystem();
+
+	    CEGUI::ImageManager::setImagesetDefaultResourceGroup("Imagesets");
+	    CEGUI::Font::setDefaultResourceGroup("Fonts");
+	    CEGUI::Scheme::setDefaultResourceGroup("Schemes");
+	    CEGUI::WidgetLookManager::setDefaultResourceGroup("LookNFeel");
+	    CEGUI::WindowManager::setDefaultResourceGroup("Layouts");
+
+	    CEGUI::SchemeManager::getSingleton().createFromFile("TaharezLook.scheme"); 
+
+	    CEGUI::System::getSingleton().getDefaultGUIContext().getMouseCursor().setDefaultImage("TaharezLook/MouseArrow");
+
+	    CEGUI::WindowManager &wmgr = CEGUI::WindowManager::getSingleton();
+	    sheet = wmgr.createWindow("DefaultWindow", "OgrePinball/Sheet");
+
+	    //the start menu
+	    menu = wmgr.createWindow("TaharezLook/FrameWindow", "OgrePinball/Menu");
+	    menu->setSize(CEGUI::USize(CEGUI::UDim(0.4, 0), CEGUI::UDim(0.5, 0)));
+	    menu->setPosition(CEGUI::Vector2<CEGUI::UDim>(CEGUI::UDim(0.3,0), CEGUI::UDim(0.25,0)));
+	    sheet->addChild(menu);
+
+	    //the one-player game button
+	    CEGUI::Window *onePlayer = wmgr.createWindow("TaharezLook/Button", "OgrePinball/Menu/OnePlayer");
+	    onePlayer->setText("Single Player Game");
+	    onePlayer->setSize(CEGUI::USize(CEGUI::UDim(0.75, 0), CEGUI::UDim(0.16, 0)));
+	    onePlayer->setPosition(CEGUI::Vector2<CEGUI::UDim>(CEGUI::UDim(0.125,0), CEGUI::UDim(0.02,0)));
+	    menu->addChild(onePlayer);
+
+	    //the two-player game button
+	    CEGUI::Window *twoPlayer = wmgr.createWindow("TaharezLook/Button", "OgrePinball/Menu/TwoPlayer");
+	    twoPlayer->setText("Multiplayer Player Game");
+	    twoPlayer->setSize(CEGUI::USize(CEGUI::UDim(0.75, 0), CEGUI::UDim(0.16, 0)));
+	    twoPlayer->setPosition(CEGUI::Vector2<CEGUI::UDim>(CEGUI::UDim(0.125,0), CEGUI::UDim(0.22,0)));
+	    menu->addChild(twoPlayer);
+
+	    //the settings button
+	    CEGUI::Window *settings = wmgr.createWindow("TaharezLook/Button", "OgrePinball/Menu/Settings");
+	    settings->setText("Settings");
+	    settings->setSize(CEGUI::USize(CEGUI::UDim(0.75, 0), CEGUI::UDim(0.16, 0)));
+	    settings->setPosition(CEGUI::Vector2<CEGUI::UDim>(CEGUI::UDim(0.125,0), CEGUI::UDim(0.42,0)));
+	    menu->addChild(settings);
+
+	    //the how to play button
+	    CEGUI::Window *howToPlay = wmgr.createWindow("TaharezLook/Button", "OgrePinball/Menu/HowToPlay");
+	    howToPlay->setText("How To Play");
+	    howToPlay->setSize(CEGUI::USize(CEGUI::UDim(0.75, 0), CEGUI::UDim(0.16, 0)));
+	    howToPlay->setPosition(CEGUI::Vector2<CEGUI::UDim>(CEGUI::UDim(0.125,0), CEGUI::UDim(0.62,0)));
+	    menu->addChild(howToPlay);
+
+	    //the quit button
+	    CEGUI::Window *quit = wmgr.createWindow("TaharezLook/Button", "Raquetball/Menu/Quit");
+	    quit->setText("Quit");
+	    quit->setSize(CEGUI::USize(CEGUI::UDim(0.75, 0), CEGUI::UDim(0.16, 0)));
+	    quit->setPosition(CEGUI::Vector2<CEGUI::UDim>(CEGUI::UDim(0.125,0), CEGUI::UDim(0.82,0)));
+	    menu->addChild(quit);
+
+	    CEGUI::System::getSingleton().getDefaultGUIContext().setRootWindow(sheet);
+	}
 }
 
 bool Game::frameStarted(const Ogre::FrameEvent& evt) {
@@ -163,7 +246,13 @@ bool Game::frameEnded(const Ogre::FrameEvent& evt) {
 
 bool Game::frameRenderingQueued(const Ogre::FrameEvent& evt){
 	if(!BaseApplication::frameRenderingQueued(evt)) return false;
-	// if (mTrayMgr->isDialogVisible()) return true;
+
+	//Need to capture/update each device
+	mKeyboard->capture();
+	mMouse->capture();
+
+	//Need to inject timestamps to CEGUI System.
+	CEGUI::System::getSingleton().injectTimePulse(evt.timeSinceLastFrame);
 
 	if (state == GAMEST_SERVER || state == GAMEST_SINGLE)
 		elapsedSec = (clock()-gameStart)/CLOCKS_PER_SEC;
