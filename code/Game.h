@@ -13,6 +13,8 @@
 #include "Obstacle.h"
 #include "Network.h"
 #include "GyroInput.h"
+#include "GameState.h"
+#include "SinglePlayerState.h"
 #include <set>
 #include <ctime>
 #include <cstdint>
@@ -60,7 +62,8 @@ class Game : public BaseApplication, public GyroListener
 	Network net;
 	int remPaddlePos;
 	unsigned char sounds[3];
-
+	int maxScore;
+	std::vector<GameState*> gamestates;
 	private:
 	uint64_t lastHit, gameStart, lastSend;
 };
