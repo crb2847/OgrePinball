@@ -11,9 +11,12 @@ Game::Game(void) : BaseApplication(), net() {
 	remPaddlePos = 0;
 	soundOn = true;
 	state = GAMEST_MENU;
+	mGyroInput = nullptr;
 }
 
-Game::~Game() {}
+Game::~Game() {
+	delete mGyroInput;
+}
 
 void Game::reset(){
 	elapsedSec = 0;
@@ -75,6 +78,9 @@ void Game::collission(GameObject *o0, GameObject *o1) {
 }
 
 void Game::createScene(void){
+	mGyroInput = new GyroInput();
+	mGyroInput->setEventCallback(this);
+	mGyroInput->connect();
 	// Init Bullet
 	Ogre::Vector3 gravityVector(0,-30.81,0);
 	Ogre::AxisAlignedBox bounds (Ogre::Vector3 (-10000, -10000, -10000), Ogre::Vector3 (10000,  10000,  10000));
@@ -170,6 +176,8 @@ bool Game::frameEnded(const Ogre::FrameEvent& evt) {
 
 bool Game::frameRenderingQueued(const Ogre::FrameEvent& evt){
 	if(!BaseApplication::frameRenderingQueued(evt)) return false;
+	mGyroInput->capture();
+
 	if (mTrayMgr->isDialogVisible()) return true;
 
 	if (state == GAMEST_SERVER || state == GAMEST_SINGLE)
@@ -276,6 +284,9 @@ bool Game::keyReleased( const OIS::KeyEvent& evt ){
 	return true;
 }
 
+void Game::gyroMoved(int dev, double x, double y, double raw_x, double raw_y) {
+	std::cerr << "gyroMoved";
+}
  
 #ifdef __cplusplus
 extern "C" {

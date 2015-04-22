@@ -12,6 +12,7 @@
 #include "PitPlane.h"
 #include "Obstacle.h"
 #include "Network.h"
+#include "GyroInput.h"
 #include <set>
 #include <ctime>
 #include <cstdint>
@@ -22,7 +23,7 @@ class GameObject;
 enum GameState_t {GAMEST_MENU, GAMEST_CONNECT, GAMEST_SINGLE, GAMEST_CLIENT, GAMEST_SERVER};
 
 
-class Game : public BaseApplication
+class Game : public BaseApplication, public GyroListener
 {
 	friend class GameObject;
 
@@ -40,6 +41,7 @@ class Game : public BaseApplication
 	bool keyPressed(const OIS::KeyEvent& evt);
 	bool keyReleased(const OIS::KeyEvent& evt);
 	void createFrameListener(void);
+	void gyroMoved(int dev, double x, double y, double raw_x, double raw_y);
 
 	int state;
 	bool soundOn;
@@ -48,6 +50,7 @@ class Game : public BaseApplication
 	Paddle *mPaddle2;
 	Paddle *mMyPaddle;
 	Ball *oBall;
+	GyroInput *mGyroInput;
 	OgreOggSound::OgreOggSoundManager* mSndMgr;
 	OgreOggSound::OgreOggSoundPlugin *mOggSoundPlugin;
 	OgreBites::ParamsPanel* mScorePanel;

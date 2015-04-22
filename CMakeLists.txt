@@ -13,6 +13,9 @@ elseif(EXISTS "/lusr/opt/ogre-1.9/lib/OGRE/cmake")
   set(CMAKE_MODULE_PATH "/lusr/opt/ogre-1.9/lib/OGRE/cmake/;${CMAKE_MODULE_PATH}")
 endif(EXISTS "/usr/local/lib/OGRE/cmake")
 
+# Input device stuff
+set(INPUT_LIBRARIES "X11" "Xi")
+
 # ogreoggsound stuff
 set(OGREOGGSOUND_DIR ${CMAKE_SOURCE_DIR}/ogreoggsound)
 set(OGREOGGSOUND_INCLUDE_DIRS ${OGREOGGSOUND_DIR}/include)
@@ -89,7 +92,15 @@ FILE(GLOB HDRS code/*.hpp)
  
 add_executable(OgrePinball WIN32 ${HDRS} ${SRCS})
 set_target_properties(OgrePinball PROPERTIES DEBUG_POSTFIX _d)
-target_link_libraries(OgrePinball ${OGREOGGSOUND_LIBRARIES} ${OGRE_BULLET_LIBRARIES} ${BULLET_LIBRARIES} ${OGRE_LIBRARIES} ${CEGUI_LIBRARIES} ${OIS_LIBRARIES} ${OGRE_Overlay_LIBRARIES})
+target_link_libraries(OgrePinball 
+  ${OGREOGGSOUND_LIBRARIES}
+  ${OGRE_BULLET_LIBRARIES}
+  ${BULLET_LIBRARIES}
+  ${OGRE_LIBRARIES}
+  ${CEGUI_LIBRARIES}
+  ${OIS_LIBRARIES}
+  ${OGRE_Overlay_LIBRARIES}
+  ${INPUT_LIBRARIES})
 
 file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/media)
 set(EXECUTABLE_OUTPUT_PATH ${PROJECT_BINARY_DIR})
