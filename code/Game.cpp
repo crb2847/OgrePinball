@@ -1,20 +1,22 @@
 #include "Game.h"
 
+CEGUI::MouseButton convertButton(OIS::MouseButtonID buttonID);
+
 bool HandleContacts(btManifoldPoint& point, btCollisionObject* body0, btCollisionObject* body1) {
    GameObject *o0 = (GameObject *) body0->getUserPointer();
    GameObject *o1 = (GameObject *) body1->getUserPointer();
    o0->getGame()->collission(o0, o1);
    return true;
 }
-
+//-------------------------------------------------------------------------------------
 Game::Game(void) : BaseApplication(), net() {
 	remPaddlePos = 0;
 	soundOn = true;
 	state = GAMEST_MENU;
 }
-
+//-------------------------------------------------------------------------------------
 Game::~Game() {}
-
+//-------------------------------------------------------------------------------------
 void Game::reset(){
 	elapsedSec = 0;
 	score = 0; lastHit = 0;
@@ -28,7 +30,7 @@ void Game::reset(){
 	sounds[0] = sounds[1] = sounds[2] = 0;
 	if (soundOn) mSndMgr->getSound("sndBg")->play();
 }
-
+//-------------------------------------------------------------------------------------
 void Game::createFrameListener() {
   Ogre::LogManager::getSingletonPtr()->logMessage("*** Initializing OIS ***");
   OIS::ParamList pl;
@@ -55,7 +57,7 @@ void Game::createFrameListener() {
 
   mRoot->addFrameListener(this);
 }
-
+//-------------------------------------------------------------------------------------
 void Game::collission(GameObject *o0, GameObject *o1) {
 	if (o0->kind > o1->kind) {GameObject *tmp = o0; o0 = o1; o1 = tmp;}
 	if (o0->kind != K::BALL) return;
@@ -88,7 +90,7 @@ void Game::collission(GameObject *o0, GameObject *o1) {
 	}
 	//std::cout << "o0=" << o0->name << ", o1=" << o1->name << "\n";
 }
-
+//-------------------------------------------------------------------------------------
 void Game::createScene(void){
 	// Init Bullet
 	Ogre::Vector3 gravityVector(0,-30.81,0);
@@ -155,7 +157,11 @@ void Game::createScene(void){
     entities.insert(p); // Right
 
 
-    std::vector<Ogre::Vector3> coinPos { Ogre::Vector3(100,100,0), Ogre::Vector3(-100,400,0), Ogre::Vector3(-100,150,0), Ogre::Vector3(-50,200,0), Ogre::Vector3(-250,300,0), Ogre::Vector3(280,400,0), Ogre::Vector3(-250,0,0), Ogre::Vector3(-300,100,0), Ogre::Vector3(-300,-400,0), Ogre::Vector3(-100,-300,0), Ogre::Vector3(0,-350,0), Ogre::Vector3(100,-270,0), Ogre::Vector3(200,-340,0)};
+    std::vector<Ogre::Vector3> coinPos { Ogre::Vector3(100,100,0), Ogre::Vector3(-100,400,0), 
+    	Ogre::Vector3(-100,150,0), Ogre::Vector3(-50,200,0), Ogre::Vector3(-250,300,0), 
+    	Ogre::Vector3(280,400,0), Ogre::Vector3(-250,0,0), Ogre::Vector3(-300,100,0), 
+    	Ogre::Vector3(-300,-400,0), Ogre::Vector3(-100,-300,0), Ogre::Vector3(0,-350,0), 
+    	Ogre::Vector3(100,-270,0), Ogre::Vector3(200,-340,0)};
     for (Ogre::Vector3 p : coinPos)
     	entities.insert(new Coin(this, p));
 
@@ -228,22 +234,51 @@ void Game::createScene(void){
 	    quit->setPosition(CEGUI::Vector2<CEGUI::UDim>(CEGUI::UDim(0.125,0), CEGUI::UDim(0.82,0)));
 	    menu->addChild(quit);
 
+		//the pause button
+	    pause = wmgr.createWindow("TaharezLook/Button", "Raquetball/Pause");
+	    pause->setText("Pause");
+	    pause->setSize(CEGUI::USize(CEGUI::UDim(0.1, 0), CEGUI::UDim(0.05, 0)));
+
+	    //the pause menu
+	    pauseMenu = wmgr.createWindow("TaharezLook/FrameWindow", "Raquetball/PauseMenu");
+	    pauseMenu->setSize(CEGUI::USize(CEGUI::UDim(0.4, 0), CEGUI::UDim(0.5, 0)));
+	    pauseMenu->setPosition(CEGUI::Vector2<CEGUI::UDim>(CEGUI::UDim(0.3,0), CEGUI::UDim(0.25,0)));
+
+        //the resume button
+	    CEGUI::Window *resume = wmgr.createWindow("TaharezLook/Button", "Raquetball/Pause/PauseMenu/Resume");
+	    resume->setText("Resume Game");
+	    resume->setSize(CEGUI::USize(CEGUI::UDim(0.75, 0), CEGUI::UDim(0.2, 0)));
+	    resume->setPosition(CEGUI::Vector2<CEGUI::UDim>(CEGUI::UDim(0.125,0), CEGUI::UDim(0.16,0)));
+	    pauseMenu->addChild(resume);
+
+	    //the main menu button (in the pause menu)
+	    CEGUI::Window *mainMenu = wmgr.createWindow("TaharezLook/Button", "Raquetball/Pause/PauseMenu/MainMenu");
+	    mainMenu->setText("Main Menu");
+	    mainMenu->setSize(CEGUI::USize(CEGUI::UDim(0.75, 0), CEGUI::UDim(0.2, 0)));
+	    mainMenu->setPosition(CEGUI::Vector2<CEGUI::UDim>(CEGUI::UDim(0.125,0), CEGUI::UDim(0.4,0)));
+	    pauseMenu->addChild(mainMenu);
+
 	    CEGUI::System::getSingleton().getDefaultGUIContext().setRootWindow(sheet);
+	    onePlayer->   subscribeEvent(CEGUI::PushButton::EventClicked, CEGUI::Event::Subscriber(&Game::startSinglePlayer, this));
+    	quit->        subscribeEvent(CEGUI::PushButton::EventClicked, CEGUI::Event::Subscriber(&Game::quit,              this));		
+		pause->       subscribeEvent(CEGUI::PushButton::EventClicked, CEGUI::Event::Subscriber(&Game::pauseGame,         this));
+   		resume->      subscribeEvent(CEGUI::PushButton::EventClicked, CEGUI::Event::Subscriber(&Game::resumeGame,        this));
+   		mainMenu->    subscribeEvent(CEGUI::PushButton::EventClicked, CEGUI::Event::Subscriber(&Game::openMainMenu,      this));
 	}
 }
-
+//-------------------------------------------------------------------------------------
 bool Game::frameStarted(const Ogre::FrameEvent& evt) {
 	if (state != GAMEST_SERVER && state != GAMEST_SINGLE) return true;
 	mWorld->stepSimulation(evt.timeSinceLastFrame);	// update Bullet Physics animation
 	return true;
 }
-
+//-------------------------------------------------------------------------------------
 bool Game::frameEnded(const Ogre::FrameEvent& evt) {
 	if (state != GAMEST_SERVER && state != GAMEST_SINGLE) return true;
 	mWorld->stepSimulation(evt.timeSinceLastFrame);	// update Bullet Physics animation
 	return true;
 }
-
+//-------------------------------------------------------------------------------------
 bool Game::frameRenderingQueued(const Ogre::FrameEvent& evt){
 	if(!BaseApplication::frameRenderingQueued(evt)) return false;
 
@@ -325,10 +360,9 @@ bool Game::frameRenderingQueued(const Ogre::FrameEvent& evt){
 
     return true;
 }
-
+//-------------------------------------------------------------------------------------
 bool Game::keyPressed( const OIS::KeyEvent& evt ){
-	if (state == GAMEST_MENU && (evt.key == OIS::KC_1 || evt.key == OIS::KC_NUMPAD1)) { state = GAMEST_SINGLE; reset(); }
-	else if (state == GAMEST_MENU && (evt.key == OIS::KC_2 || evt.key == OIS::KC_NUMPAD2)) state = GAMEST_CONNECT;
+	if (state == GAMEST_MENU && (evt.key == OIS::KC_2 || evt.key == OIS::KC_NUMPAD2)) state = GAMEST_CONNECT;
 	else if (state == GAMEST_SERVER && evt.key == OIS::KC_LEFT) mPaddle1->motion |= 1;
 	else if (state == GAMEST_CLIENT && evt.key == OIS::KC_LEFT) mPaddle2->motion |= 1;
 	else if (state == GAMEST_SERVER && evt.key == OIS::KC_RIGHT) mPaddle1->motion |= 2;
@@ -342,7 +376,7 @@ bool Game::keyPressed( const OIS::KeyEvent& evt ){
 	else BaseApplication::keyPressed(evt);
     return true;
 }
-
+//-------------------------------------------------------------------------------------
 bool Game::keyReleased( const OIS::KeyEvent& evt ){
 	if (state == GAMEST_SERVER && evt.key == OIS::KC_LEFT) mPaddle1->motion &= ~1;
 	else if (state == GAMEST_CLIENT && evt.key == OIS::KC_LEFT) mPaddle2->motion &= ~1;
@@ -353,8 +387,91 @@ bool Game::keyReleased( const OIS::KeyEvent& evt ){
 	else BaseApplication::keyReleased(evt);
 	return true;
 }
-
+//-------------------------------------------------------------------------------------
+bool Game::mouseMoved( const OIS::MouseEvent &arg )
+{
+  CEGUI::GUIContext &context = CEGUI::System::getSingleton().getDefaultGUIContext();
+  context.injectMouseMove(arg.state.X.rel, arg.state.Y.rel);
+  
+  // Scroll wheel.
+  if (arg.state.Z.rel)
+    context.injectMouseWheelChange(arg.state.Z.rel / 120.0f);
+  return true;
+}
+//------------------------------------------------------------------------------------- 
+bool Game::mousePressed( const OIS::MouseEvent &arg, OIS::MouseButtonID id )
+{
+  CEGUI::System::getSingleton().getDefaultGUIContext().injectMouseButtonDown(convertButton(id));
+  return true;  
+}
+//-------------------------------------------------------------------------------------
+bool Game::mouseReleased( const OIS::MouseEvent &arg, OIS::MouseButtonID id )
+{
+  CEGUI::System::getSingleton().getDefaultGUIContext().injectMouseButtonUp(convertButton(id));
+  return true;
+}
+//-------------------------------------------------------------------------------------
+CEGUI::MouseButton convertButton(OIS::MouseButtonID buttonID)
+{
+    switch (buttonID)
+    {
+    case OIS::MB_Left:
+        return CEGUI::LeftButton;
  
+    case OIS::MB_Right:
+        return CEGUI::RightButton;
+ 
+    case OIS::MB_Middle:
+        return CEGUI::MiddleButton;
+ 
+    default:
+        return CEGUI::LeftButton;
+    }
+}
+//-------------------------------------------------------------------------------------
+bool Game::quit(const CEGUI::EventArgs &e)
+{
+  mShutDown = true;
+  return true;
+}
+//-------------------------------------------------------------------------------------
+bool Game::startSinglePlayer(const CEGUI::EventArgs &e)
+{
+  sheet->removeChild(menu);
+  sheet->addChild(pause);
+  state = GAMEST_SINGLE; 
+  reset();
+  return true;
+}
+//-------------------------------------------------------------------------------------
+bool Game::pauseGame(const CEGUI::EventArgs &e)
+{
+  sheet->removeChild(pause);
+  //sheet->removeChild(scoreBox);
+  sheet->addChild(pauseMenu);
+  state = GAMEST_MENU;
+  return true;
+}
+//-------------------------------------------------------------------------------------
+bool Game::resumeGame(const CEGUI::EventArgs &e)
+{
+  sheet->removeChild(pauseMenu);
+  sheet->addChild(pause);
+  // sheet->addChild(scoreBox);
+  state = GAMEST_SINGLE;
+  return true;
+}
+//-------------------------------------------------------------------------------------
+bool Game::openMainMenu(const CEGUI::EventArgs &e)
+{
+  sheet->removeChild(pauseMenu);
+  sheet->addChild(menu);
+  state = GAMEST_MENU;
+
+  return true;
+}
+//-------------------------------------------------------------------------------------
+
 #ifdef __cplusplus
 extern "C" {
 #endif
