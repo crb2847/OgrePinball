@@ -8,7 +8,9 @@
 class GyroListener {
 public:
 	virtual ~GyroListener() {}
-	virtual void gyroMoved(int dev, double x, double y, double raw_x, double raw_y) = 0;
+	virtual void gyroMoved(int dev, double x, double y, double raw_x, double raw_y) {}
+	virtual void gyroKeyPressed(int dev, int keycode) {}
+	virtual void gyroKeyReleased(int dev, int keycode) {}
 };
 
 class GyroInput {

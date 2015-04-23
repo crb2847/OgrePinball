@@ -29,8 +29,7 @@ int GyroInput::connect(void) {
 		for (int j = 0; j < dev->num_classes; j++)
 			if (dev->classes[j]->type == XIValuatorClass) { type = 1; break; }
 		devI[dev->deviceid] = ++devCnt[type];
-		if(type != 1) continue;
-		uint32_t mask = XI_RawMotionMask;
+		uint32_t mask = XI_RawMotionMask  | XI_RawKeyPressMask | XI_RawKeyReleaseMask;
 		XIEventMask evtMask {dev->deviceid, 4, (unsigned char *) &mask};
 		XISelectEvents(dis, win, &evtMask, 1);
 	}
@@ -50,6 +49,12 @@ void GyroInput::capture(void) {
 				if (re->valuators.mask[0] & 1) { dx = re->valuators.values[0]; dxr = re->raw_values[0]; }
 				if (re->valuators.mask[0] & 2) { dy = re->valuators.values[1]; dyr = re->raw_values[1]; }
 				listener->gyroMoved(devI[re->deviceid], dx, dy, dxr, dyr);
+			} else if (ev.xcookie.evtype == XI_RawKeyPress) {
+				XIRawEvent *re =  (XIRawEvent *) ev.xcookie.data;
+				listener->gyroKeyPressed(devI[re->deviceid], re->detail);
+			} else if (ev.xcookie.evtype == XI_RawKeyRelease) {
+				XIRawEvent *re =  (XIRawEvent *) ev.xcookie.data;
+				listener->gyroKeyReleased(devI[re->deviceid], re->detail);
 			}
 		}
 		XFreeEventData(dis, &ev.xcookie);
