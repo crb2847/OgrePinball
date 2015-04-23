@@ -45,7 +45,6 @@ void GyroInput::capture(void) {
 				XGetEventData(dis, &ev.xcookie) && listener != nullptr) {
 			XIRawEvent *re =  (XIRawEvent *) ev.xcookie.data;
 			if (ev.xcookie.evtype == XI_RawMotion) {
-				XIRawEvent *re =  (XIRawEvent *) ev.xcookie.data;
 				double dx = 0.0, dy = 0.0, dxr = 0.0, dyr = 0.0;
 				if (re->valuators.mask[0] & 1) { dx = re->valuators.values[0]; dxr = re->raw_values[0]; }
 				if (re->valuators.mask[0] & 2) { dy = re->valuators.values[1]; dyr = re->raw_values[1]; }
