@@ -119,8 +119,8 @@ void Game::createScene(void){
 
     mPaddle1 = new Paddle(this,1);
     entities.insert(mPaddle1);
-    SinglePlayerState* sp = new SinglePlayerState(mPaddle1);
-    gamestates.push_back(sp);
+    //SinglePlayerState* sp = new SinglePlayerState(this);
+    //gamestates.push_back(sp);
     
 
     mPaddle2 = new Paddle(this,2);
@@ -181,13 +181,13 @@ void Game::createScene(void){
 }
 
 bool Game::frameStarted(const Ogre::FrameEvent& evt) {
-	if (state != GAMEST_SERVER && state != GAMEST_SINGLE) return true;
+	if (state != GAMEST_SINGLE && state != GAMEST_MULTI) return true;
 	mWorld->stepSimulation(evt.timeSinceLastFrame);	// update Bullet Physics animation
 	return true;
 }
 
 bool Game::frameEnded(const Ogre::FrameEvent& evt) {
-	if (state != GAMEST_SERVER && state != GAMEST_SINGLE) return true;
+	if (state != GAMEST_SINGLE && state != GAMEST_MULTI) return true;
 	mWorld->stepSimulation(evt.timeSinceLastFrame);	// update Bullet Physics animation
 	return true;
 }
@@ -198,7 +198,7 @@ bool Game::frameRenderingQueued(const Ogre::FrameEvent& evt){
 
 	if (mTrayMgr->isDialogVisible()) return true;
 
-	if (state == GAMEST_SERVER || state == GAMEST_SINGLE)
+	if (state == GAMEST_SINGLE || state == GAMEST_MULTI)
 		elapsedSec = (clock()-gameStart)/CLOCKS_PER_SEC;
 	mScorePanel->setParamValue(0, Ogre::StringConverter::toString(score));
 	mScorePanel->setParamValue(1, Ogre::StringConverter::toString(elapsedSec));
@@ -208,85 +208,25 @@ bool Game::frameRenderingQueued(const Ogre::FrameEvent& evt){
 		mControlPanel->setText("1:Single2:Multi");
 		mControlPanel->show();
 		return true;
-	} else if (state == GAMEST_CONNECT) {
-		mControlPanel->setText("Connecting");
-		mControlPanel->show();
-		bool r_server;
-		if (net.connect(&r_server)) {
-			state = r_server ? GAMEST_SERVER : GAMEST_CLIENT;
-			reset();
-		} else {
-			return true;
-		}
 	} else {
 		if(mTrayMgr->getWidget("ControlPanel"))
 			mTrayMgr->destroyWidget("ControlPanel");
 	}
 
-	NetworkData_t netout, netin;
-	int ci = 0;
-
 	for(GameObject *obj : entities) {
 		obj->update(evt);
-		Coin *coin = dynamic_cast<Coin *>(obj);
-		if (coin) netout.coins[ci++] = coin->taken;
-	}
-
-	if (state == GAMEST_SINGLE) return true;
-
-	netout.paddle1Pos = mPaddle1->rootNode->getPosition().x;
-	netout.paddle2Pos = mPaddle2->rootNode->getPosition().x;
-	netout.score = score;
-	//netout.score2 = score2;
-	netout.ballX = oBall->rootNode->getPosition().x;
-	netout.ballY = oBall->rootNode->getPosition().y;
-	netout.ballRotation = oBall->rootNode->getOrientation();
-	netout.type = NET_UPDATE;
-	netout.time = elapsedSec;
-	netout.sounds[0] = sounds[0]; netout.sounds[1] = sounds[1]; netout.sounds[2] = sounds[2];
-	netout.sounds[3] = sounds[3];
-	net.write(&netout);
-
-	while (net.read(&netin)) {
-		if (netin.type != NET_UPDATE) continue;
-		if (state == GAMEST_SERVER) {
-			mPaddle2->setPosition(Ogre::Vector3(netin.paddle2Pos, -490, 0.0));
-		} else {
-			if (soundOn && netin.sounds[0] != sounds[0]) mSndMgr->getSound("sndHit")->play();
-			if (soundOn && netin.sounds[1] != sounds[1]) mSndMgr->getSound("sndPaddle")->play();
-			if (soundOn && netin.sounds[2] != sounds[2]) mSndMgr->getSound("sndScore")->play();
-			if (soundOn && netin.sounds[3] != sounds[3]) mSndMgr->getSound("sndScore")->play();
-			sounds[0] = netin.sounds[0]; sounds[1] = netin.sounds[1]; sounds[2] = netin.sounds[2];
-			sounds[3] = netin.sounds[3];
-			mPaddle1->setPosition(Ogre::Vector3(netin.paddle1Pos, -490, 0.0));
-			oBall->setPosition(Ogre::Vector3(netin.ballX, netin.ballY,0));
-			oBall->setRotation(netin.ballRotation);
-			score = netin.score;
-			elapsedSec = netin.time;
-			ci = 0;
-			for(GameObject *obj : entities) {
-				Coin *coin = dynamic_cast<Coin *>(obj);
-				if (!coin) continue;
-				coin->taken = netin.coins[ci];
-				coin->rootNode->setVisible(!netin.coins[ci]);
-				ci++;
-			}
-		}
 	}
 
     return true;
 }
 
 bool Game::keyPressed( const OIS::KeyEvent& evt ){
-	gamestates[0]->keyPressedState(evt);
+	//gamestates[0]->keyPressedState(evt);
+
 	if (state == GAMEST_MENU && (evt.key == OIS::KC_1 || evt.key == OIS::KC_NUMPAD1)) { state = GAMEST_SINGLE; reset(); }
 	else if (state == GAMEST_MENU && (evt.key == OIS::KC_2 || evt.key == OIS::KC_NUMPAD2)) state = GAMEST_CONNECT;
-	else if (state == GAMEST_SERVER && evt.key == OIS::KC_LEFT) mPaddle1->motion |= 1;
-	else if (state == GAMEST_CLIENT && evt.key == OIS::KC_LEFT) mPaddle2->motion |= 1;
-	else if (state == GAMEST_SERVER && evt.key == OIS::KC_RIGHT) mPaddle1->motion |= 2;
-	else if (state == GAMEST_CLIENT && evt.key == OIS::KC_RIGHT) mPaddle2->motion |= 2;
-	// else if (state == GAMEST_SINGLE && evt.key == OIS::KC_LEFT) { mPaddle1->motion |= 1; mPaddle2->motion |= 1; }
-	// else if (state == GAMEST_SINGLE && evt.key == OIS::KC_RIGHT) { mPaddle1->motion |= 2; mPaddle2->motion |= 2; }
+	else if (state == GAMEST_SINGLE && evt.key == OIS::KC_LEFT) { mPaddle1->motion |= 1; mPaddle2->motion |= 1; }
+	else if (state == GAMEST_SINGLE && evt.key == OIS::KC_RIGHT) { mPaddle1->motion |= 2; mPaddle2->motion |= 2; }
 	else if (evt.key == OIS::KC_M){
 		if (!soundOn) { soundOn = true; mSndMgr->getSound("sndBg")->play(); }
 		else if (soundOn) { soundOn = false; mSndMgr->getSound("sndBg")->pause(); }
@@ -296,19 +236,15 @@ bool Game::keyPressed( const OIS::KeyEvent& evt ){
 }
 
 bool Game::keyReleased( const OIS::KeyEvent& evt ){
-	gamestates[0]->keyReleasedState(evt);
-	if (state == GAMEST_SERVER && evt.key == OIS::KC_LEFT) mPaddle1->motion &= ~1;
-	else if (state == GAMEST_CLIENT && evt.key == OIS::KC_LEFT) mPaddle2->motion &= ~1;
-	else if (state == GAMEST_SERVER && evt.key == OIS::KC_RIGHT) mPaddle1->motion &= ~2;
-	else if (state == GAMEST_CLIENT && evt.key == OIS::KC_RIGHT) mPaddle2->motion &= ~2;
-	// else if (state == GAMEST_SINGLE && evt.key == OIS::KC_LEFT) { mPaddle1->motion &= ~1; mPaddle2->motion &= ~1; }
-	// else if (state == GAMEST_SINGLE && evt.key == OIS::KC_RIGHT) { mPaddle1->motion &= ~2; mPaddle2->motion &= ~2; }
+	//gamestates[0]->keyReleasedState(evt);
+	if (state == GAMEST_SINGLE && evt.key == OIS::KC_LEFT) { mPaddle1->motion &= ~1; mPaddle2->motion &= ~1; }
+	else if (state == GAMEST_SINGLE && evt.key == OIS::KC_RIGHT) { mPaddle1->motion &= ~2; mPaddle2->motion &= ~2; }
 	else BaseApplication::keyReleased(evt);
 	return true;
 }
 
 void Game::gyroMoved(int dev, double x, double y, double raw_x, double raw_y) {
-	std::cerr << "gyroMoved";
+
 }
  
 #ifdef __cplusplus
