@@ -31,6 +31,13 @@ class Game : public BaseApplication, public GyroListener
 
 	public:
 	std::set<GameObject*> entities;
+	OgreBulletDynamics::DynamicsWorld *mWorld;
+	int maxScore;
+	Paddle *mPaddle1;
+	Paddle *mPaddle2;
+	Ball *oBall;
+	uint64_t lastHit, gameStart, lastSend;
+	int score, elapsedSec;
 	Game(void);
 	virtual ~Game(void);
 	void collission(GameObject *o0, GameObject *o1);
@@ -47,25 +54,17 @@ class Game : public BaseApplication, public GyroListener
 
 	int state;
 	bool soundOn;
-	OgreBulletDynamics::DynamicsWorld *mWorld;
-	Paddle *mPaddle1;
-	Paddle *mPaddle2;
 	Paddle *mMyPaddle;
-	Ball *oBall;
 	GyroInput *mGyroInput;
 	OgreOggSound::OgreOggSoundManager* mSndMgr;
 	OgreOggSound::OgreOggSoundPlugin *mOggSoundPlugin;
 	OgreBites::ParamsPanel* mScorePanel;
-	int score, elapsedSec;
 	OgreBites::TextBox* mControlPanel;
 	void reset();
 	Network net;
 	int remPaddlePos;
 	unsigned char sounds[3];
-	int maxScore;
 	std::vector<GameState*> gamestates;
-	private:
-	uint64_t lastHit, gameStart, lastSend;
 };
 
 #endif // #ifndef __Game_h_

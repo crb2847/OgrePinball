@@ -19,6 +19,7 @@ class SinglePlayerState : public GameState   {
 	void reset();
 
 	private:
+	Game* g;
 };
 
 #endif // #ifndef __SinglePlayerState_h_

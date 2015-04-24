@@ -117,61 +117,9 @@ void Game::createScene(void){
     mSceneMgr->setAmbientLight(Ogre::ColourValue(0, 0, 0));
     mSceneMgr->setShadowTechnique(Ogre::SHADOWTYPE_STENCIL_ADDITIVE);
 
-    mPaddle1 = new Paddle(this,1);
-    entities.insert(mPaddle1);
-    //SinglePlayerState* sp = new SinglePlayerState(this);
-    //gamestates.push_back(sp);
-    
-
-    mPaddle2 = new Paddle(this,2);
-    entities.insert(mPaddle2);
-
-    //mMyPaddle = server ? mPaddle1 : mPaddle2;
-
-    oBall = new Ball(this);
-    entities.insert(oBall);
-
-
-    //Create 6 walls
-    Ogre::Plane plane(Ogre::Vector3::UNIT_Y, 0);
-    Ogre::MeshManager::getSingleton().createPlane("ground", Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME,
-        plane, 1000, 1000, 20, 20, true, 1, 5.0, 5.0, Ogre::Vector3::UNIT_X);
-
-    PitPlane* pit = new PitPlane(this, Ogre::Vector3::UNIT_Y, Ogre::Real(-510));
-    entities.insert(pit); // Bottom
-
-    Wall *p = new Wall(this, Ogre::Vector3(0.75f,1.0f,0.2f),
-    		Ogre::Quaternion(Ogre::Degree(180), Ogre::Vector3::UNIT_Z), Ogre::Vector3(0, 500, 0));
-    entities.insert(p); // Top
-
-    p = new Wall(this, Ogre::Vector3(0.75f,1.0f,1.0f),
-    		Ogre::Quaternion(Ogre::Degree(90), Ogre::Vector3::UNIT_X), Ogre::Vector3(0, 0, -100));
-    entities.insert(p); // Back
-
-    p = new Wall(this, Ogre::Vector3(0.75f,1.0f,1.0f),
-    		Ogre::Quaternion(Ogre::Degree(270), Ogre::Vector3::UNIT_X), Ogre::Vector3(0, 0, 100));
-    entities.insert(p); // Front
-    
-    p = new Wall(this, Ogre::Vector3(1.0f,1.0f,0.2f),
-    		Ogre::Quaternion(Ogre::Degree(270), Ogre::Vector3::UNIT_Z),  Ogre::Vector3(-375, 0, 0));
-    entities.insert(p); // Left
-
-    p = new Wall(this, Ogre::Vector3(1.0f,1.0f,0.2f),
-    		Ogre::Quaternion(Ogre::Degree(90), Ogre::Vector3::UNIT_Z), Ogre::Vector3(375, 0, 0));
-    entities.insert(p); // Right
-
-
-    std::vector<Ogre::Vector3> coinPos { Ogre::Vector3(100,100,0), Ogre::Vector3(-100,400,0), Ogre::Vector3(-100,150,0), Ogre::Vector3(-50,200,0), Ogre::Vector3(-250,300,0), Ogre::Vector3(280,400,0), Ogre::Vector3(-250,0,0), Ogre::Vector3(-300,100,0), Ogre::Vector3(-300,-400,0), Ogre::Vector3(-100,-300,0), Ogre::Vector3(0,-350,0), Ogre::Vector3(100,-270,0), Ogre::Vector3(200,-340,0)};
-    for (Ogre::Vector3 p : coinPos)
-    	entities.insert(new Coin(this, p));
-
-    // Make sure to set this to the # of coins being made here. Will have to change this if we add versus mode
-    maxScore = 13;
-
-    std::vector<Ogre::Vector3> obstaclePos { Ogre::Vector3(-350,-250,0), Ogre::Vector3(355,480,0),
-    	Ogre::Vector3(-100,50,0), Ogre::Vector3(100,-150,0) };
-    for (Ogre::Vector3 p : obstaclePos)
-    	entities.insert(new Obstacle(this, p));
+    SinglePlayerState* sp = new SinglePlayerState(this);
+    gamestates.push_back(sp);
+    sp->createState();
 
     // Create a Light and set its position
     Ogre::Light* light = mSceneMgr->createLight("OutsideLight");
@@ -181,25 +129,22 @@ void Game::createScene(void){
 }
 
 bool Game::frameStarted(const Ogre::FrameEvent& evt) {
-	if (state != GAMEST_SINGLE && state != GAMEST_MULTI) return true;
-	mWorld->stepSimulation(evt.timeSinceLastFrame);	// update Bullet Physics animation
+	gamestates[0]->frameStarted(evt);
 	return true;
 }
 
 bool Game::frameEnded(const Ogre::FrameEvent& evt) {
-	if (state != GAMEST_SINGLE && state != GAMEST_MULTI) return true;
-	mWorld->stepSimulation(evt.timeSinceLastFrame);	// update Bullet Physics animation
+	gamestates[0]->frameEnded(evt);
 	return true;
 }
 
 bool Game::frameRenderingQueued(const Ogre::FrameEvent& evt){
+	//gamestates[state]->frameRender();
 	if(!BaseApplication::frameRenderingQueued(evt)) return false;
 	mGyroInput->capture();
 
 	if (mTrayMgr->isDialogVisible()) return true;
 
-	if (state == GAMEST_SINGLE || state == GAMEST_MULTI)
-		elapsedSec = (clock()-gameStart)/CLOCKS_PER_SEC;
 	mScorePanel->setParamValue(0, Ogre::StringConverter::toString(score));
 	mScorePanel->setParamValue(1, Ogre::StringConverter::toString(elapsedSec));
 	mScorePanel->setParamValue(2, Ogre::StringConverter::toString(state));
@@ -212,21 +157,16 @@ bool Game::frameRenderingQueued(const Ogre::FrameEvent& evt){
 		if(mTrayMgr->getWidget("ControlPanel"))
 			mTrayMgr->destroyWidget("ControlPanel");
 	}
-
-	for(GameObject *obj : entities) {
-		obj->update(evt);
-	}
-
     return true;
 }
 
 bool Game::keyPressed( const OIS::KeyEvent& evt ){
-	//gamestates[0]->keyPressedState(evt);
+	gamestates[0]->keyPressed(evt);
 
 	if (state == GAMEST_MENU && (evt.key == OIS::KC_1 || evt.key == OIS::KC_NUMPAD1)) { state = GAMEST_SINGLE; reset(); }
 	else if (state == GAMEST_MENU && (evt.key == OIS::KC_2 || evt.key == OIS::KC_NUMPAD2)) state = GAMEST_CONNECT;
-	else if (state == GAMEST_SINGLE && evt.key == OIS::KC_LEFT) { mPaddle1->motion |= 1; mPaddle2->motion |= 1; }
-	else if (state == GAMEST_SINGLE && evt.key == OIS::KC_RIGHT) { mPaddle1->motion |= 2; mPaddle2->motion |= 2; }
+	// else if (state == GAMEST_SINGLE && evt.key == OIS::KC_LEFT) { mPaddle1->motion |= 1; mPaddle2->motion |= 1; }
+	// else if (state == GAMEST_SINGLE && evt.key == OIS::KC_RIGHT) { mPaddle1->motion |= 2; mPaddle2->motion |= 2; }
 	else if (evt.key == OIS::KC_M){
 		if (!soundOn) { soundOn = true; mSndMgr->getSound("sndBg")->play(); }
 		else if (soundOn) { soundOn = false; mSndMgr->getSound("sndBg")->pause(); }
@@ -236,10 +176,11 @@ bool Game::keyPressed( const OIS::KeyEvent& evt ){
 }
 
 bool Game::keyReleased( const OIS::KeyEvent& evt ){
-	//gamestates[0]->keyReleasedState(evt);
-	if (state == GAMEST_SINGLE && evt.key == OIS::KC_LEFT) { mPaddle1->motion &= ~1; mPaddle2->motion &= ~1; }
-	else if (state == GAMEST_SINGLE && evt.key == OIS::KC_RIGHT) { mPaddle1->motion &= ~2; mPaddle2->motion &= ~2; }
-	else BaseApplication::keyReleased(evt);
+	gamestates[0]->keyReleased(evt);
+	// if (state == GAMEST_SINGLE && evt.key == OIS::KC_LEFT) { mPaddle1->motion &= ~1; mPaddle2->motion &= ~1; }
+	// else if (state == GAMEST_SINGLE && evt.key == OIS::KC_RIGHT) { mPaddle1->motion &= ~2; mPaddle2->motion &= ~2; }
+	// else 
+		BaseApplication::keyReleased(evt);
 	return true;
 }
 
