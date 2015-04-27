@@ -192,7 +192,8 @@ bool Game::keyReleased( const OIS::KeyEvent& evt ){
 }
 
 void Game::gyroMoved(int dev, double x, double y, double raw_x, double raw_y) {
-
+	printf("gyroMoved %f\n", x);
+	if (mPaddle1) mPaddle1->gyroMovement(x);
 }
  
 #ifdef __cplusplus
