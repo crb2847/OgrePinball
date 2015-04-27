@@ -21,8 +21,8 @@ class GameState{
 		virtual void frameStarted(const Ogre::FrameEvent& evt){};
 		virtual void frameRender(const Ogre::FrameEvent& evt){};
 		virtual void frameEnded(const Ogre::FrameEvent& evt){};
-		virtual void keyPressed(const OIS::KeyEvent& evt){};
-		virtual void keyReleased(const OIS::KeyEvent& evt){};
+		virtual bool keyPressed(const OIS::KeyEvent& evt){};
+		virtual bool keyReleased(const OIS::KeyEvent& evt){};
 		virtual void gyroMoved(int dev, double x, double y, double raw_x, double raw_y) {}
 		virtual void gyroKeyPressed(int dev, int keycode) {}
 		virtual void gyroKeyReleased(int dev, int keycode) {}

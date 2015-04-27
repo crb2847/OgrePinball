@@ -18,6 +18,7 @@
 #include <set>
 #include <ctime>
 #include <cstdint>
+#include <map>
 #include "SdkTrays.h"
 
 class GameObject;
@@ -64,7 +65,7 @@ class Game : public BaseApplication, public GyroListener
 	Network net;
 	int remPaddlePos;
 	unsigned char sounds[3];
-	std::vector<GameState*> gamestates;
+	std::map<int, GameState*> gamestates;
 };
 
 #endif // #ifndef __Game_h_

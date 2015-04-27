@@ -67,14 +67,18 @@ void SinglePlayerState::frameEnded(const Ogre::FrameEvent& evt){
 	g->mWorld->stepSimulation(evt.timeSinceLastFrame);
 }
 
-void SinglePlayerState::keyPressed(const OIS::KeyEvent& evt){
+bool SinglePlayerState::keyPressed(const OIS::KeyEvent& evt){
 	if (evt.key == OIS::KC_LEFT) { g->mPaddle1->motion |= 1;}
 	else if (evt.key == OIS::KC_RIGHT) { g->mPaddle1->motion |= 2;}
+	else return false;
+	return true;
 }
 
-void SinglePlayerState::keyReleased(const OIS::KeyEvent& evt){
+bool SinglePlayerState::keyReleased(const OIS::KeyEvent& evt){
 	if (evt.key == OIS::KC_LEFT) { g->mPaddle1->motion &= ~1;}
 	else if (evt.key == OIS::KC_RIGHT) { g->mPaddle1->motion &= ~2;}
+	else return false;
+	return true;
 }
 
 void SinglePlayerState::gyroMoved(int dev, double x, double y, double raw_x, double raw_y) {}

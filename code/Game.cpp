@@ -10,8 +10,13 @@ bool HandleContacts(btManifoldPoint& point, btCollisionObject* body0, btCollisio
 Game::Game(void) : BaseApplication(), net() {
 	remPaddlePos = 0;
 	soundOn = true;
-	state = GAMEST_MENU;
+	state = GAMEST_SINGLE;
 	mGyroInput = nullptr;
+
+	gamestates[GAMEST_MENU] = new GameState();
+	gamestates[GAMEST_CONNECT] = new GameState();
+	gamestates[GAMEST_SINGLE] = new SinglePlayerState(this);
+	gamestates[GAMEST_MULTI] = new GameState();
 }
 
 Game::~Game() {
@@ -117,9 +122,8 @@ void Game::createScene(void){
     mSceneMgr->setAmbientLight(Ogre::ColourValue(0, 0, 0));
     mSceneMgr->setShadowTechnique(Ogre::SHADOWTYPE_STENCIL_ADDITIVE);
 
-    SinglePlayerState* sp = new SinglePlayerState(this);
-    gamestates.push_back(sp);
-    sp->createState();
+    for (auto &st : gamestates)
+    	st.second->createState();
 
     // Create a Light and set its position
     Ogre::Light* light = mSceneMgr->createLight("OutsideLight");
@@ -129,12 +133,12 @@ void Game::createScene(void){
 }
 
 bool Game::frameStarted(const Ogre::FrameEvent& evt) {
-	gamestates[0]->frameStarted(evt);
+	gamestates[state]->frameStarted(evt);
 	return true;
 }
 
 bool Game::frameEnded(const Ogre::FrameEvent& evt) {
-	gamestates[0]->frameEnded(evt);
+	gamestates[state]->frameEnded(evt);
 	return true;
 }
 
@@ -157,13 +161,16 @@ bool Game::frameRenderingQueued(const Ogre::FrameEvent& evt){
 		if(mTrayMgr->getWidget("ControlPanel"))
 			mTrayMgr->destroyWidget("ControlPanel");
 	}
+
+	for(GameObject *obj : entities)
+		obj->update(evt);
+
     return true;
 }
 
 bool Game::keyPressed( const OIS::KeyEvent& evt ){
-	gamestates[0]->keyPressed(evt);
-
-	if (state == GAMEST_MENU && (evt.key == OIS::KC_1 || evt.key == OIS::KC_NUMPAD1)) { state = GAMEST_SINGLE; reset(); }
+	if (gamestates[state]->keyPressed(evt)) {}
+	else if (state == GAMEST_MENU && (evt.key == OIS::KC_1 || evt.key == OIS::KC_NUMPAD1)) { state = GAMEST_SINGLE; reset(); }
 	else if (state == GAMEST_MENU && (evt.key == OIS::KC_2 || evt.key == OIS::KC_NUMPAD2)) state = GAMEST_CONNECT;
 	// else if (state == GAMEST_SINGLE && evt.key == OIS::KC_LEFT) { mPaddle1->motion |= 1; mPaddle2->motion |= 1; }
 	// else if (state == GAMEST_SINGLE && evt.key == OIS::KC_RIGHT) { mPaddle1->motion |= 2; mPaddle2->motion |= 2; }
@@ -176,11 +183,11 @@ bool Game::keyPressed( const OIS::KeyEvent& evt ){
 }
 
 bool Game::keyReleased( const OIS::KeyEvent& evt ){
-	gamestates[0]->keyReleased(evt);
+	if (gamestates[state]->keyReleased(evt)) {}
+	else BaseApplication::keyReleased(evt);
 	// if (state == GAMEST_SINGLE && evt.key == OIS::KC_LEFT) { mPaddle1->motion &= ~1; mPaddle2->motion &= ~1; }
 	// else if (state == GAMEST_SINGLE && evt.key == OIS::KC_RIGHT) { mPaddle1->motion &= ~2; mPaddle2->motion &= ~2; }
 	// else 
-		BaseApplication::keyReleased(evt);
 	return true;
 }
 

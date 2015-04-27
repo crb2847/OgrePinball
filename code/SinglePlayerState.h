@@ -11,8 +11,8 @@ class SinglePlayerState : public GameState   {
 	void frameStarted(const Ogre::FrameEvent& evt) ;
 	void frameRender(const Ogre::FrameEvent& evt) ;
 	void frameEnded(const Ogre::FrameEvent& evt) ;
-	void keyPressed(const OIS::KeyEvent& evt);
-	void keyReleased(const OIS::KeyEvent& evt);
+	bool keyPressed(const OIS::KeyEvent& evt);
+	bool keyReleased(const OIS::KeyEvent& evt);
 	void gyroMoved(int dev, double x, double y, double raw_x, double raw_y) ;
 	void gyroKeyPressed(int dev, int keycode) ;
 	void gyroKeyReleased(int dev, int keycode) ;
