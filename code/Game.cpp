@@ -177,7 +177,17 @@ bool Game::keyPressed( const OIS::KeyEvent& evt ){
 	else if (evt.key == OIS::KC_M){
 		if (!soundOn) { soundOn = true; mSndMgr->getSound("sndBg")->play(); }
 		else if (soundOn) { soundOn = false; mSndMgr->getSound("sndBg")->pause(); }
+	} else if (evt.key == OIS::KC_8) {
+	    mCamera->setPosition(Ogre::Vector3(0,0,1300));
+	    mCamera->lookAt(Ogre::Vector3(0,0,0));
+	} else if (evt.key == OIS::KC_9) {
+	    mCamera->setPosition(Ogre::Vector3(0,850,800));
+	    mCamera->lookAt(Ogre::Vector3(0,100,0));
+	} else if (evt.key == OIS::KC_0) {
+	    mCamera->setPosition(Ogre::Vector3(0,-920,600));
+	    mCamera->lookAt(Ogre::Vector3(0,-100,0));
 	}
+
 	else BaseApplication::keyPressed(evt);
     return true;
 }
