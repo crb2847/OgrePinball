@@ -92,7 +92,7 @@ void BaseApplication::createCamera(void)
     mCamera = mSceneMgr->createCamera("PlayerCam");
 
     // Position it at 500 in Z direction
-    mCamera->setPosition(Ogre::Vector3(0,0,1000));
+    mCamera->setPosition(Ogre::Vector3(0,0,1300));
     // Look back along -Z
     mCamera->lookAt(Ogre::Vector3(0,0,0));
     mCamera->setNearClipDistance(5);
@@ -110,6 +110,8 @@ void BaseApplication::createFrameListener(void)
     mWindow->getCustomAttribute("WINDOW", &windowHnd);
     windowHndStr << windowHnd;
     pl.insert(std::make_pair(std::string("WINDOW"), windowHndStr.str()));
+    //pl.insert(std::make_pair(std::string("x11_mouse_grab"), std::string("false")));
+    //pl.insert(std::make_pair(std::string("x11_keyboard_grab"), std::string("false")));
 
     mInputManager = OIS::InputManager::createInputSystem(pl);
 
@@ -128,6 +130,7 @@ void BaseApplication::createFrameListener(void)
     mInputContext.mKeyboard = mKeyboard;
     mInputContext.mMouse = mMouse;
 
+<<<<<<< HEAD
     // Create a params panel for displaying sample details
     Ogre::StringVector items;
     items.push_back("cam.pX");
@@ -142,6 +145,8 @@ void BaseApplication::createFrameListener(void)
     items.push_back("Filtering");
     items.push_back("Poly Mode");
 
+=======
+>>>>>>> cf7f8723d1084fd6c4edf943423e56d150205459
     mRoot->addFrameListener(this);
 }
 //---------------------------------------------------------------------------

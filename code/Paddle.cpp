@@ -27,7 +27,7 @@ Paddle::Paddle(Game *game, int pID) : GameObject(game, K::PADDLE){
 	bRadius = 50.0f;
 	bDirection = Ogre::Vector3(-1.0f, 0.0f, 0.0f);
 	bDirection.normalise();
-	bSpeed = 250.0f;
+	bSpeed = 500.0f;
 	playerID = pID;
 }
 
@@ -53,3 +53,19 @@ void Paddle::update(const Ogre::FrameEvent& evt){
 	}
 	setPosition(pos);
 }
+
+void Paddle::gyroMovement(double d){
+	Ogre::Vector3 pos = rootNode->getPosition();
+	pos.x += d;
+	float lim = 750/2.0f - bRadius;
+	if (playerID == 1){
+		if (pos.x < -lim) pos.x = -lim;
+		if (pos.x > -bRadius) pos.x = -bRadius;
+	}
+	if (playerID == 2){
+		if (pos.x > lim) pos.x = lim;
+		if (pos.x < bRadius) pos.x = bRadius;
+	}
+	setPosition(pos);
+}
+

@@ -7,6 +7,7 @@ class Paddle : public virtual GameObject
 {
 	public:
 		Paddle(Game *game, int pID);
+		void gyroMovement(double d);
 		void setPosition(Ogre::Vector3 pos);
 		void update(const Ogre::FrameEvent& evt);
 		int motion = 0;
