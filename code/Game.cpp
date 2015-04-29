@@ -437,7 +437,6 @@ bool Game::goBackHTP(const CEGUI::EventArgs &e)
 //-------------------------------------------------------------------------------------
 
 void Game::gyroKeyPressed(int dev, int keycode) {
-	printf("Keycode %d\n", keycode);
 	printf("Gyro key pressed, device=%d, keycode=%d\n", dev, keycode);
 }
 

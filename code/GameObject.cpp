@@ -16,6 +16,19 @@ GameObject::GameObject(Game *game, int kind) {
 	bDirection = Ogre::Vector3(1.0f, 0.0f, 0.0f);
 	bDirection.normalise();
 	bSpeed = 250.0f;
+
+	rootNode = nullptr;
+	rigidBody = nullptr;
+	collShape = nullptr;
+}
+
+GameObject::~GameObject() {
+	if (rigidBody) delete rigidBody;
+	if (collShape) delete collShape;
+	if (rootNode) {
+		rootNode->detachAllObjects();
+		delete rootNode;
+	}
 }
 
 void GameObject::move(const Ogre::FrameEvent& evt) { }
