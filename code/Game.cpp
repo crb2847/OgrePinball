@@ -404,11 +404,6 @@ bool Game::openMainMenu(const CEGUI::EventArgs &e)
   sheet->addChild(menu);
   state = GAMEST_MENU;
 }
-
-void Game::gyroMoved(int dev, double x, double y, double raw_x, double raw_y) {
-	printf("gyroMoved %f\n", x);
-	if (mPaddle1) mPaddle1->gyroMovement(x);
-}
 //-------------------------------------------------------------------------------------
 bool Game::openSettingsMenu(const CEGUI::EventArgs &e)
 {
@@ -443,6 +438,16 @@ bool Game::goBackHTP(const CEGUI::EventArgs &e)
 
 void Game::gyroKeyPressed(int dev, int keycode) {
 	printf("Keycode %d\n", keycode);
+	printf("Gyro key pressed, device=%d, keycode=%d\n", dev, keycode);
+}
+
+void Game::gyroKeyReleased(int dev, int keycode) {
+	printf("Gyro key released, device=%d, keycode=%d\n", dev, keycode);
+}
+
+void Game::gyroMoved(int dev, double x, double y, double raw_x, double raw_y) {
+	printf("Gyro moved, device=%d, x=%f, y=%f, raw_x=%f, raw_y=%f\n", dev, x, y, raw_x, raw_y);
+	if (mPaddle1) mPaddle1->gyroMovement(x);
 }
 
 #ifdef __cplusplus
