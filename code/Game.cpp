@@ -437,10 +437,22 @@ bool Game::goBackHTP(const CEGUI::EventArgs &e)
 //-------------------------------------------------------------------------------------
 
 void Game::gyroKeyPressed(int dev, int keycode) {
+	if (!mPaddle1) return;
+	if (keycode == GK_ZOOMIN)
+		mPaddle1->setRotation(Ogre::Quaternion(Ogre::Degree(-10), Ogre::Vector3(0,0,1)));
+	else if (keycode == GK_ZOOMOUT)
+		mPaddle1->setRotation(Ogre::Quaternion(Ogre::Degree(10), Ogre::Vector3(0,0,1)));
+	else if (keycode == GK_MUTE) {
+		if (!soundOn) { soundOn = true; mSndMgr->getSound("sndBg")->play(); }
+		else if (soundOn) { soundOn = false; mSndMgr->getSound("sndBg")->pause(); }
+	}
 	printf("Gyro key pressed, device=%d, keycode=%d\n", dev, keycode);
 }
 
 void Game::gyroKeyReleased(int dev, int keycode) {
+	if (!mPaddle1) return;
+	if (keycode == GK_ZOOMOUT || keycode == GK_ZOOMIN)
+		mPaddle1->setRotation(Ogre::Quaternion(Ogre::Degree(0), Ogre::Vector3(0,0,1)));
 	printf("Gyro key released, device=%d, keycode=%d\n", dev, keycode);
 }
 
