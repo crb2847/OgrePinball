@@ -15,7 +15,7 @@
 #define GK_BACK     166
 #define GK_HOME     180
 #define GK_ZOOMOUT  71
-#define GK_ZOOMIN   72
+#define GK_ZOOMIN   70
 #define GK_VOLDEC   122
 #define GK_VOLINC   123
 #define GK_ESC      9

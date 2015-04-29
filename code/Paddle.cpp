@@ -56,7 +56,7 @@ void Paddle::update(const Ogre::FrameEvent& evt){
 
 void Paddle::gyroMovement(double d){
 	Ogre::Vector3 pos = rootNode->getPosition();
-	pos.x += d;
+	pos.x += d*0.5;
 	float lim = 750/2.0f - bRadius;
 	if (playerID == 1){
 		if (pos.x < -lim) pos.x = -lim;
