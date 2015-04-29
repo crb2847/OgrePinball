@@ -1,6 +1,8 @@
 #ifndef __Game_h_
 #define __Game_h_
 
+#include <CEGUI/CEGUI.h>
+#include <CEGUI/RendererModules/Ogre/Renderer.h>
 #include "BaseApplication.h"
 #include "OgreBulletDynamicsWorld.h"
 #include "OgreOggSound.h"
@@ -19,7 +21,6 @@
 #include <ctime>
 #include <cstdint>
 #include <map>
-#include "SdkTrays.h"
 
 class GameObject;
 
@@ -52,6 +53,23 @@ class Game : public BaseApplication, public GyroListener
 	bool keyReleased(const OIS::KeyEvent& evt);
 	void createFrameListener(void);
 	void gyroMoved(int dev, double x, double y, double raw_x, double raw_y);
+	void gyroKeyPressed(int dev, int keycode);
+
+	// OIS::MouseListener
+    virtual bool mouseMoved( const OIS::MouseEvent &arg );
+    virtual bool mousePressed( const OIS::MouseEvent &arg, OIS::MouseButtonID id );
+    virtual bool mouseReleased( const OIS::MouseEvent &arg, OIS::MouseButtonID id );
+
+    //methods for button events
+    bool startSinglePlayer(const CEGUI::EventArgs &e);
+    bool quit(const CEGUI::EventArgs &e);
+    bool pauseGame(const CEGUI::EventArgs &e);
+    bool resumeGame(const CEGUI::EventArgs &e);
+    bool openMainMenu(const CEGUI::EventArgs &e);
+    bool openSettingsMenu(const CEGUI::EventArgs &e);
+    bool goBack(const CEGUI::EventArgs &e);
+    bool openHowToPlayMenu(const CEGUI::EventArgs &e);
+    bool goBackHTP(const CEGUI::EventArgs &e);
 
 	int state;
 	bool soundOn;
@@ -59,13 +77,23 @@ class Game : public BaseApplication, public GyroListener
 	GyroInput *mGyroInput;
 	OgreOggSound::OgreOggSoundManager* mSndMgr;
 	OgreOggSound::OgreOggSoundPlugin *mOggSoundPlugin;
-	OgreBites::ParamsPanel* mScorePanel;
-	OgreBites::TextBox* mControlPanel;
 	void reset();
 	Network net;
 	int remPaddlePos;
 	unsigned char sounds[3];
 	std::map<int, GameState*> gamestates;
+
+	//CEGUI globals
+	CEGUI::OgreRenderer* mRenderer;
+    CEGUI::Window *sheet;
+    CEGUI::Window *menu;
+    CEGUI::Window *scoreBox;
+    CEGUI::Window *pause;
+    CEGUI::Window *pauseMenu;
+    CEGUI::Window *settingsMenu;
+    CEGUI::Window *sound;
+    CEGUI::Window *howToPlayMenu;
+    CEGUI::Window *soundPause;
 };
 
 #endif // #ifndef __Game_h_
