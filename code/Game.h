@@ -14,8 +14,6 @@
 #include "PitPlane.h"
 #include "Obstacle.h"
 #include "GyroInput.h"
-#include "GameState.h"
-#include "SinglePlayerState.h"
 #include <set>
 #include <ctime>
 #include <cstdint>
@@ -32,13 +30,6 @@ class Game : public BaseApplication, public GyroListener
 
 	public:
 	std::set<GameObject*> entities;
-	OgreBulletDynamics::DynamicsWorld *mWorld;
-	int maxScore;
-	Paddle *mPaddle1;
-	Paddle *mPaddle2;
-	Ball *oBall;
-	uint64_t lastHit, gameStart, lastSend;
-	int score, elapsedSec;
 	Game(void);
 	virtual ~Game(void);
 	void collission(GameObject *o0, GameObject *o1);
@@ -73,14 +64,19 @@ class Game : public BaseApplication, public GyroListener
 
 	int state;
 	bool soundOn;
+	OgreBulletDynamics::DynamicsWorld *mWorld;
+	Paddle *mPaddle1;
+	Paddle *mPaddle2;
 	Paddle *mMyPaddle;
+	Ball *oBall;
 	GyroInput *mGyroInput;
 	OgreOggSound::OgreOggSoundManager* mSndMgr;
 	OgreOggSound::OgreOggSoundPlugin *mOggSoundPlugin;
+	int score, elapsedSec;
 	void reset();
 	int remPaddlePos;
 	unsigned char sounds[3];
-	std::map<int, GameState*> gamestates;
+	int maxScore;
 
 	//CEGUI globals
 	CEGUI::OgreRenderer* mRenderer;
@@ -93,6 +89,9 @@ class Game : public BaseApplication, public GyroListener
     CEGUI::Window *sound;
     CEGUI::Window *howToPlayMenu;
     CEGUI::Window *soundPause;
+
+	private:
+	uint64_t lastHit, gameStart, lastSend;
 };
 
 #endif // #ifndef __Game_h_
