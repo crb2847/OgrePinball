@@ -69,3 +69,7 @@ void Paddle::gyroMovement(double d){
 	setPosition(pos);
 }
 
+void Paddle::tilt(double a) {
+	setRotation(Ogre::Quaternion(Ogre::Degree(16*a), Ogre::Vector3(0,0,1)));
+}
+

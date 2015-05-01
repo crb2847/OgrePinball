@@ -62,7 +62,7 @@ class Game : public BaseApplication, public GyroListener
     bool openHowToPlayMenu(const CEGUI::EventArgs &e);
     bool goBackHTP(const CEGUI::EventArgs &e);
 
-	int state;
+	int state, nextState;
 	bool soundOn;
 	OgreBulletDynamics::DynamicsWorld *mWorld;
 	Paddle *mPaddle1;

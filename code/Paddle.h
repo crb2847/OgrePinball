@@ -10,6 +10,7 @@ class Paddle : public virtual GameObject
 		void gyroMovement(double d);
 		void setPosition(Ogre::Vector3 pos);
 		void update(const Ogre::FrameEvent& evt);
+		void tilt(double a);
 		int motion = 0;
 		int playerID;
 };

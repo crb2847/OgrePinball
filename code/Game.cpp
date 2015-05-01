@@ -13,6 +13,7 @@ Game::Game(void) : BaseApplication() {
 	remPaddlePos = 0;
 	soundOn = true;
 	state = GAMEST_MENU;
+	nextState = -1;
 	mGyroInput = nullptr;
 }
 
@@ -321,8 +322,13 @@ bool Game::frameRenderingQueued(const Ogre::FrameEvent& evt){
 	mGyroInput->capture();
 
     CEGUI::System::getSingleton().injectTimePulse(evt.timeSinceLastFrame);
-	if (state == GAMEST_MENU) {
-		return true;
+	if (state == GAMEST_CONNECT) {
+		int nc = mGyroInput->connect();
+		if ((nextState == GAMEST_SINGLE && nc >= 1) ||
+			(nextState == GAMEST_MULTI && nc >= 2)) {
+			state = nextState;
+			reset();
+		} else return true;
 	}
 
 	for(GameObject *obj : entities)
@@ -332,11 +338,17 @@ bool Game::frameRenderingQueued(const Ogre::FrameEvent& evt){
 }
 
 bool Game::keyPressed( const OIS::KeyEvent& evt ){
-	if (state == GAMEST_MENU && (evt.key == OIS::KC_1 || evt.key == OIS::KC_NUMPAD1)) { state = GAMEST_SINGLE; reset(); }
-	else if (state == GAMEST_MENU && (evt.key == OIS::KC_2 || evt.key == OIS::KC_NUMPAD2)) state = GAMEST_CONNECT;
-	else if (state == GAMEST_SINGLE && evt.key == OIS::KC_LEFT) { mPaddle1->motion |= 1; mPaddle2->motion |= 1; }
-	else if (state == GAMEST_SINGLE && evt.key == OIS::KC_RIGHT) { mPaddle1->motion |= 2; mPaddle2->motion |= 2; }
-	else if (evt.key == OIS::KC_M){
+	if (evt.key == OIS::KC_LEFT) {
+		if (state == GAMEST_SINGLE) { mPaddle1->motion |= 1; mPaddle2->motion |= 1; }
+		else if (state == GAMEST_MULTI) mPaddle1->motion |= 1;
+	} else if (evt.key == OIS::KC_RIGHT) {
+		if (state == GAMEST_SINGLE) { mPaddle1->motion |= 2; mPaddle2->motion |= 2; }
+		else if (state == GAMEST_MULTI) mPaddle1->motion |= 2;
+	} else if (evt.key == OIS::KC_A) {
+		if (state == GAMEST_MULTI) mPaddle2->motion |= 1;
+	} else if (evt.key == OIS::KC_D) {
+		if (state == GAMEST_MULTI) mPaddle2->motion |= 2;
+	} else if (evt.key == OIS::KC_M) {
 		if (!soundOn) { soundOn = true; mSndMgr->getSound("sndBg")->play(); }
 		else if (soundOn) { soundOn = false; mSndMgr->getSound("sndBg")->pause(); }
 	} else if (evt.key == OIS::KC_8) {
@@ -348,16 +360,22 @@ bool Game::keyPressed( const OIS::KeyEvent& evt ){
 	} else if (evt.key == OIS::KC_0) {
 	    mCamera->setPosition(Ogre::Vector3(0,-920,600));
 	    mCamera->lookAt(Ogre::Vector3(0,-100,0));
-	}
-
-	else BaseApplication::keyPressed(evt);
+	} else BaseApplication::keyPressed(evt);
     return true;
 }
 
 bool Game::keyReleased( const OIS::KeyEvent& evt ){
-	if (state == GAMEST_SINGLE && evt.key == OIS::KC_LEFT) { mPaddle1->motion &= ~1; mPaddle2->motion &= ~1; }
-	else if (state == GAMEST_SINGLE && evt.key == OIS::KC_RIGHT) { mPaddle1->motion &= ~2; mPaddle2->motion &= ~2; }
-	else BaseApplication::keyReleased(evt);
+	if (evt.key == OIS::KC_LEFT) {
+		if (state == GAMEST_SINGLE) { mPaddle1->motion &= ~1; mPaddle2->motion &= ~1; }
+		else if (state == GAMEST_MULTI) mPaddle1->motion &= ~1;
+	} else if (evt.key == OIS::KC_RIGHT) {
+		if (state == GAMEST_SINGLE) { mPaddle1->motion &= ~2; mPaddle2->motion &= ~2; }
+		else if (state == GAMEST_MULTI) mPaddle1->motion &= 2;
+	} else if (evt.key == OIS::KC_A) {
+		if (state == GAMEST_MULTI) mPaddle2->motion |= ~1;
+	} else if (evt.key == OIS::KC_D) {
+		if (state == GAMEST_MULTI) mPaddle2->motion |= ~2;
+	} else BaseApplication::keyReleased(evt);
 	return true;
 }
 //-------------------------------------------------------------------------------------
@@ -476,11 +494,15 @@ bool Game::goBackHTP(const CEGUI::EventArgs &e)
 
 void Game::gyroKeyPressed(int dev, int keycode) {
 	if (!mPaddle1) return;
-	if (keycode == GK_ZOOMIN)
-		mPaddle1->setRotation(Ogre::Quaternion(Ogre::Degree(-10), Ogre::Vector3(0,0,1)));
-	else if (keycode == GK_ZOOMOUT)
-		mPaddle1->setRotation(Ogre::Quaternion(Ogre::Degree(10), Ogre::Vector3(0,0,1)));
-	else if (keycode == GK_MUTE) {
+	if (keycode == GK_ZOOMIN) {
+		if (state == GAMEST_SINGLE) { mPaddle1->tilt(-1);  mPaddle2->tilt(-1); }
+		else if (state == GAMEST_MULTI && dev == 0) mPaddle1->tilt(-1);
+		else if (state == GAMEST_MULTI && dev == 1) mPaddle2->tilt(-1);
+	} else if (keycode == GK_ZOOMOUT) {
+		if (state == GAMEST_SINGLE) { mPaddle1->tilt(1);  mPaddle2->tilt(1); }
+		else if (state == GAMEST_MULTI && dev == 0) mPaddle1->tilt(1);
+		else if (state == GAMEST_MULTI && dev == 1) mPaddle2->tilt(1);
+	} else if (keycode == GK_MUTE) {
 		if (!soundOn) { soundOn = true; mSndMgr->getSound("sndBg")->play(); }
 		else if (soundOn) { soundOn = false; mSndMgr->getSound("sndBg")->pause(); }
 	}
@@ -489,14 +511,22 @@ void Game::gyroKeyPressed(int dev, int keycode) {
 
 void Game::gyroKeyReleased(int dev, int keycode) {
 	if (!mPaddle1) return;
-	if (keycode == GK_ZOOMOUT || keycode == GK_ZOOMIN)
-		mPaddle1->setRotation(Ogre::Quaternion(Ogre::Degree(0), Ogre::Vector3(0,0,1)));
+	if (keycode == GK_ZOOMOUT || keycode == GK_ZOOMIN) {
+		if (state == GAMEST_SINGLE) { mPaddle1->tilt(0);  mPaddle2->tilt(0); }
+		else if (state == GAMEST_MULTI && dev == 0) mPaddle1->tilt(0);
+		else if (state == GAMEST_MULTI && dev == 1) mPaddle2->tilt(0);
+	}
 	printf("Gyro key released, device=%d, keycode=%d\n", dev, keycode);
 }
 
 void Game::gyroMoved(int dev, double x, double y, double raw_x, double raw_y) {
-	printf("Gyro moved, device=%d, x=%f, y=%f, raw_x=%f, raw_y=%f\n", dev, x, y, raw_x, raw_y);
-	if (mPaddle1) mPaddle1->gyroMovement(x);
+	if (state == GAMEST_SINGLE) {
+		mPaddle1->gyroMovement(x);
+		mPaddle2->gyroMovement(x);
+	} else if (state == GAMEST_MULTI) {
+		if (dev == 0) mPaddle1->gyroMovement(x);
+		if (dev == 1) mPaddle2->gyroMovement(x);
+	}
 }
 
 #ifdef __cplusplus
