@@ -407,11 +407,11 @@ bool Game::keyReleased( const OIS::KeyEvent& evt ){
 		else if (state == GAMEST_MULTI) mPaddle1->motion &= ~1;
 	} else if (evt.key == OIS::KC_RIGHT) {
 		if (state == GAMEST_SINGLE) { mPaddle1->motion &= ~2; mPaddle2->motion &= ~2; }
-		else if (state == GAMEST_MULTI) mPaddle1->motion &= 2;
+		else if (state == GAMEST_MULTI) mPaddle1->motion &= ~2;
 	} else if (evt.key == OIS::KC_A) {
-		if (state == GAMEST_MULTI) mPaddle2->motion |= ~1;
+		if (state == GAMEST_MULTI) mPaddle2->motion &= ~1;
 	} else if (evt.key == OIS::KC_D) {
-		if (state == GAMEST_MULTI) mPaddle2->motion |= ~2;
+		if (state == GAMEST_MULTI) mPaddle2->motion &= ~2;
 	} else BaseApplication::keyReleased(evt);
 	return true;
 }
