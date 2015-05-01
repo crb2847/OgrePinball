@@ -9,7 +9,7 @@ bool HandleContacts(btManifoldPoint& point, btCollisionObject* body0, btCollisio
    return true;
 }
 
-Game::Game(void) : BaseApplication(), net() {
+Game::Game(void) : BaseApplication() {
 	remPaddlePos = 0;
 	soundOn = true;
 	state = GAMEST_SINGLE;

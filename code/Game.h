@@ -13,7 +13,6 @@
 #include "Coin.h"
 #include "PitPlane.h"
 #include "Obstacle.h"
-#include "Network.h"
 #include "GyroInput.h"
 #include "GameState.h"
 #include "SinglePlayerState.h"
@@ -79,7 +78,6 @@ class Game : public BaseApplication, public GyroListener
 	OgreOggSound::OgreOggSoundManager* mSndMgr;
 	OgreOggSound::OgreOggSoundPlugin *mOggSoundPlugin;
 	void reset();
-	Network net;
 	int remPaddlePos;
 	unsigned char sounds[3];
 	std::map<int, GameState*> gamestates;
