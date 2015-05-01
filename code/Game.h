@@ -61,6 +61,9 @@ class Game : public BaseApplication, public GyroListener
     bool goBack(const CEGUI::EventArgs &e);
     bool openHowToPlayMenu(const CEGUI::EventArgs &e);
     bool goBackHTP(const CEGUI::EventArgs &e);
+    bool goBackMCS(const CEGUI::EventArgs &e);
+    bool startMultiPlayer(const CEGUI::EventArgs &e);
+    bool playKeysMCS(const CEGUI::EventArgs &e);
 
 	int state;
 	bool soundOn;
@@ -89,6 +92,8 @@ class Game : public BaseApplication, public GyroListener
     CEGUI::Window *sound;
     CEGUI::Window *howToPlayMenu;
     CEGUI::Window *soundPause;
+    CEGUI::Window *singlePlayerConnection;
+    CEGUI::Window *multiPlayerConnection;
 
 	private:
 	uint64_t lastHit, gameStart, lastSend;

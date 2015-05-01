@@ -130,7 +130,6 @@ void BaseApplication::createFrameListener(void)
     mInputContext.mKeyboard = mKeyboard;
     mInputContext.mMouse = mMouse;
 
-<<<<<<< HEAD
     // Create a params panel for displaying sample details
     Ogre::StringVector items;
     items.push_back("cam.pX");
@@ -145,8 +144,6 @@ void BaseApplication::createFrameListener(void)
     items.push_back("Filtering");
     items.push_back("Poly Mode");
 
-=======
->>>>>>> cf7f8723d1084fd6c4edf943423e56d150205459
     mRoot->addFrameListener(this);
 }
 //---------------------------------------------------------------------------
