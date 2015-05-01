@@ -358,14 +358,15 @@ bool Game::frameRenderingQueued(const Ogre::FrameEvent& evt){
 	mGyroInput->capture();
 
     CEGUI::System::getSingleton().injectTimePulse(evt.timeSinceLastFrame);
-	if (state == GAMEST_CONNECT) {
-		int nc = mGyroInput->connect();
-		if ((nextState == GAMEST_SINGLE && nc >= 1) ||
-			(nextState == GAMEST_MULTI && nc >= 2)) {
-			state = nextState;
-			reset();
-		} else return true;
-	}
+
+    if (state == GAMEST_CONN_SINGLE && mGyroInput->connect() >= 1) {
+    	state = GAMEST_SINGLE; reset();
+    } else if (state == GAMEST_CONN_MULTI && mGyroInput->connect() >= 2) {
+    	if (multiPlayerConnection) sheet->removeChild(multiPlayerConnection);
+    	state = GAMEST_MULTI; reset();
+    }
+
+    if (state != GAMEST_SINGLE && state != GAMEST_MULTI) return true;
 
 	for(GameObject *obj : entities)
 		obj->update(evt);
@@ -539,20 +540,20 @@ bool Game::startMultiPlayer(const CEGUI::EventArgs &e)
 {
   sheet->removeChild(menu);
   sheet->addChild(multiPlayerConnection);
-
+  state = GAMEST_CONN_MULTI;
   return true;
 }
 //-------------------------------------------------------------------------------------
 bool Game::playKeysMCS(const CEGUI::EventArgs &e)
 {
   sheet->removeChild(multiPlayerConnection);
-
+  state = GAMEST_MULTI;
+  reset();
   return true;
 }
 //-------------------------------------------------------------------------------------
 
 void Game::gyroKeyPressed(int dev, int keycode) {
-	if (!mPaddle1) return;
 	if (keycode == GK_ZOOMIN) {
 		if (state == GAMEST_SINGLE) { mPaddle1->tilt(-1);  mPaddle2->tilt(-1); }
 		else if (state == GAMEST_MULTI && dev == 0) mPaddle1->tilt(-1);
@@ -569,7 +570,6 @@ void Game::gyroKeyPressed(int dev, int keycode) {
 }
 
 void Game::gyroKeyReleased(int dev, int keycode) {
-	if (!mPaddle1) return;
 	if (keycode == GK_ZOOMOUT || keycode == GK_ZOOMIN) {
 		if (state == GAMEST_SINGLE) { mPaddle1->tilt(0);  mPaddle2->tilt(0); }
 		else if (state == GAMEST_MULTI && dev == 0) mPaddle1->tilt(0);
@@ -586,6 +586,7 @@ void Game::gyroMoved(int dev, double x, double y, double raw_x, double raw_y) {
 		if (dev == 0) mPaddle1->gyroMovement(x);
 		if (dev == 1) mPaddle2->gyroMovement(x);
 	}
+	printf("Gyro moved, device=%d, x=%f, y=%f, raw_x=%f, raw_y=%f\n", dev, x, y, raw_x, raw_y);
 }
 
 #ifdef __cplusplus

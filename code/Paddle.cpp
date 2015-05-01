@@ -10,7 +10,7 @@ Paddle::Paddle(Game *game, int pID) : GameObject(game, K::PADDLE){
 	rootNode->attachObject(entity);
 
 	rootNode->setScale(scale = Ogre::Vector3(1, 0.1, 2));
-	rootNode->setPosition(position = Ogre::Vector3((pID==1)?-325:25, -490, 0));
+	rootNode->setPosition(position = Ogre::Vector3((pID==1)?-325:50, -490, 0));
 	rootNode->setOrientation(orientation = Ogre::Quaternion());
 
 	Ogre::Vector3 bSize = entity->getBoundingBox().getHalfSize() * 0.95 * scale;

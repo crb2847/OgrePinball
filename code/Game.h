@@ -21,7 +21,7 @@
 
 class GameObject;
 
-enum GameState_t {GAMEST_MENU, GAMEST_CONNECT, GAMEST_SINGLE, GAMEST_MULTI};
+enum GameState_t {GAMEST_MENU, GAMEST_CONN_SINGLE, GAMEST_CONN_MULTI, GAMEST_SINGLE, GAMEST_MULTI};
 
 
 class Game : public BaseApplication, public GyroListener

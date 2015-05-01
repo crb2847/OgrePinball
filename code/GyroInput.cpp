@@ -28,7 +28,7 @@ int GyroInput::connect(void) {
 		int type = 0; //0=keyboard, 1=mouse
 		for (int j = 0; j < dev->num_classes; j++)
 			if (dev->classes[j]->type == XIValuatorClass) { type = 1; break; }
-		devI[dev->deviceid] = ++devCnt[type];
+		devI[dev->deviceid] = devCnt[type]++;
 		uint32_t mask = XI_RawMotionMask  | XI_RawKeyPressMask | XI_RawKeyReleaseMask;
 		XIEventMask evtMask {dev->deviceid, 4, (unsigned char *) &mask};
 		XISelectEvents(dis, win, &evtMask, 1);
