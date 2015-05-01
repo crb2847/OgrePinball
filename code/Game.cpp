@@ -9,16 +9,11 @@ bool HandleContacts(btManifoldPoint& point, btCollisionObject* body0, btCollisio
    return true;
 }
 
-Game::Game(void) : BaseApplication(), net() {
+Game::Game(void) : BaseApplication() {
 	remPaddlePos = 0;
 	soundOn = true;
-	state = GAMEST_SINGLE;
+	state = GAMEST_MENU;
 	mGyroInput = nullptr;
-
-	gamestates[GAMEST_MENU] = new GameState();
-	gamestates[GAMEST_CONNECT] = new GameState();
-	gamestates[GAMEST_SINGLE] = new SinglePlayerState(this);
-	gamestates[GAMEST_MULTI] = new GameState();
 }
 
 Game::~Game() {
@@ -116,8 +111,53 @@ void Game::createScene(void){
     mSceneMgr->setAmbientLight(Ogre::ColourValue(0, 0, 0));
     mSceneMgr->setShadowTechnique(Ogre::SHADOWTYPE_STENCIL_ADDITIVE);
 
-    for (auto &st : gamestates)
-    	st.second->createState();
+	mPaddle1 = new Paddle(this,1);
+	entities.insert(mPaddle1);
+
+    mPaddle2 = new Paddle(this,2);
+    entities.insert(mPaddle2);
+
+    oBall = new Ball(this);
+    entities.insert(oBall);
+
+	//Create 6 walls
+    Ogre::Plane plane(Ogre::Vector3::UNIT_Y, 0);
+    Ogre::MeshManager::getSingleton().createPlane("ground", Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME,
+        plane, 1000, 1000, 20, 20, true, 1, 5.0, 5.0, Ogre::Vector3::UNIT_X);
+
+    PitPlane* pit = new PitPlane(this, Ogre::Vector3::UNIT_Y, Ogre::Real(-510));
+    entities.insert(pit); // Bottom
+
+    Wall *p = new Wall(this, Ogre::Vector3(0.75f,1.0f,0.2f),
+    		Ogre::Quaternion(Ogre::Degree(180), Ogre::Vector3::UNIT_Z), Ogre::Vector3(0, 500, 0));
+    entities.insert(p); // Top
+
+    p = new Wall(this, Ogre::Vector3(0.75f,1.0f,1.0f),
+    		Ogre::Quaternion(Ogre::Degree(90), Ogre::Vector3::UNIT_X), Ogre::Vector3(0, 0, -100));
+    entities.insert(p); // Back
+
+    p = new Wall(this, Ogre::Vector3(0.75f,1.0f,1.0f),
+    		Ogre::Quaternion(Ogre::Degree(270), Ogre::Vector3::UNIT_X), Ogre::Vector3(0, 0, 100));
+    entities.insert(p); // Front
+
+    p = new Wall(this, Ogre::Vector3(1.0f,1.0f,0.2f),
+    		Ogre::Quaternion(Ogre::Degree(270), Ogre::Vector3::UNIT_Z),  Ogre::Vector3(-375, 0, 0));
+    entities.insert(p); // Left
+
+    p = new Wall(this, Ogre::Vector3(1.0f,1.0f,0.2f),
+    		Ogre::Quaternion(Ogre::Degree(90), Ogre::Vector3::UNIT_Z), Ogre::Vector3(375, 0, 0));
+    entities.insert(p); // Right
+
+    maxScore = 13;
+
+    std::vector<Ogre::Vector3> coinPos { Ogre::Vector3(100,100,0), Ogre::Vector3(-100,400,0), Ogre::Vector3(-100,150,0), Ogre::Vector3(-50,200,0), Ogre::Vector3(-250,300,0), Ogre::Vector3(280,400,0), Ogre::Vector3(-250,0,0), Ogre::Vector3(-300,100,0), Ogre::Vector3(-300,-400,0), Ogre::Vector3(-100,-300,0), Ogre::Vector3(0,-350,0), Ogre::Vector3(100,-270,0), Ogre::Vector3(200,-340,0)};
+    for (Ogre::Vector3 p : coinPos)
+    	entities.insert(new Coin(this, p));
+
+    std::vector<Ogre::Vector3> obstaclePos { Ogre::Vector3(-350,-250,0), Ogre::Vector3(355,480,0),
+    	Ogre::Vector3(-100,50,0), Ogre::Vector3(100,-150,0) };
+    for (Ogre::Vector3 p : obstaclePos)
+    	entities.insert(new Obstacle(this, p));
 
     // Create a Light and set its position
     Ogre::Light* light = mSceneMgr->createLight("OutsideLight");
@@ -265,17 +305,18 @@ void Game::createScene(void){
 }
 
 bool Game::frameStarted(const Ogre::FrameEvent& evt) {
-	gamestates[state]->frameStarted(evt);
+	if (state != GAMEST_SINGLE && state != GAMEST_MULTI) return true;
+	mWorld->stepSimulation(evt.timeSinceLastFrame);	// update Bullet Physics animation
 	return true;
 }
 
 bool Game::frameEnded(const Ogre::FrameEvent& evt) {
-	gamestates[state]->frameEnded(evt);
+	if (state != GAMEST_SINGLE && state != GAMEST_MULTI) return true;
+	mWorld->stepSimulation(evt.timeSinceLastFrame);	// update Bullet Physics animation
 	return true;
 }
 
 bool Game::frameRenderingQueued(const Ogre::FrameEvent& evt){
-	//gamestates[state]->frameRender();
 	if(!BaseApplication::frameRenderingQueued(evt)) return false;
 	mGyroInput->capture();
 
@@ -291,11 +332,10 @@ bool Game::frameRenderingQueued(const Ogre::FrameEvent& evt){
 }
 
 bool Game::keyPressed( const OIS::KeyEvent& evt ){
-	if (gamestates[state]->keyPressed(evt)) {}
-	else if (state == GAMEST_MENU && (evt.key == OIS::KC_1 || evt.key == OIS::KC_NUMPAD1)) { state = GAMEST_SINGLE; reset(); }
+	if (state == GAMEST_MENU && (evt.key == OIS::KC_1 || evt.key == OIS::KC_NUMPAD1)) { state = GAMEST_SINGLE; reset(); }
 	else if (state == GAMEST_MENU && (evt.key == OIS::KC_2 || evt.key == OIS::KC_NUMPAD2)) state = GAMEST_CONNECT;
-	// else if (state == GAMEST_SINGLE && evt.key == OIS::KC_LEFT) { mPaddle1->motion |= 1; mPaddle2->motion |= 1; }
-	// else if (state == GAMEST_SINGLE && evt.key == OIS::KC_RIGHT) { mPaddle1->motion |= 2; mPaddle2->motion |= 2; }
+	else if (state == GAMEST_SINGLE && evt.key == OIS::KC_LEFT) { mPaddle1->motion |= 1; mPaddle2->motion |= 1; }
+	else if (state == GAMEST_SINGLE && evt.key == OIS::KC_RIGHT) { mPaddle1->motion |= 2; mPaddle2->motion |= 2; }
 	else if (evt.key == OIS::KC_M){
 		if (!soundOn) { soundOn = true; mSndMgr->getSound("sndBg")->play(); }
 		else if (soundOn) { soundOn = false; mSndMgr->getSound("sndBg")->pause(); }
@@ -315,11 +355,9 @@ bool Game::keyPressed( const OIS::KeyEvent& evt ){
 }
 
 bool Game::keyReleased( const OIS::KeyEvent& evt ){
-	if (gamestates[state]->keyReleased(evt)) {}
+	if (state == GAMEST_SINGLE && evt.key == OIS::KC_LEFT) { mPaddle1->motion &= ~1; mPaddle2->motion &= ~1; }
+	else if (state == GAMEST_SINGLE && evt.key == OIS::KC_RIGHT) { mPaddle1->motion &= ~2; mPaddle2->motion &= ~2; }
 	else BaseApplication::keyReleased(evt);
-	// if (state == GAMEST_SINGLE && evt.key == OIS::KC_LEFT) { mPaddle1->motion &= ~1; mPaddle2->motion &= ~1; }
-	// else if (state == GAMEST_SINGLE && evt.key == OIS::KC_RIGHT) { mPaddle1->motion &= ~2; mPaddle2->motion &= ~2; }
-	// else 
 	return true;
 }
 //-------------------------------------------------------------------------------------
@@ -404,11 +442,6 @@ bool Game::openMainMenu(const CEGUI::EventArgs &e)
   sheet->addChild(menu);
   state = GAMEST_MENU;
 }
-
-void Game::gyroMoved(int dev, double x, double y, double raw_x, double raw_y) {
-	printf("gyroMoved %f\n", x);
-	if (mPaddle1) mPaddle1->gyroMovement(x);
-}
 //-------------------------------------------------------------------------------------
 bool Game::openSettingsMenu(const CEGUI::EventArgs &e)
 {
@@ -442,7 +475,28 @@ bool Game::goBackHTP(const CEGUI::EventArgs &e)
 //-------------------------------------------------------------------------------------
 
 void Game::gyroKeyPressed(int dev, int keycode) {
-	printf("Keycode %d\n", keycode);
+	if (!mPaddle1) return;
+	if (keycode == GK_ZOOMIN)
+		mPaddle1->setRotation(Ogre::Quaternion(Ogre::Degree(-10), Ogre::Vector3(0,0,1)));
+	else if (keycode == GK_ZOOMOUT)
+		mPaddle1->setRotation(Ogre::Quaternion(Ogre::Degree(10), Ogre::Vector3(0,0,1)));
+	else if (keycode == GK_MUTE) {
+		if (!soundOn) { soundOn = true; mSndMgr->getSound("sndBg")->play(); }
+		else if (soundOn) { soundOn = false; mSndMgr->getSound("sndBg")->pause(); }
+	}
+	printf("Gyro key pressed, device=%d, keycode=%d\n", dev, keycode);
+}
+
+void Game::gyroKeyReleased(int dev, int keycode) {
+	if (!mPaddle1) return;
+	if (keycode == GK_ZOOMOUT || keycode == GK_ZOOMIN)
+		mPaddle1->setRotation(Ogre::Quaternion(Ogre::Degree(0), Ogre::Vector3(0,0,1)));
+	printf("Gyro key released, device=%d, keycode=%d\n", dev, keycode);
+}
+
+void Game::gyroMoved(int dev, double x, double y, double raw_x, double raw_y) {
+	printf("Gyro moved, device=%d, x=%f, y=%f, raw_x=%f, raw_y=%f\n", dev, x, y, raw_x, raw_y);
+	if (mPaddle1) mPaddle1->gyroMovement(x);
 }
 
 #ifdef __cplusplus

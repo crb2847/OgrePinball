@@ -16,6 +16,7 @@ class GameObject
 {
 	friend class Game;
 	public: 
+	    virtual ~GameObject();
 		GameObject(Game *game, int kind);
 		void setBDirection(Ogre::Vector3);
 		void move(const Ogre::FrameEvent& evt);
