@@ -79,7 +79,7 @@ class Game : public BaseApplication, public GyroListener
 	void reset();
 	int remPaddlePos;
 	unsigned char sounds[3];
-	int maxScore;
+	int maxScore, level;
 
 	//CEGUI globals
 	CEGUI::OgreRenderer* mRenderer;
@@ -97,6 +97,8 @@ class Game : public BaseApplication, public GyroListener
 
 	private:
 	uint64_t lastHit, gameStart, lastSend;
+	void cleanWorld(void);
+
 };
 
 #endif // #ifndef __Game_h_
