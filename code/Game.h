@@ -21,7 +21,7 @@
 
 class GameObject;
 
-enum GameState_t {GAMEST_MENU, GAMEST_CONN_SINGLE, GAMEST_CONN_MULTI, GAMEST_SINGLE, GAMEST_MULTI};
+enum GameState_t {GAMEST_MENU, GAMEST_CONN_SINGLE, GAMEST_CONN_MULTI, GAMEST_SINGLE, GAMEST_MULTI, GAMEST_SINGLE_MENU, GAMEST_MULTI_MENU};
 
 
 class Game : public BaseApplication, public GyroListener
@@ -64,6 +64,8 @@ class Game : public BaseApplication, public GyroListener
     bool goBackMCS(const CEGUI::EventArgs &e);
     bool startMultiPlayer(const CEGUI::EventArgs &e);
     bool playKeysMCS(const CEGUI::EventArgs &e);
+    bool goBackSCS(const CEGUI::EventArgs &e);
+    bool playKeysSCS(const CEGUI::EventArgs &e);
 
 	int state, nextState;
 	bool soundOn;
@@ -94,6 +96,8 @@ class Game : public BaseApplication, public GyroListener
     CEGUI::Window *soundPause;
     CEGUI::Window *singlePlayerConnection;
     CEGUI::Window *multiPlayerConnection;
+    CEGUI::Window *scoreBox1;
+    CEGUI::Window *scoreBox2;
 
 	private:
 	uint64_t lastHit, gameStart, lastSend;

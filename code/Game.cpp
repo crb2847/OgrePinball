@@ -65,6 +65,8 @@ void Game::collission(GameObject *o0, GameObject *o1) {
 		break;
 	case K::PIT:
 		scoreBox->setText("Score: 0");
+		scoreBox1->setText("Player One Score: 0");
+		scoreBox2->setText("Player Two Score: 0");
 		reset();
 		break;
 	case K::COIN:
@@ -72,7 +74,9 @@ void Game::collission(GameObject *o0, GameObject *o1) {
 		if (coin->taken) break;
 		score[player]++;
 		printf("Score: player0=%d, player1=%d\n", score[0], score[1]);
-		scoreBox->setText("Score: " + std::to_string(score[0]));
+		scoreBox->setText("Score: " + std::to_string(score[1]));
+		scoreBox1->setText("Player One Score: " + std::to_string(score[1]));
+		scoreBox2->setText("Player Two Score: " + std::to_string(score[0]));
 		if (score[player] == maxScore){
 			sounds[3]++;
 			// if (soundOn) mSndMgr->getSound("sndScore")->play();
@@ -296,6 +300,18 @@ void Game::createScene(void){
 	    scoreBox->setSize(CEGUI::USize(CEGUI::UDim(0.1, 0), CEGUI::UDim(0.05, 0)));
 	    scoreBox->setPosition(CEGUI::Vector2<CEGUI::UDim>(CEGUI::UDim(0.9,0), CEGUI::UDim(0,0)));
 
+        //the score box (player one in multi)
+	    scoreBox1 = wmgr.createWindow("TaharezLook/StaticText", "OgrePinball/Pause/PauseMenu/Sound");
+	    scoreBox1->setText("Player One Score: 0");
+	    scoreBox1->setSize(CEGUI::USize(CEGUI::UDim(0.2, 0), CEGUI::UDim(0.05, 0)));
+	    scoreBox1->setPosition(CEGUI::Vector2<CEGUI::UDim>(CEGUI::UDim(0.8,0), CEGUI::UDim(0,0)));
+
+        //the score box (player two in multi)
+	    scoreBox2 = wmgr.createWindow("TaharezLook/StaticText", "OgrePinball/Pause/PauseMenu/Sound");
+	    scoreBox2->setText("Player Two Score: 0");
+	    scoreBox2->setSize(CEGUI::USize(CEGUI::UDim(0.2, 0), CEGUI::UDim(0.05, 0)));
+	    scoreBox2->setPosition(CEGUI::Vector2<CEGUI::UDim>(CEGUI::UDim(0.8,0), CEGUI::UDim(0.05,0)));
+
         //the single player connection screen
 	    singlePlayerConnection = wmgr.createWindow("TaharezLook/FrameWindow", "OgrePinball/Menu/SinglePlayer/SinglePlayerConnection");
 	    singlePlayerConnection->setSize(CEGUI::USize(CEGUI::UDim(0.4, 0), CEGUI::UDim(0.5, 0)));
@@ -313,19 +329,47 @@ void Game::createScene(void){
 	    backMCS->setPosition(CEGUI::Vector2<CEGUI::UDim>(CEGUI::UDim(0.125,0), CEGUI::UDim(0.82,0)));
 	    multiPlayerConnection->addChild(backMCS);
 
-        //the waiting for connection text box
+        //the waiting for connection text box (multi)
 	    CEGUI::Window *info = wmgr.createWindow("TaharezLook/StaticText", "OgrePinball/Menu/Muliplayer/MCS/Info");
 	    info->setText("Waiting on connection with the controllers");
 	    info->setSize(CEGUI::USize(CEGUI::UDim(0.96, 0), CEGUI::UDim(0.3, 0)));
 	    info->setPosition(CEGUI::Vector2<CEGUI::UDim>(CEGUI::UDim(0.02,0), CEGUI::UDim(0.02,0)));
 	    multiPlayerConnection->addChild(info);
 
-		//the play with keys button
+        //the waiting for connection text box (single)
+	    CEGUI::Window *info2 = wmgr.createWindow("TaharezLook/StaticText", "OgrePinball/Menu/Muliplayer/MCS/Info");
+	    info2->setText("Waiting on connection with the controller");
+	    info2->setSize(CEGUI::USize(CEGUI::UDim(0.96, 0), CEGUI::UDim(0.3, 0)));
+	    info2->setPosition(CEGUI::Vector2<CEGUI::UDim>(CEGUI::UDim(0.02,0), CEGUI::UDim(0.02,0)));
+	    singlePlayerConnection->addChild(info2);
+
+		//the play with keys button (in multi connection screen)
 	    CEGUI::Window *keysMCS = wmgr.createWindow("TaharezLook/Button", "OgrePinball/Menu/Multiplayer/MCS/Back");
 	    keysMCS->setText("Play With Keys");
 	    keysMCS->setSize(CEGUI::USize(CEGUI::UDim(0.75, 0), CEGUI::UDim(0.16, 0)));
 	    keysMCS->setPosition(CEGUI::Vector2<CEGUI::UDim>(CEGUI::UDim(0.125,0), CEGUI::UDim(0.62,0)));
 	    multiPlayerConnection->addChild(keysMCS);
+
+	    //the back button (in the single player connection screen)
+	    CEGUI::Window *backSCS = wmgr.createWindow("TaharezLook/Button", "OgrePinball/Menu/Multiplayer/MCS/Back");
+	    backSCS->setText("Back");
+	    backSCS->setSize(CEGUI::USize(CEGUI::UDim(0.75, 0), CEGUI::UDim(0.16, 0)));
+	    backSCS->setPosition(CEGUI::Vector2<CEGUI::UDim>(CEGUI::UDim(0.125,0), CEGUI::UDim(0.82,0)));
+	    singlePlayerConnection->addChild(backSCS);
+
+		//the play with keys button (in single connection screen)
+	    CEGUI::Window *keysSCS = wmgr.createWindow("TaharezLook/Button", "OgrePinball/Menu/Multiplayer/MCS/Back");
+	    keysSCS->setText("Play With Keys");
+	    keysSCS->setSize(CEGUI::USize(CEGUI::UDim(0.75, 0), CEGUI::UDim(0.16, 0)));
+	    keysSCS->setPosition(CEGUI::Vector2<CEGUI::UDim>(CEGUI::UDim(0.125,0), CEGUI::UDim(0.62,0)));
+	    singlePlayerConnection->addChild(keysSCS);
+
+	    //how to play information
+	    CEGUI::Window *HTPinfo = wmgr.createWindow("TaharezLook/StaticText", "OgrePinball/Menu/howToPlayMenu/Info");
+	    HTPinfo->setText("Single Player Instructions:\nScore points by collecting coins without\nmissing the ball.\n\nMulti Player Instructions:\nThe player who last hit the ball gets the\npoints from the coins.\n\nControls:\nIn both modes, you can play with either\nthe arrow keys (and AS keys for\nmultiplayer) or by tilting the controllers");
+	    HTPinfo->setSize(CEGUI::USize(CEGUI::UDim(0.96, 0), CEGUI::UDim(0.78, 0)));
+	    HTPinfo->setPosition(CEGUI::Vector2<CEGUI::UDim>(CEGUI::UDim(0.02,0), CEGUI::UDim(0.02,0)));
+	    howToPlayMenu->addChild(HTPinfo);
 
 	    CEGUI::System::getSingleton().getDefaultGUIContext().setRootWindow(sheet);
 	    onePlayer->   subscribeEvent(CEGUI::PushButton::EventClicked, CEGUI::Event::Subscriber(&Game::startSinglePlayer, this));
@@ -339,7 +383,9 @@ void Game::createScene(void){
   	  	howToPlay->   subscribeEvent(CEGUI::PushButton::EventClicked, CEGUI::Event::Subscriber(&Game::openHowToPlayMenu, this)); 
    		backHTP->     subscribeEvent(CEGUI::PushButton::EventClicked, CEGUI::Event::Subscriber(&Game::goBackHTP,         this));	
    		backMCS->     subscribeEvent(CEGUI::PushButton::EventClicked, CEGUI::Event::Subscriber(&Game::goBackMCS,         this));
-      	keysMCS->     subscribeEvent(CEGUI::PushButton::EventClicked, CEGUI::Event::Subscriber(&Game::playKeysMCS,         this));	
+      	keysMCS->     subscribeEvent(CEGUI::PushButton::EventClicked, CEGUI::Event::Subscriber(&Game::playKeysMCS,       this));
+      	backSCS->     subscribeEvent(CEGUI::PushButton::EventClicked, CEGUI::Event::Subscriber(&Game::goBackSCS,         this));
+      	keysSCS->     subscribeEvent(CEGUI::PushButton::EventClicked, CEGUI::Event::Subscriber(&Game::playKeysSCS,       this));	
 	}
 }
 
@@ -362,6 +408,7 @@ bool Game::frameRenderingQueued(const Ogre::FrameEvent& evt){
     CEGUI::System::getSingleton().injectTimePulse(evt.timeSinceLastFrame);
 
     if (state == GAMEST_CONN_SINGLE && mGyroInput->connect() >= 1) {
+    	if (singlePlayerConnection) sheet->removeChild(singlePlayerConnection);
     	state = GAMEST_SINGLE; reset();
     } else if (state == GAMEST_CONN_MULTI && mGyroInput->connect() >= 2) {
     	if (multiPlayerConnection) sheet->removeChild(multiPlayerConnection);
@@ -468,9 +515,8 @@ bool Game::quit(const CEGUI::EventArgs &e)
 bool Game::startSinglePlayer(const CEGUI::EventArgs &e)
 {
   sheet->removeChild(menu);
-  sheet->addChild(pause);
-  sheet->addChild(scoreBox);
-  state = GAMEST_SINGLE; 
+  sheet->addChild(singlePlayerConnection);
+  state = GAMEST_CONN_SINGLE;
   reset();
   return true;
 }
@@ -478,9 +524,18 @@ bool Game::startSinglePlayer(const CEGUI::EventArgs &e)
 bool Game::pauseGame(const CEGUI::EventArgs &e)
 {
   sheet->removeChild(pause);
-  sheet->removeChild(scoreBox);
   sheet->addChild(pauseMenu);
-  state = GAMEST_MENU;
+  if(state == GAMEST_SINGLE)
+  {
+    sheet->removeChild(scoreBox);
+  	state = GAMEST_SINGLE_MENU;
+  }
+  else if(state == GAMEST_MULTI)
+  {
+  	sheet->removeChild(scoreBox1);
+  	sheet->removeChild(scoreBox2);
+  	state = GAMEST_MULTI_MENU;
+  }
   return true;
 }
 //-------------------------------------------------------------------------------------
@@ -488,8 +543,17 @@ bool Game::resumeGame(const CEGUI::EventArgs &e)
 {
   sheet->removeChild(pauseMenu);
   sheet->addChild(pause);
-  sheet->addChild(scoreBox);
-  state = GAMEST_SINGLE;
+  if(state == GAMEST_SINGLE_MENU)
+  {
+  	sheet->addChild(scoreBox);
+  	state = GAMEST_SINGLE;
+  }
+  else if(state == GAMEST_MULTI_MENU)
+  {
+  	sheet->addChild(scoreBox1);
+  	sheet->addChild(scoreBox2);
+  	state = GAMEST_MULTI;
+  }
   return true;
 }
 //-------------------------------------------------------------------------------------
@@ -549,7 +613,28 @@ bool Game::startMultiPlayer(const CEGUI::EventArgs &e)
 bool Game::playKeysMCS(const CEGUI::EventArgs &e)
 {
   sheet->removeChild(multiPlayerConnection);
+  sheet->addChild(scoreBox1);
+  sheet->addChild(scoreBox2);
+  sheet->addChild(pause);
   state = GAMEST_MULTI;
+  reset();
+  return true;
+}
+//-------------------------------------------------------------------------------------
+bool Game::goBackSCS(const CEGUI::EventArgs &e)
+{
+  sheet->removeChild(singlePlayerConnection);
+  sheet->addChild(menu);
+
+  return true;
+}
+//-------------------------------------------------------------------------------------
+bool Game::playKeysSCS(const CEGUI::EventArgs &e)
+{
+  sheet->removeChild(singlePlayerConnection);
+  sheet->addChild(scoreBox);
+  sheet->addChild(pause);
+  state = GAMEST_SINGLE;
   reset();
   return true;
 }
