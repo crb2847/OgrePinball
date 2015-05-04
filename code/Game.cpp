@@ -12,6 +12,7 @@ bool HandleContacts(btManifoldPoint& point, btCollisionObject* body0, btCollisio
 Game::Game(void) : BaseApplication() {
 	remPaddlePos = 0;
 	soundOn = true;
+    level=0;
 	state = GAMEST_MENU;
 	nextState = -1;
 	mGyroInput = nullptr;
@@ -79,6 +80,7 @@ void Game::collission(GameObject *o0, GameObject *o1) {
 		scoreBox2->setText("Player Two Score: " + std::to_string(score[0]));
 		if (score[player] == maxScore){
 			sounds[3]++;
+            level++;
 			// if (soundOn) mSndMgr->getSound("sndScore")->play();
 		}
 		else {
@@ -90,6 +92,16 @@ void Game::collission(GameObject *o0, GameObject *o1) {
 		break;
 	}
 	//std::cout << "o0=" << o0->name << ", o1=" << o1->name << "\n";
+}
+
+void Game::cleanWorld(void){
+	std::set<GameObject*> newWorld;
+	for(GameObject *obj : entities) {
+		if (dynamic_cast<Coin *>(obj) || dynamic_cast<Obstacle *>(obj)) {
+			delete obj;
+		} else newWorld.insert(obj);
+	}
+	entities = newWorld;
 }
 
 void Game::createScene(void){
@@ -173,6 +185,8 @@ void Game::createScene(void){
     light->setPosition(90.0f, 90.0f, 800.0f);
 
     elapsedSec = 0;
+
+    cleanWorld();
 
     //initalize CEGUI components
     {
