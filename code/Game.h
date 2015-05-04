@@ -75,7 +75,7 @@ class Game : public BaseApplication, public GyroListener
 	GyroInput *mGyroInput;
 	OgreOggSound::OgreOggSoundManager* mSndMgr;
 	OgreOggSound::OgreOggSoundPlugin *mOggSoundPlugin;
-	int score, elapsedSec;
+	int score[3], elapsedSec, player;
 	void reset();
 	int remPaddlePos;
 	unsigned char sounds[3];

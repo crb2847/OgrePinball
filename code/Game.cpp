@@ -23,7 +23,8 @@ Game::~Game() {
 
 void Game::reset(){
 	elapsedSec = 0;
-	score = 0; lastHit = 0;
+	score[0] = score[1] = 0; player = 2;
+	lastHit = 0;
 	gameStart = clock();
 	for(GameObject *obj : entities) {
 		Coin *coin = dynamic_cast<Coin *>(obj);
@@ -60,7 +61,7 @@ void Game::collission(GameObject *o0, GameObject *o1) {
 		sounds[1]++;
 		oBall->rigidBody->setLinearVelocity(
 				oBall->rigidBody->getLinearVelocity().normalisedCopy() * 450.0); 
-		// should check here which direction the paddle is moving then move the ball accordingly
+		player = (o1 == mPaddle1) ? 0 : 1;
 		break;
 	case K::PIT:
 		scoreBox->setText("Score: 0");
@@ -69,9 +70,10 @@ void Game::collission(GameObject *o0, GameObject *o1) {
 	case K::COIN:
 		Coin *coin = dynamic_cast<Coin *>(o1);
 		if (coin->taken) break;
-		score++;
-		scoreBox->setText("Score: " + std::to_string(score));
-		if (score == maxScore){
+		score[player]++;
+		printf("Score: player0=%d, player1=%d\n", score[0], score[1]);
+		scoreBox->setText("Score: " + std::to_string(score[0]));
+		if (score[player] == maxScore){
 			sounds[3]++;
 			// if (soundOn) mSndMgr->getSound("sndScore")->play();
 		}
@@ -166,7 +168,7 @@ void Game::createScene(void){
     Ogre::Light* light = mSceneMgr->createLight("OutsideLight");
     light->setPosition(90.0f, 90.0f, 800.0f);
 
-    elapsedSec = 0; score = 0;
+    elapsedSec = 0;
 
     //initalize CEGUI components
     {
