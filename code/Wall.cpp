@@ -8,7 +8,7 @@ Wall::Wall(Game *game, Ogre::Vector3 scale,
 
 	name = "Wall@" + Ogre::StringConverter::toString(id);
 	Ogre::Entity* entGround = scnMgr->createEntity("et"+name, "ground");
-    entGround->setMaterialName("Examples/Rockwall");
+    entGround->setMaterialName("Wall");
     entGround->setCastShadows(false);
     rootNode = scnMgr->getRootSceneNode()->createChildSceneNode("nd"+name);
 	rootNode->attachObject(entGround);

@@ -1,4 +1,4 @@
-material Obstacle
+material Paddle
  {
     technique
     {
@@ -6,7 +6,7 @@ material Obstacle
         {
           texture_unit
           {
-            texture obstacle.jpg
+            texture paddle.jpg
             scale 1 1
             // this means that the texture will be tiled 10 times (1/10 = 0.1)
           }

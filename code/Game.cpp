@@ -149,24 +149,24 @@ void Game::createScene(void){
     PitPlane* pit = new PitPlane(this, Ogre::Vector3::UNIT_Y, Ogre::Real(-510));
     entities.insert(pit); // Bottom
 
-    Wall *p = new Wall(this, Ogre::Vector3(0.75f,1.0f,0.2f),
+    Wall *p = new Wall(this, Ogre::Vector3(1.4f,1.0f,1.0f),
     		Ogre::Quaternion(Ogre::Degree(180), Ogre::Vector3::UNIT_Z), Ogre::Vector3(0, 500, 0));
     entities.insert(p); // Top
 
-    p = new Wall(this, Ogre::Vector3(0.75f,1.0f,1.0f),
+    p = new Wall(this, Ogre::Vector3(1.4f,1.0f,1.0f),
     		Ogre::Quaternion(Ogre::Degree(90), Ogre::Vector3::UNIT_X), Ogre::Vector3(0, 0, -100));
     entities.insert(p); // Back
 
-    p = new Wall(this, Ogre::Vector3(0.75f,1.0f,1.0f),
+    p = new Wall(this, Ogre::Vector3(1.4f,1.0f,1.0f),
     		Ogre::Quaternion(Ogre::Degree(270), Ogre::Vector3::UNIT_X), Ogre::Vector3(0, 0, 100));
     entities.insert(p); // Front
 
-    p = new Wall(this, Ogre::Vector3(1.0f,1.0f,0.2f),
-    		Ogre::Quaternion(Ogre::Degree(270), Ogre::Vector3::UNIT_Z),  Ogre::Vector3(-375, 0, 0));
+    p = new Wall(this, Ogre::Vector3(1.0f,1.0f,1.0f),
+    		Ogre::Quaternion(Ogre::Degree(270), Ogre::Vector3::UNIT_Z),  Ogre::Vector3(-700, 0, 0));
     entities.insert(p); // Left
 
-    p = new Wall(this, Ogre::Vector3(1.0f,1.0f,0.2f),
-    		Ogre::Quaternion(Ogre::Degree(90), Ogre::Vector3::UNIT_Z), Ogre::Vector3(375, 0, 0));
+    p = new Wall(this, Ogre::Vector3(1.0f,1.0f,1.0f),
+    		Ogre::Quaternion(Ogre::Degree(90), Ogre::Vector3::UNIT_Z), Ogre::Vector3(700, 0, 0));
     entities.insert(p); // Right
 
     maxScore = 13;
@@ -186,7 +186,7 @@ void Game::createScene(void){
 
     elapsedSec = 0;
 
-    cleanWorld();
+    // cleanWorld();
 
     //initalize CEGUI components
     {
@@ -380,8 +380,8 @@ void Game::createScene(void){
 
 	    //how to play information
 	    CEGUI::Window *HTPinfo = wmgr.createWindow("TaharezLook/StaticText", "OgrePinball/Menu/howToPlayMenu/Info");
-	    HTPinfo->setText("Single Player Instructions:\nScore points by collecting coins without\nmissing the ball.\n\nMulti Player Instructions:\nThe player who last hit the ball gets the\npoints from the coins.\n\nControls:\nIn both modes, you can play with either\nthe arrow keys (and AS keys for\nmultiplayer) or by tilting the controllers");
-	    HTPinfo->setSize(CEGUI::USize(CEGUI::UDim(0.96, 0), CEGUI::UDim(0.78, 0)));
+	    HTPinfo->setText("Single Player Instructions:\nScore points by collecting coins without\nmissing the ball.\n\nMulti Player Instructions:\nThe player who last hit the ball gets the\npoints from the coins.\n\nControls:\nIn both modes, you can play with either\nthe arrow keys (and AS keys for\nmultiplayer) or by tilting the controllers\nPressing R turns on wireframes\n8, 9, and 0 change the camera");
+	    HTPinfo->setSize(CEGUI::USize(CEGUI::UDim(0.96, 0), CEGUI::UDim(0.85, 0)));
 	    HTPinfo->setPosition(CEGUI::Vector2<CEGUI::UDim>(CEGUI::UDim(0.02,0), CEGUI::UDim(0.02,0)));
 	    howToPlayMenu->addChild(HTPinfo);
 
@@ -455,11 +455,11 @@ bool Game::keyPressed( const OIS::KeyEvent& evt ){
 	    mCamera->setPosition(Ogre::Vector3(0,0,1300));
 	    mCamera->lookAt(Ogre::Vector3(0,0,0));
 	} else if (evt.key == OIS::KC_9) {
-	    mCamera->setPosition(Ogre::Vector3(0,850,800));
-	    mCamera->lookAt(Ogre::Vector3(0,100,0));
+	    mCamera->setPosition(Ogre::Vector3(0,900,900));
+	    mCamera->lookAt(Ogre::Vector3(0,0,50));
 	} else if (evt.key == OIS::KC_0) {
-	    mCamera->setPosition(Ogre::Vector3(0,-920,600));
-	    mCamera->lookAt(Ogre::Vector3(0,-100,0));
+	    mCamera->setPosition(Ogre::Vector3(0,-1100,900));
+	    mCamera->lookAt(Ogre::Vector3(0,0,84));
 	} else BaseApplication::keyPressed(evt);
     return true;
 }

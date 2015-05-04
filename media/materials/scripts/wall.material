@@ -1,4 +1,4 @@
-material Obstacle
+material Wall
  {
     technique
     {
@@ -6,8 +6,8 @@ material Obstacle
         {
           texture_unit
           {
-            texture obstacle.jpg
-            scale 1 1
+            texture tiles.jpg
+            scale 20 10
             // this means that the texture will be tiled 10 times (1/10 = 0.1)
           }
        }   
