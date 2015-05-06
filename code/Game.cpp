@@ -61,7 +61,7 @@ void Game::collission(GameObject *o0, GameObject *o1) {
 		if (soundOn) mSndMgr->getSound("sndPaddle")->play();
 		sounds[1]++;
 		oBall->rigidBody->setLinearVelocity(
-				oBall->rigidBody->getLinearVelocity().normalisedCopy() * 375.0);
+				oBall->rigidBody->getLinearVelocity().normalisedCopy() * 450.0);
 		player = (o1 == mPaddle1) ? 0 : 1;
 		break;
 	case K::PIT:
@@ -109,7 +109,7 @@ void Game::createScene(void){
 	mGyroInput->setEventCallback(this);
 	mGyroInput->connect();
 	// Init Bullet
-	Ogre::Vector3 gravityVector(0,-35,0);
+	Ogre::Vector3 gravityVector(0,-70,0);
 	Ogre::AxisAlignedBox bounds (Ogre::Vector3 (-10000, -10000, -10000), Ogre::Vector3 (10000,  10000,  10000));
 	mWorld = new OgreBulletDynamics::DynamicsWorld(mSceneMgr, bounds, gravityVector);
 	gContactProcessedCallback = (ContactProcessedCallback) HandleContacts;
