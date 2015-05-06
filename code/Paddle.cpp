@@ -10,7 +10,7 @@ Paddle::Paddle(Game *game, int pID) : GameObject(game, K::PADDLE){
 	rootNode = scnMgr->getRootSceneNode()->createChildSceneNode("nd"+name);
 	rootNode->attachObject(entity);
 
-	bRadius = 60.0f;
+	bRadius = 65.0f;
 	rootNode->setScale(scale = Ogre::Vector3(bRadius/50, 0.1, 2));
 	rootNode->setPosition(position = Ogre::Vector3(((pID==1)?-700:0)+bRadius, -490, 0));
 	rootNode->setOrientation(orientation = Ogre::Quaternion());

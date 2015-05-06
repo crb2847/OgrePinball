@@ -13,7 +13,7 @@ Ball::Ball(Game *game) : GameObject(game, K::BALL){
 	bRadius = 40.0f;
 	bDirection = Ogre::Vector3(1.0f, 2.0f, 0.0f);
 	bDirection.normalise();
-	bSpeed = 450.0f;
+	bSpeed = 300.0f;
 
 	collShape = new OgreBulletCollisions::SphereCollisionShape(bRadius * 0.45);
 	rigidBody = new OgreBulletDynamics::RigidBody("bt"+name, mWorld);

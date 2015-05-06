@@ -52,16 +52,16 @@ void Game::collission(GameObject *o0, GameObject *o1) {
 			{sounds[0]++; if (soundOn) mSndMgr->getSound("sndHit")->play();}
 		lastHit = clock();
 		if (oBall->rigidBody->getLinearVelocity().length() > 500.0){
-			oBall->rigidBody->setLinearVelocity(oBall->rigidBody->getLinearVelocity());
+			//oBall->rigidBody->setLinearVelocity(oBall->rigidBody->getLinearVelocity());
 		}
 		else oBall->rigidBody->setLinearVelocity(oBall->rigidBody->getLinearVelocity() * 1.1);
-		oBall->rigidBody->setLinearVelocity(oBall->rigidBody->getLinearVelocity()); // just do this if you want it easy
+		//oBall->rigidBody->setLinearVelocity(oBall->rigidBody->getLinearVelocity()); // just do this if you want it easy
 		break;
 	case K::PADDLE:
 		if (soundOn) mSndMgr->getSound("sndPaddle")->play();
 		sounds[1]++;
 		oBall->rigidBody->setLinearVelocity(
-				oBall->rigidBody->getLinearVelocity().normalisedCopy() * 450.0); 
+				oBall->rigidBody->getLinearVelocity().normalisedCopy() * 375.0);
 		player = (o1 == mPaddle1) ? 0 : 1;
 		break;
 	case K::PIT:
@@ -109,7 +109,7 @@ void Game::createScene(void){
 	mGyroInput->setEventCallback(this);
 	mGyroInput->connect();
 	// Init Bullet
-	Ogre::Vector3 gravityVector(0,-70,0);
+	Ogre::Vector3 gravityVector(0,-35,0);
 	Ogre::AxisAlignedBox bounds (Ogre::Vector3 (-10000, -10000, -10000), Ogre::Vector3 (10000,  10000,  10000));
 	mWorld = new OgreBulletDynamics::DynamicsWorld(mSceneMgr, bounds, gravityVector);
 	gContactProcessedCallback = (ContactProcessedCallback) HandleContacts;
