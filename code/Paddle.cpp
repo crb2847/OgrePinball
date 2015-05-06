@@ -10,8 +10,9 @@ Paddle::Paddle(Game *game, int pID) : GameObject(game, K::PADDLE){
 	rootNode = scnMgr->getRootSceneNode()->createChildSceneNode("nd"+name);
 	rootNode->attachObject(entity);
 
-	rootNode->setScale(scale = Ogre::Vector3(1, 0.1, 2));
-	rootNode->setPosition(position = Ogre::Vector3((pID==1)?-650:50, -490, 0));
+	bRadius = 60.0f;
+	rootNode->setScale(scale = Ogre::Vector3(bRadius/50, 0.1, 2));
+	rootNode->setPosition(position = Ogre::Vector3(((pID==1)?-700:0)+bRadius, -490, 0));
 	rootNode->setOrientation(orientation = Ogre::Quaternion());
 
 	Ogre::Vector3 bSize = entity->getBoundingBox().getHalfSize() * 0.95 * scale;
@@ -25,7 +26,6 @@ Paddle::Paddle(Game *game, int pID) : GameObject(game, K::PADDLE){
 	btObj->setCollisionFlags(btObj->getCollisionFlags() | btCollisionObject::CF_CUSTOM_MATERIAL_CALLBACK);
 	btObj->setUserPointer(static_cast<GameObject*>(this));
 
-	bRadius = 50.0f;
 	bDirection = Ogre::Vector3(-1.0f, 0.0f, 0.0f);
 	bDirection.normalise();
 	bSpeed = 500.0f;
