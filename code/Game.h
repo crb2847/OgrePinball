@@ -23,7 +23,6 @@ class GameObject;
 
 enum GameState_t {GAMEST_MENU, GAMEST_CONN_SINGLE, GAMEST_CONN_MULTI, GAMEST_SINGLE, GAMEST_MULTI, GAMEST_SINGLE_MENU, GAMEST_MULTI_MENU};
 
-
 class Game : public BaseApplication, public GyroListener
 {
 	friend class GameObject;
@@ -67,20 +66,17 @@ class Game : public BaseApplication, public GyroListener
     bool goBackSCS(const CEGUI::EventArgs &e);
     bool playKeysSCS(const CEGUI::EventArgs &e);
 
-	int state, nextState;
+	int state, mscore;
 	bool soundOn;
 	OgreBulletDynamics::DynamicsWorld *mWorld;
 	Paddle *mPaddle1;
 	Paddle *mPaddle2;
-	Paddle *mMyPaddle;
 	Ball *oBall;
 	GyroInput *mGyroInput;
 	OgreOggSound::OgreOggSoundManager* mSndMgr;
 	OgreOggSound::OgreOggSoundPlugin *mOggSoundPlugin;
 	int score[3], elapsedSec, player;
 	void reset();
-	int remPaddlePos;
-	unsigned char sounds[3];
 	int maxScore, level;
 
 	//CEGUI globals
@@ -100,9 +96,9 @@ class Game : public BaseApplication, public GyroListener
     CEGUI::Window *scoreBox2;
 
 	private:
-	uint64_t lastHit, gameStart, lastSend;
+	uint64_t lastHit, gameStart;
 	void cleanWorld(void);
-
+	void initCEGUI(void);
 };
 
 #endif // #ifndef __Game_h_
