@@ -14,7 +14,8 @@ Game::Game(void) : BaseApplication() {
     level=0;
 	state = GAMEST_MENU;
 	mGyroInput = nullptr;
-	mscore=0;
+	mscore = 0;
+	mPaddle0 = mPaddle1 = mPaddle2 = nullptr;
 }
 
 Game::~Game() {
@@ -23,17 +24,24 @@ Game::~Game() {
 
 void Game::reset(){
 	elapsedSec = 0;
-	score[0] = score[1] = 0; player = 2;
+	score[0] = score[1] = score[2] = 0; player = 0;
 	lastHit = 0;
 	gameStart = clock();
 	mscore = 0;
-
+	if (state == GAMEST_SINGLE) {
+		if (!mPaddle0) entities.insert(mPaddle0 = new Paddle(this, 0));
+		if (mPaddle1) { entities.erase(mPaddle1); delete mPaddle1; mPaddle1 = nullptr; }
+		if (mPaddle2) { entities.erase(mPaddle2); delete mPaddle2; mPaddle2 = nullptr; }
+	} else if (state == GAMEST_MULTI) {
+		if (mPaddle0) { entities.erase(mPaddle0); delete mPaddle0; mPaddle0 = nullptr; }
+		if (!mPaddle1) entities.insert(mPaddle1 = new Paddle(this, 1));
+		if (!mPaddle2) entities.insert(mPaddle2 = new Paddle(this, 2));
+	}
     maxScore = 5;
     cleanWorld();
     std::vector<Ogre::Vector3> coinPos { Ogre::Vector3(100,100,0), Ogre::Vector3(-100,400,0), Ogre::Vector3(-100,150,0), Ogre::Vector3(-50,200,0), Ogre::Vector3(-250,300,0), Ogre::Vector3(280,400,0), Ogre::Vector3(-250,0,0), Ogre::Vector3(-300,100,0), Ogre::Vector3(-300,-400,0), Ogre::Vector3(-100,-300,0), Ogre::Vector3(0,-350,0), Ogre::Vector3(100,-270,0), Ogre::Vector3(200,-340,0)};
     for (Ogre::Vector3 p : coinPos)
     	entities.insert(new Coin(this, p));
-
     std::vector<Ogre::Vector3> obstaclePos { Ogre::Vector3(-350,-250,0), Ogre::Vector3(355,480,0),
     	Ogre::Vector3(-100,50,0), Ogre::Vector3(100,-150,0) };
     for (Ogre::Vector3 p : obstaclePos)
@@ -69,23 +77,25 @@ void Game::collission(GameObject *o0, GameObject *o1) {
 		if (soundOn) mSndMgr->getSound("sndPaddle")->play();
 		oBall->rigidBody->setLinearVelocity(
 			oBall->rigidBody->getLinearVelocity().normalisedCopy() * 450.0);
-		player = (o1 == mPaddle1) ? 1 : 0;
+		player = (o1 == mPaddle0) ? 0 : ((o1 == mPaddle1) ? 1 : 2);
 		break;
 	case K::PIT:
 		reset();
 		break;
 	case K::COIN:
 		Coin *coin = dynamic_cast<Coin *>(o1);
-		if (coin->taken) break;
-		score[player]++;
-		mscore++;
-		scoreBox->setText("Score: " + std::to_string(score[1]));
-		scoreBox1->setText("Player One Score: " + std::to_string(score[0]));
-		scoreBox2->setText("Player Two Score: " + std::to_string(score[1]));
+		entities.erase(coin);
+		delete coin;
+
+		score[player]++; mscore++;
+		scoreBox->setText("Score: " + std::to_string(score[0]));
+		scoreBox1->setText("Player One Score: " + std::to_string(score[1]));
+		scoreBox2->setText("Player Two Score: " + std::to_string(score[2]));
+
 		if (mscore == maxScore){
             level++;
+            cleanWorld();
             if(level==1){
-            	cleanWorld();
             	std::vector<Ogre::Vector3> coinPos { Ogre::Vector3(100,100,0), Ogre::Vector3(-100,400,0), Ogre::Vector3(-100,150,0), Ogre::Vector3(-50,200,0), Ogre::Vector3(-250,300,0), Ogre::Vector3(280,400,0), Ogre::Vector3(-250,0,0), Ogre::Vector3(-300,100,0), Ogre::Vector3(-300,-400,0), Ogre::Vector3(-100,-300,0), Ogre::Vector3(0,-350,0), Ogre::Vector3(100,-270,0), Ogre::Vector3(200,-340,0)};
 			    for (Ogre::Vector3 p : coinPos)
 			    	entities.insert(new Coin(this, p));
@@ -94,9 +104,7 @@ void Game::collission(GameObject *o0, GameObject *o1) {
 			    	Ogre::Vector3(-500,50,0), Ogre::Vector3(500,0,0) };
 			    for (Ogre::Vector3 p : obstaclePos)
 			    	entities.insert(new Obstacle(this, p));
-            }
-            else if(level==2){
-            	cleanWorld();
+            } else if(level==2){
             	std::vector<Ogre::Vector3> coinPos { Ogre::Vector3(100,100,0), Ogre::Vector3(-100,400,0), Ogre::Vector3(-100,150,0), Ogre::Vector3(-50,200,0), Ogre::Vector3(-250,300,0), Ogre::Vector3(280,400,0), Ogre::Vector3(-250,0,0), Ogre::Vector3(-300,100,0), Ogre::Vector3(-300,-400,0), Ogre::Vector3(-100,-300,0), Ogre::Vector3(0,-350,0), Ogre::Vector3(100,-270,0), Ogre::Vector3(200,-340,0)};
 			    for (Ogre::Vector3 p : coinPos)
 			    	entities.insert(new Coin(this, p));
@@ -105,13 +113,11 @@ void Game::collission(GameObject *o0, GameObject *o1) {
 			    	Ogre::Vector3(400,380,0), Ogre::Vector3(-250,150,0), Ogre::Vector3(0,-350,0) };
 			    for (Ogre::Vector3 p : obstaclePos)
 			    	entities.insert(new Obstacle(this, p));
-
             }
+        	oBall->setPosition(Ogre::Vector3(0,0,0));
+        	oBall->rigidBody->setLinearVelocity(oBall->bDirection * oBall->bSpeed);
 		}
 		if (soundOn) mSndMgr->getSound("sndScore")->play();
-
-		entities.erase(coin);
-		delete coin;
 		break;
 	}
 }
@@ -153,12 +159,6 @@ void Game::createScene(void){
 	// Set the scene's ambient light
     mSceneMgr->setAmbientLight(Ogre::ColourValue(0, 0, 0));
     mSceneMgr->setShadowTechnique(Ogre::SHADOWTYPE_STENCIL_ADDITIVE);
-
-	mPaddle1 = new Paddle(this,1);
-	entities.insert(mPaddle1);
-
-    mPaddle2 = new Paddle(this,2);
-    entities.insert(mPaddle2);
 
     oBall = new Ball(this);
     entities.insert(oBall);
@@ -235,15 +235,15 @@ bool Game::frameRenderingQueued(const Ogre::FrameEvent& evt){
 
 bool Game::keyPressed( const OIS::KeyEvent& evt ){
 	if (evt.key == OIS::KC_LEFT) {
-		if (state == GAMEST_SINGLE) { mPaddle1->motion |= 1; mPaddle2->motion |= 1; }
-		else if (state == GAMEST_MULTI) mPaddle1->motion |= 1;
+		if (state == GAMEST_SINGLE && mPaddle0) mPaddle0->motion |= 1;
+		else if (state == GAMEST_MULTI && mPaddle2) mPaddle2->motion |= 1;
 	} else if (evt.key == OIS::KC_RIGHT) {
-		if (state == GAMEST_SINGLE) { mPaddle1->motion |= 2; mPaddle2->motion |= 2; }
-		else if (state == GAMEST_MULTI) mPaddle1->motion |= 2;
+		if (state == GAMEST_SINGLE && mPaddle0) mPaddle0->motion |= 2;
+		else if (state == GAMEST_MULTI && mPaddle2) mPaddle2->motion |= 2;
 	} else if (evt.key == OIS::KC_A) {
-		if (state == GAMEST_MULTI) mPaddle2->motion |= 1;
+		if (state == GAMEST_MULTI && mPaddle1) mPaddle1->motion |= 1;
 	} else if (evt.key == OIS::KC_D) {
-		if (state == GAMEST_MULTI) mPaddle2->motion |= 2;
+		if (state == GAMEST_MULTI && mPaddle1) mPaddle1->motion |= 2;
 	} else if (evt.key == OIS::KC_M) {
 		if (!soundOn) { soundOn = true; mSndMgr->getSound("sndBg")->play(); }
 		else if (soundOn) { soundOn = false; mSndMgr->getSound("sndBg")->pause(); }
@@ -262,15 +262,15 @@ bool Game::keyPressed( const OIS::KeyEvent& evt ){
 
 bool Game::keyReleased( const OIS::KeyEvent& evt ){
 	if (evt.key == OIS::KC_LEFT) {
-		if (state == GAMEST_SINGLE) { mPaddle1->motion &= ~1; mPaddle2->motion &= ~1; }
-		else if (state == GAMEST_MULTI) mPaddle1->motion &= ~1;
+		if (state == GAMEST_SINGLE && mPaddle0) mPaddle0->motion &= ~1;
+		else if (state == GAMEST_MULTI && mPaddle2) mPaddle2->motion &= ~1;
 	} else if (evt.key == OIS::KC_RIGHT) {
-		if (state == GAMEST_SINGLE) { mPaddle1->motion &= ~2; mPaddle2->motion &= ~2; }
-		else if (state == GAMEST_MULTI) mPaddle1->motion &= ~2;
+		if (state == GAMEST_SINGLE && mPaddle0) mPaddle0->motion &= ~2;
+		else if (state == GAMEST_MULTI && mPaddle2) mPaddle2->motion &= ~2;
 	} else if (evt.key == OIS::KC_A) {
-		if (state == GAMEST_MULTI) mPaddle2->motion &= ~1;
+		if (state == GAMEST_MULTI && mPaddle1) mPaddle1->motion &= ~1;
 	} else if (evt.key == OIS::KC_D) {
-		if (state == GAMEST_MULTI) mPaddle2->motion &= ~2;
+		if (state == GAMEST_MULTI && mPaddle1) mPaddle1->motion &= ~2;
 	} else BaseApplication::keyReleased(evt);
 	return true;
 }
@@ -296,38 +296,34 @@ bool Game::mouseReleased( const OIS::MouseEvent &arg, OIS::MouseButtonID id ) {
 
 void Game::gyroKeyPressed(int dev, int keycode) {
 	if (keycode == GK_ZOOMIN) {
-		if (state == GAMEST_SINGLE) { mPaddle1->tilt(-1);  mPaddle2->tilt(-1); }
-		else if (state == GAMEST_MULTI && dev == 0) mPaddle1->tilt(-1);
-		else if (state == GAMEST_MULTI && dev == 1) mPaddle2->tilt(-1);
+		if (state == GAMEST_SINGLE && mPaddle0) mPaddle0->tilt(-1);
+		else if (state == GAMEST_MULTI && dev == 0 && mPaddle1) mPaddle1->tilt(-1);
+		else if (state == GAMEST_MULTI && dev == 1 && mPaddle2) mPaddle2->tilt(-1);
 	} else if (keycode == GK_ZOOMOUT) {
-		if (state == GAMEST_SINGLE) { mPaddle1->tilt(1);  mPaddle2->tilt(1); }
-		else if (state == GAMEST_MULTI && dev == 0) mPaddle1->tilt(1);
-		else if (state == GAMEST_MULTI && dev == 1) mPaddle2->tilt(1);
+		if (state == GAMEST_SINGLE && mPaddle0) mPaddle0->tilt(1);
+		else if (state == GAMEST_MULTI && dev == 0 && mPaddle1) mPaddle1->tilt(1);
+		else if (state == GAMEST_MULTI && dev == 1 && mPaddle2) mPaddle2->tilt(1);
 	} else if (keycode == GK_MUTE) {
 		if (!soundOn) { soundOn = true; mSndMgr->getSound("sndBg")->play(); }
 		else if (soundOn) { soundOn = false; mSndMgr->getSound("sndBg")->pause(); }
 	}
-	printf("Gyro key pressed, device=%d, keycode=%d\n", dev, keycode);
 }
 
 void Game::gyroKeyReleased(int dev, int keycode) {
 	if (keycode == GK_ZOOMOUT || keycode == GK_ZOOMIN) {
-		if (state == GAMEST_SINGLE) { mPaddle1->tilt(0);  mPaddle2->tilt(0); }
-		else if (state == GAMEST_MULTI && dev == 0) mPaddle1->tilt(0);
-		else if (state == GAMEST_MULTI && dev == 1) mPaddle2->tilt(0);
+		if (state == GAMEST_SINGLE && mPaddle0) mPaddle0->tilt(0);
+		else if (state == GAMEST_MULTI && dev == 0 && mPaddle1) mPaddle1->tilt(0);
+		else if (state == GAMEST_MULTI && dev == 1 && mPaddle2) mPaddle2->tilt(0);
 	}
-	printf("Gyro key released, device=%d, keycode=%d\n", dev, keycode);
 }
 
 void Game::gyroMoved(int dev, double x, double y, double raw_x, double raw_y) {
 	if (state == GAMEST_SINGLE) {
-		mPaddle1->gyroMovement(x);
-		mPaddle2->gyroMovement(x);
+		mPaddle0->gyroMovement(x);
 	} else if (state == GAMEST_MULTI) {
 		if (dev == 0) mPaddle1->gyroMovement(x);
 		if (dev == 1) mPaddle2->gyroMovement(x);
 	}
-	printf("Gyro moved, device=%d, x=%f, y=%f, raw_x=%f, raw_y=%f\n", dev, x, y, raw_x, raw_y);
 }
 
 #ifdef __cplusplus

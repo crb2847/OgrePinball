@@ -69,8 +69,7 @@ class Game : public BaseApplication, public GyroListener
 	int state, mscore;
 	bool soundOn;
 	OgreBulletDynamics::DynamicsWorld *mWorld;
-	Paddle *mPaddle1;
-	Paddle *mPaddle2;
+	Paddle *mPaddle0, *mPaddle1, *mPaddle2;
 	Ball *oBall;
 	GyroInput *mGyroInput;
 	OgreOggSound::OgreOggSoundManager* mSndMgr;
