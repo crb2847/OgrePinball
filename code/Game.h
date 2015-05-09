@@ -13,6 +13,7 @@
 #include "Coin.h"
 #include "PitPlane.h"
 #include "Obstacle.h"
+#include "Brick.h"
 #include "GyroInput.h"
 #include <set>
 #include <ctime>

@@ -37,7 +37,7 @@ void Game::reset(){
 		if (!mPaddle1) entities.insert(mPaddle1 = new Paddle(this, 1));
 		if (!mPaddle2) entities.insert(mPaddle2 = new Paddle(this, 2));
 	}
-    maxScore = 5;
+    maxScore = 10;
     cleanWorld();
     std::vector<Ogre::Vector3> coinPos { Ogre::Vector3(100,100,0), Ogre::Vector3(-100,400,0), Ogre::Vector3(-100,150,0), Ogre::Vector3(-50,200,0), Ogre::Vector3(-250,300,0), Ogre::Vector3(280,400,0), Ogre::Vector3(-250,0,0), Ogre::Vector3(-300,100,0), Ogre::Vector3(-300,-400,0), Ogre::Vector3(-100,-300,0), Ogre::Vector3(0,-350,0), Ogre::Vector3(100,-270,0), Ogre::Vector3(200,-340,0)};
     for (Ogre::Vector3 p : coinPos)
@@ -46,6 +46,9 @@ void Game::reset(){
     	Ogre::Vector3(-100,50,0), Ogre::Vector3(100,-150,0) };
     for (Ogre::Vector3 p : obstaclePos)
     	entities.insert(new Obstacle(this, p));
+
+    entities.insert(new Brick(this, Ogre::Vector3(-250,-250,0), 1, true));
+    entities.insert(new Brick(this, Ogre::Vector3(-250,250,0), 2, true));
 
 	scoreBox->setText("Score: 0");
 	scoreBox1->setText("Player One Score: 0");
@@ -63,6 +66,8 @@ void Game::createFrameListener() {
 void Game::collission(GameObject *o0, GameObject *o1) {
 	if (o0->kind > o1->kind) {GameObject *tmp = o0; o0 = o1; o1 = tmp;}
 	if (o0->kind != K::BALL) return;
+
+	Brick *brick; Coin *coin;
 
 	switch(o1->kind){
 	case K::WALL:
@@ -82,8 +87,18 @@ void Game::collission(GameObject *o0, GameObject *o1) {
 	case K::PIT:
 		reset();
 		break;
+	case K::BRICK:
+		brick = dynamic_cast<Brick *>(o1);
+		brick->points--;
+		if (brick->points == 0) {
+			if (brick->hasCoin)
+				entities.insert(new Coin(this, brick->position));
+			entities.erase(brick);
+			delete brick;
+		}
+		break;
 	case K::COIN:
-		Coin *coin = dynamic_cast<Coin *>(o1);
+		coin = dynamic_cast<Coin *>(o1);
 		entities.erase(coin);
 		delete coin;
 
@@ -125,9 +140,9 @@ void Game::collission(GameObject *o0, GameObject *o1) {
 void Game::cleanWorld(void){
 	std::set<GameObject*> newWorld;
 	for(GameObject *obj : entities) {
-		if (dynamic_cast<Coin *>(obj) || dynamic_cast<Obstacle *>(obj)) {
+		if (obj->kind == K::COIN || obj->kind == K::OBSTACLE || obj->kind == K::BRICK)
 			delete obj;
-		} else newWorld.insert(obj);
+		else newWorld.insert(obj);
 	}
 	entities = newWorld;
 }

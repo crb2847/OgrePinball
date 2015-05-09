@@ -9,7 +9,7 @@
 class Game;
 
 namespace K {
-	enum Kind {BALL, WALL, PIT, COIN, PADDLE, OBSTACLE};
+	enum Kind {BALL, WALL, PIT, COIN, PADDLE, OBSTACLE, BRICK};
 }
 
 class GameObject

@@ -224,7 +224,6 @@ bool Game::startSinglePlayer(const CEGUI::EventArgs &e)
   sheet->removeChild(menu);
   sheet->addChild(singlePlayerConnection);
   state = GAMEST_CONN_SINGLE;
-  reset();
   return true;
 }
 //-------------------------------------------------------------------------------------
