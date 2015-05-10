@@ -32,7 +32,7 @@ void Game::setLevel(){
 			Ogre::Vector3(-100,-300,0), Ogre::Vector3(0,-350,0), Ogre::Vector3(100,-270,0), Ogre::Vector3(200,-340,0)};
 	    for (Ogre::Vector3 p : coinPos)
 	    	entities.insert(new Coin(this, p));
-	    std::vector<Ogre::Vector3> obstaclePos { Ogre::Vector3(-300,-250,0), Ogre::Vector3(300,-250,0),
+	    std::vector<Ogre::Vector3> obstaclePos { Ogre::Vector3(-300,-150,0), Ogre::Vector3(300,-150,0),
 	    	Ogre::Vector3(-250,150,0), Ogre::Vector3(250,150,0) };
 	    for (Ogre::Vector3 p : obstaclePos)
 	    	entities.insert(new Obstacle(this, p));
@@ -149,7 +149,7 @@ void Game::reset(){
 		if (!mPaddle2) entities.insert(mPaddle2 = new Paddle(this, 2));
 	}
 	oBall->setPosition(Ogre::Vector3(0,0,0));
-	oBall->rigidBody->setLinearVelocity(oBall->bDirection * oBall->bSpeed);
+	oBall->rigidBody->setLinearVelocity(Ogre::Vector3(1.0f, 1.0f, 0.0f) * oBall->bSpeed);
     
     cleanWorld();
     setLevel();
@@ -343,12 +343,12 @@ bool Game::keyPressed( const OIS::KeyEvent& evt ){
 		int random = rand()%4;
 		oBall->rigidBody->setLinearVelocity(oBall->bDirection * 150);
 		switch(random){
-			case 0: oBall->bDirection = Ogre::Vector3(-1.0f, 2.0f, 0.0f);break;
-			case 1: oBall->bDirection = Ogre::Vector3(-1.0f, -2.0f, 0.0f); break;
-			case 2: oBall->bDirection = Ogre::Vector3(1.0f, 2.0f, 0.0f); break;
-			case 3: oBall->bDirection = Ogre::Vector3(1.0f, -2.0f, 0.0f); break;
-			case 4: oBall->bDirection = Ogre::Vector3(1.0f, -2.0f, 0.0f); break;
-			case 5: oBall->bDirection = Ogre::Vector3(1.0f, -2.0f, 0.0f); break;
+			case 0: oBall->bDirection = Ogre::Vector3(-1.0f, 1.0f, 0.0f);break;
+			case 1: oBall->bDirection = Ogre::Vector3(-1.0f, -1.0f, 0.0f); break;
+			case 2: oBall->bDirection = Ogre::Vector3(1.0f, 1.0f, 0.0f); break;
+			case 3: oBall->bDirection = Ogre::Vector3(1.0f, -1.0f, 0.0f); break;
+			case 4: oBall->bDirection = Ogre::Vector3(0.0f, 1.0f, 0.0f); break;
+			case 5: oBall->bDirection = Ogre::Vector3(1.0f, 0.0f, 0.0f); break;
 		}
 	}
 	else if (evt.key == OIS::KC_RIGHT) {
