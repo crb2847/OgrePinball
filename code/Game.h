@@ -18,6 +18,7 @@
 #include <set>
 #include <ctime>
 #include <cstdint>
+#include <stdlib.h>
 #include <map>
 
 class GameObject;
@@ -39,6 +40,7 @@ class Game : public BaseApplication, public GyroListener
 	virtual bool frameRenderingQueued(const Ogre::FrameEvent& evt);
     virtual bool frameStarted(const Ogre::FrameEvent& evt);
     virtual bool frameEnded(const Ogre::FrameEvent& evt);
+    void setLevel();
 	bool keyPressed(const OIS::KeyEvent& evt);
 	bool keyReleased(const OIS::KeyEvent& evt);
 	void createFrameListener(void);

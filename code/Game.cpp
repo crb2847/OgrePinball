@@ -22,6 +22,117 @@ Game::~Game() {
 	delete mGyroInput;
 }
 
+void Game::setLevel(){
+	if(level==0){
+		maxScore = 8;
+		std::vector<Ogre::Vector3> coinPos { 
+			Ogre::Vector3(100,100,0), Ogre::Vector3(-100,400,0), Ogre::Vector3(-100,150,0), 
+			Ogre::Vector3(-50,200,0), Ogre::Vector3(-250,300,0), Ogre::Vector3(280,400,0), 
+			Ogre::Vector3(-250,0,0), Ogre::Vector3(-300,100,0), Ogre::Vector3(-300,-400,0), 
+			Ogre::Vector3(-100,-300,0), Ogre::Vector3(0,-350,0), Ogre::Vector3(100,-270,0), Ogre::Vector3(200,-340,0)};
+	    for (Ogre::Vector3 p : coinPos)
+	    	entities.insert(new Coin(this, p));
+	    std::vector<Ogre::Vector3> obstaclePos { Ogre::Vector3(-300,-250,0), Ogre::Vector3(300,-250,0),
+	    	Ogre::Vector3(-250,150,0), Ogre::Vector3(250,150,0) };
+	    for (Ogre::Vector3 p : obstaclePos)
+	    	entities.insert(new Obstacle(this, p));
+	}
+	if(level==1){
+		maxScore = 10;
+    	std::vector<Ogre::Vector3> coinPos { Ogre::Vector3(100,100,0), Ogre::Vector3(-100,400,0), Ogre::Vector3(-100,150,0), 
+    		Ogre::Vector3(-50,200,0), Ogre::Vector3(-250,300,0), Ogre::Vector3(280,400,0), Ogre::Vector3(-250,0,0), 
+    		Ogre::Vector3(-300,100,0), Ogre::Vector3(-300,-400,0), Ogre::Vector3(-100,-300,0), Ogre::Vector3(0,-350,0), 
+    		Ogre::Vector3(100,-270,0), Ogre::Vector3(200,-340,0)}; //13 coins
+	    for (Ogre::Vector3 p : coinPos)
+	    	entities.insert(new Coin(this, p));
+
+	    std::vector<Ogre::Vector3> obstaclePos { Ogre::Vector3(0,400,0), Ogre::Vector3(0,325,0),
+	    	Ogre::Vector3(-500,50,0), Ogre::Vector3(500,0,0) };
+	    for (Ogre::Vector3 p : obstaclePos)
+	    	entities.insert(new Obstacle(this, p));
+
+	    std::vector<Ogre::Vector3> brickPos { Ogre::Vector3(-350,-250,0),  Ogre::Vector3(350,-250,0),
+	    	Ogre::Vector3(-350,250,0),Ogre::Vector3(350,250,0)};
+	    for (Ogre::Vector3 p : brickPos)
+    	entities.insert(new Brick(this, p,2,false));
+
+    } else if(level==2){
+		maxScore = 10;
+    	std::vector<Ogre::Vector3> coinPos { 
+    		Ogre::Vector3(100,100,0), Ogre::Vector3(-100,400,0), Ogre::Vector3(-100,150,0), 
+    		Ogre::Vector3(-50,200,0), Ogre::Vector3(-250,300,0), Ogre::Vector3(280,400,0)};
+	    for (Ogre::Vector3 p : coinPos)
+	    	entities.insert(new Coin(this, p));
+
+	    std::vector<Ogre::Vector3> obstaclePos { 
+	    	Ogre::Vector3(250,0,0), Ogre::Vector3(-250,0,0)};
+	    for (Ogre::Vector3 p : obstaclePos)
+	    	entities.insert(new Obstacle(this, p));
+
+	    std::vector<Ogre::Vector3> brickPos { 
+	    	Ogre::Vector3(-350,-250,0), Ogre::Vector3(350,-250,0), Ogre::Vector3(-350,250,0),Ogre::Vector3(350,250,0),
+		    Ogre::Vector3(0,250,0),  Ogre::Vector3(100,250,0),Ogre::Vector3(-100,250,0),Ogre::Vector3(200,250,0)};
+	    for (Ogre::Vector3 p : brickPos)
+    	entities.insert(new Brick(this, p,2,false));
+
+    	std::vector<Ogre::Vector3> brickPosC { 
+    		Ogre::Vector3(0,-250,0),  Ogre::Vector3(100,-250,0),Ogre::Vector3(-100,-250,0),Ogre::Vector3(200,-250,0)};
+	    for (Ogre::Vector3 p : brickPosC)
+    		entities.insert(new Brick(this, p,1,true));
+    }
+    else if(level==3){
+		maxScore = 3;
+		oBall->setPosition(Ogre::Vector3(400,0,0));
+    	std::vector<Ogre::Vector3> obstaclePos { 
+    		Ogre::Vector3(0,-200,0), Ogre::Vector3(0,200,0), Ogre::Vector3(275,0,0), Ogre::Vector3(-275,0,0),
+    		Ogre::Vector3(315,200,0), Ogre::Vector3(-315,200,0)};
+	    for (Ogre::Vector3 p : obstaclePos)
+	    	entities.insert(new Obstacle(this, p));
+
+	    std::vector<Ogre::Vector3> brickPos { 
+	    	Ogre::Vector3(100,0,0), Ogre::Vector3(-100,0,0),
+		    Ogre::Vector3(100,50,0),Ogre::Vector3(0,-50,0),Ogre::Vector3(0,50,0),
+			Ogre::Vector3(-100,50,0),Ogre::Vector3(100,-50,0),Ogre::Vector3(-100,-50,0)};
+	    for (Ogre::Vector3 p : brickPos)
+    	entities.insert(new Brick(this, p,3,false));
+    	
+	    std::vector<Ogre::Vector3> brickPosC { Ogre::Vector3(0,0,0),Ogre::Vector3(200,0,0),Ogre::Vector3(-200,0,0)};
+	    for (Ogre::Vector3 p : brickPosC)
+    	entities.insert(new Brick(this, p,1,true));
+    }
+    else if(level==4){
+		maxScore = 5;
+		oBall->setPosition(Ogre::Vector3(0,400,0));
+	    std::vector<Ogre::Vector3> brickPos { 
+	    	Ogre::Vector3(-500,500,0),Ogre::Vector3(-500,450,0),Ogre::Vector3(-500,400,0),Ogre::Vector3(-400,450,0),
+	    	Ogre::Vector3(-300,500,0),Ogre::Vector3(-300,450,0),Ogre::Vector3(-300,400,0),Ogre::Vector3(-100,500,0),
+	    	Ogre::Vector3(-100,450,0),Ogre::Vector3(-100,400,0),
+	    	Ogre::Vector3(-300,200,0),Ogre::Vector3(-300,150,0),Ogre::Vector3(-300,100,0),Ogre::Vector3(-300,50,0),Ogre::Vector3(-300,0,0),
+	    	Ogre::Vector3(-200,0,0),Ogre::Vector3(-100,0,0),Ogre::Vector3(-100,100,0),Ogre::Vector3(-100,150,0),Ogre::Vector3(-100,50,0),
+	    	Ogre::Vector3(-100,200,0),Ogre::Vector3(200,200,0),Ogre::Vector3(200,150,0),Ogre::Vector3(200,100,0),
+	    	Ogre::Vector3(200,50,0),Ogre::Vector3(200,0,0),Ogre::Vector3(300,200,0),Ogre::Vector3(100,200,0) };
+	    for (Ogre::Vector3 p : brickPos)
+    	entities.insert(new Brick(this, p,4,false));
+
+	    std::vector<Ogre::Vector3> brickPosC { 
+	    	Ogre::Vector3(-250,-150,0),Ogre::Vector3(-400,250,0),Ogre::Vector3(350,-150,0),
+	    	Ogre::Vector3(350,400,0),Ogre::Vector3(150,350,0) };
+	    for (Ogre::Vector3 p : brickPosC)
+    	entities.insert(new Brick(this, p,2,true));
+    }
+    else if(level==5){
+		maxScore = 10;
+
+	    std::vector<Ogre::Vector3> brickPos { Ogre::Vector3(-350,-250,0) };
+	    for (Ogre::Vector3 p : brickPos)
+    	entities.insert(new Brick(this, p,1,false));
+
+	    std::vector<Ogre::Vector3> brickPosC { Ogre::Vector3(-350,-250,0) };
+	    for (Ogre::Vector3 p : brickPosC)
+    	entities.insert(new Brick(this, p,1,true));
+    }
+}
+
 void Game::reset(){
 	elapsedSec = 0;
 	score[0] = score[1] = score[2] = 0; player = 0;
@@ -37,25 +148,18 @@ void Game::reset(){
 		if (!mPaddle1) entities.insert(mPaddle1 = new Paddle(this, 1));
 		if (!mPaddle2) entities.insert(mPaddle2 = new Paddle(this, 2));
 	}
-    maxScore = 10;
+	oBall->setPosition(Ogre::Vector3(0,0,0));
+	oBall->rigidBody->setLinearVelocity(oBall->bDirection * oBall->bSpeed);
+    
     cleanWorld();
-    std::vector<Ogre::Vector3> coinPos { Ogre::Vector3(100,100,0), Ogre::Vector3(-100,400,0), Ogre::Vector3(-100,150,0), Ogre::Vector3(-50,200,0), Ogre::Vector3(-250,300,0), Ogre::Vector3(280,400,0), Ogre::Vector3(-250,0,0), Ogre::Vector3(-300,100,0), Ogre::Vector3(-300,-400,0), Ogre::Vector3(-100,-300,0), Ogre::Vector3(0,-350,0), Ogre::Vector3(100,-270,0), Ogre::Vector3(200,-340,0)};
-    for (Ogre::Vector3 p : coinPos)
-    	entities.insert(new Coin(this, p));
-    std::vector<Ogre::Vector3> obstaclePos { Ogre::Vector3(-350,-250,0), Ogre::Vector3(355,480,0),
-    	Ogre::Vector3(-100,50,0), Ogre::Vector3(100,-150,0) };
-    for (Ogre::Vector3 p : obstaclePos)
-    	entities.insert(new Obstacle(this, p));
-
-    entities.insert(new Brick(this, Ogre::Vector3(-250,-250,0), 1, true));
-    entities.insert(new Brick(this, Ogre::Vector3(-250,250,0), 2, true));
+    setLevel();
+    //entities.insert(new Brick(this, Ogre::Vector3(-250,-250,0), 1, true));
+    //entities.insert(new Brick(this, Ogre::Vector3(-250,250,0), 2, true));
 
 	scoreBox->setText("Score: 0");
 	scoreBox1->setText("Player One Score: 0");
 	scoreBox2->setText("Player Two Score: 0");
 
-	oBall->setPosition(Ogre::Vector3(0,0,0));
-	oBall->rigidBody->setLinearVelocity(oBall->bDirection * oBall->bSpeed);
 	if (soundOn) mSndMgr->getSound("sndBg")->play();
 }
 //-------------------------------------------------------------------------------------
@@ -109,26 +213,8 @@ void Game::collission(GameObject *o0, GameObject *o1) {
 
 		if (mscore == maxScore){
             level++;
-            cleanWorld();
-            if(level==1){
-            	std::vector<Ogre::Vector3> coinPos { Ogre::Vector3(100,100,0), Ogre::Vector3(-100,400,0), Ogre::Vector3(-100,150,0), Ogre::Vector3(-50,200,0), Ogre::Vector3(-250,300,0), Ogre::Vector3(280,400,0), Ogre::Vector3(-250,0,0), Ogre::Vector3(-300,100,0), Ogre::Vector3(-300,-400,0), Ogre::Vector3(-100,-300,0), Ogre::Vector3(0,-350,0), Ogre::Vector3(100,-270,0), Ogre::Vector3(200,-340,0)};
-			    for (Ogre::Vector3 p : coinPos)
-			    	entities.insert(new Coin(this, p));
-
-			    std::vector<Ogre::Vector3> obstaclePos { Ogre::Vector3(0,400,0), Ogre::Vector3(0,325,0),
-			    	Ogre::Vector3(-500,50,0), Ogre::Vector3(500,0,0) };
-			    for (Ogre::Vector3 p : obstaclePos)
-			    	entities.insert(new Obstacle(this, p));
-            } else if(level==2){
-            	std::vector<Ogre::Vector3> coinPos { Ogre::Vector3(100,100,0), Ogre::Vector3(-100,400,0), Ogre::Vector3(-100,150,0), Ogre::Vector3(-50,200,0), Ogre::Vector3(-250,300,0), Ogre::Vector3(280,400,0), Ogre::Vector3(-250,0,0), Ogre::Vector3(-300,100,0), Ogre::Vector3(-300,-400,0), Ogre::Vector3(-100,-300,0), Ogre::Vector3(0,-350,0), Ogre::Vector3(100,-270,0), Ogre::Vector3(200,-340,0)};
-			    for (Ogre::Vector3 p : coinPos)
-			    	entities.insert(new Coin(this, p));
-
-			    std::vector<Ogre::Vector3> obstaclePos { Ogre::Vector3(-710,450,0), Ogre::Vector3(80,495,0),
-			    	Ogre::Vector3(400,380,0), Ogre::Vector3(-250,150,0), Ogre::Vector3(0,-350,0) };
-			    for (Ogre::Vector3 p : obstaclePos)
-			    	entities.insert(new Obstacle(this, p));
-            }
+            mscore=0;
+            reset();
         	oBall->setPosition(Ogre::Vector3(0,0,0));
         	oBall->rigidBody->setLinearVelocity(oBall->bDirection * oBall->bSpeed);
 		}
@@ -152,7 +238,7 @@ void Game::createScene(void){
 	mGyroInput->setEventCallback(this);
 	mGyroInput->connect();
 	// Init Bullet
-	Ogre::Vector3 gravityVector(0,-70,0);
+	Ogre::Vector3 gravityVector(0,0,0); //Ogre::Vector3 gravityVector(0,-70,0);
 	Ogre::AxisAlignedBox bounds (Ogre::Vector3 (-10000, -10000, -10000), Ogre::Vector3 (10000,  10000,  10000));
 	mWorld = new OgreBulletDynamics::DynamicsWorld(mSceneMgr, bounds, gravityVector);
 	gContactProcessedCallback = (ContactProcessedCallback) HandleContacts;
@@ -252,7 +338,20 @@ bool Game::keyPressed( const OIS::KeyEvent& evt ){
 	if (evt.key == OIS::KC_LEFT) {
 		if (state == GAMEST_SINGLE && mPaddle0) mPaddle0->motion |= 1;
 		else if (state == GAMEST_MULTI && mPaddle2) mPaddle2->motion |= 1;
-	} else if (evt.key == OIS::KC_RIGHT) {
+	} 
+	else if(evt.key == OIS::KC_SPACE){
+		int random = rand()%4;
+		oBall->rigidBody->setLinearVelocity(oBall->bDirection * 150);
+		switch(random){
+			case 0: oBall->bDirection = Ogre::Vector3(-1.0f, 2.0f, 0.0f);break;
+			case 1: oBall->bDirection = Ogre::Vector3(-1.0f, -2.0f, 0.0f); break;
+			case 2: oBall->bDirection = Ogre::Vector3(1.0f, 2.0f, 0.0f); break;
+			case 3: oBall->bDirection = Ogre::Vector3(1.0f, -2.0f, 0.0f); break;
+			case 4: oBall->bDirection = Ogre::Vector3(1.0f, -2.0f, 0.0f); break;
+			case 5: oBall->bDirection = Ogre::Vector3(1.0f, -2.0f, 0.0f); break;
+		}
+	}
+	else if (evt.key == OIS::KC_RIGHT) {
 		if (state == GAMEST_SINGLE && mPaddle0) mPaddle0->motion |= 2;
 		else if (state == GAMEST_MULTI && mPaddle2) mPaddle2->motion |= 2;
 	} else if (evt.key == OIS::KC_A) {
