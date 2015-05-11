@@ -24,7 +24,7 @@ Game::~Game() {
 
 void Game::setLevel(){
 	if(level==0){
-		maxScore = 8;
+		maxScore = 13;
 		std::vector<Ogre::Vector3> coinPos { 
 			Ogre::Vector3(100,100,0), Ogre::Vector3(-100,400,0), Ogre::Vector3(-100,150,0), 
 			Ogre::Vector3(-50,200,0), Ogre::Vector3(-250,300,0), Ogre::Vector3(280,400,0), 
@@ -38,7 +38,7 @@ void Game::setLevel(){
 	    	entities.insert(new Obstacle(this, p));
 	}
 	if(level==1){
-		maxScore = 10;
+		maxScore = 13;
     	std::vector<Ogre::Vector3> coinPos { Ogre::Vector3(100,100,0), Ogre::Vector3(-100,400,0), Ogre::Vector3(-100,150,0), 
     		Ogre::Vector3(-50,200,0), Ogre::Vector3(-250,300,0), Ogre::Vector3(280,400,0), Ogre::Vector3(-250,0,0), 
     		Ogre::Vector3(-300,100,0), Ogre::Vector3(-300,-400,0), Ogre::Vector3(-100,-300,0), Ogre::Vector3(0,-350,0), 
