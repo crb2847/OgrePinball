@@ -240,7 +240,7 @@ void Game::createScene(void){
 	mGyroInput->setEventCallback(this);
 	mGyroInput->connect();
 	// Init Bullet
-	Ogre::Vector3 gravityVector(0,0,0); //Ogre::Vector3 gravityVector(0,-70,0);
+	Ogre::Vector3 gravityVector(0,-70,0); //Ogre::Vector3 gravityVector(0,-70,0);
 	Ogre::AxisAlignedBox bounds (Ogre::Vector3 (-10000, -10000, -10000), Ogre::Vector3 (10000,  10000,  10000));
 	mWorld = new OgreBulletDynamics::DynamicsWorld(mSceneMgr, bounds, gravityVector);
 	gContactProcessedCallback = (ContactProcessedCallback) HandleContacts;
