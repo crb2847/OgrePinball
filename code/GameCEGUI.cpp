@@ -115,8 +115,8 @@ void Game::initCEGUI(void){
 	//the back button (in the how to play menu)
 	CEGUI::Window *backHTP = wmgr.createWindow("TaharezLook/Button", "OgrePinball/Menu/howToPlayMenu/Back");
 	backHTP->setText("Back");
-	backHTP->setSize(CEGUI::USize(CEGUI::UDim(0.75, 0), CEGUI::UDim(0.16, 0)));
-	backHTP->setPosition(CEGUI::Vector2<CEGUI::UDim>(CEGUI::UDim(0.125,0), CEGUI::UDim(0.82,0)));
+	backHTP->setSize(CEGUI::USize(CEGUI::UDim(0.75, 0), CEGUI::UDim(0.1, 0)));
+	backHTP->setPosition(CEGUI::Vector2<CEGUI::UDim>(CEGUI::UDim(0.125,0), CEGUI::UDim(0.88,0)));
 	howToPlayMenu->addChild(backHTP);
 
 	//the score box
@@ -196,6 +196,18 @@ void Game::initCEGUI(void){
 	HTPinfo->setPosition(CEGUI::Vector2<CEGUI::UDim>(CEGUI::UDim(0.02,0), CEGUI::UDim(0.02,0)));
 	howToPlayMenu->addChild(HTPinfo);
 
+	//level complete popup
+	complete = wmgr.createWindow("TaharezLook/FrameWindow", "OgrePinball/Menu/Multiplayer/complete");
+	complete->setSize(CEGUI::USize(CEGUI::UDim(0.3, 0), CEGUI::UDim(0.2, 0)));
+	complete->setPosition(CEGUI::Vector2<CEGUI::UDim>(CEGUI::UDim(0.35,0), CEGUI::UDim(0.4,0)));
+
+	//the continue button
+	CEGUI::Window *continueBut = wmgr.createWindow("TaharezLook/Button", "OgrePinball/Menu/Multiplayer/MCS/Back");
+	continueBut->setText("Next Level");
+	continueBut->setSize(CEGUI::USize(CEGUI::UDim(0.75, 0), CEGUI::UDim(0.8, 0)));
+	continueBut->setPosition(CEGUI::Vector2<CEGUI::UDim>(CEGUI::UDim(0.125,0), CEGUI::UDim(0.1,0)));
+	complete->addChild(continueBut);
+
 	CEGUI::System::getSingleton().getDefaultGUIContext().setRootWindow(sheet);
 	onePlayer->   subscribeEvent(CEGUI::PushButton::EventClicked, CEGUI::Event::Subscriber(&Game::startSinglePlayer, this));
 	twoPlayer->   subscribeEvent(CEGUI::PushButton::EventClicked, CEGUI::Event::Subscriber(&Game::startMultiPlayer,  this));
@@ -211,6 +223,9 @@ void Game::initCEGUI(void){
 	keysMCS->     subscribeEvent(CEGUI::PushButton::EventClicked, CEGUI::Event::Subscriber(&Game::playKeysMCS,       this));
 	backSCS->     subscribeEvent(CEGUI::PushButton::EventClicked, CEGUI::Event::Subscriber(&Game::goBackSCS,         this));
 	keysSCS->     subscribeEvent(CEGUI::PushButton::EventClicked, CEGUI::Event::Subscriber(&Game::playKeysSCS,       this));
+	continueBut-> subscribeEvent(CEGUI::PushButton::EventClicked, CEGUI::Event::Subscriber(&Game::nextLevel,       	 this));
+	sound-> 	  subscribeEvent(CEGUI::PushButton::EventClicked, CEGUI::Event::Subscriber(&Game::changeSound,       this));
+	soundPause->  subscribeEvent(CEGUI::PushButton::EventClicked, CEGUI::Event::Subscriber(&Game::changeSound,       this));
 }
 //-------------------------------------------------------------------------------------
 bool Game::quit(const CEGUI::EventArgs &e)
@@ -333,6 +348,42 @@ bool Game::goBackSCS(const CEGUI::EventArgs &e)
 bool Game::playKeysSCS(const CEGUI::EventArgs &e)
 {
   startGame(GAMEST_SINGLE);
+  return true;
+}
+//-------------------------------------------------------------------------------------
+bool Game::nextLevel(const CEGUI::EventArgs &e)
+{
+  sheet->removeChild(complete);
+  sheet->addChild(scoreBox);
+  sheet->addChild(pause);
+  state = GAMEST_SINGLE;
+
+  level++;
+  mscore=0;
+  reset();
+  oBall->setPosition(Ogre::Vector3(0,0,0));
+  oBall->rigidBody->setLinearVelocity(oBall->bDirection * oBall->bSpeed);
+
+  return true;
+}
+//-------------------------------------------------------------------------------------
+bool Game::changeSound(const CEGUI::EventArgs &e)
+{
+  if(soundOn)
+  {
+  	soundOn = false;
+  	sound->setText("Enable Sound");
+  	soundPause->setText("Enable Sound");
+  	mSndMgr->getSound("sndBg")->pause();
+  }
+  else if(!soundOn)
+  {
+  	soundOn = true;
+  	sound->setText("Disable Sound");
+  	soundPause->setText("Disable Sound");
+  	mSndMgr->getSound("sndBg")->play();
+  }
+
   return true;
 }
 //-------------------------------------------------------------------------------------
