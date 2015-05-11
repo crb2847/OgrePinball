@@ -1,6 +1,5 @@
 fragment_program color_FP glsl {
   source brick.glsl
-  syntax glsl120
 }
 
 material Brick {
