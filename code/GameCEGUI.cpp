@@ -283,6 +283,7 @@ bool Game::openMainMenu(const CEGUI::EventArgs &e)
   sheet->removeChild(pauseMenu);
   sheet->addChild(menu);
   state = GAMEST_MENU;
+  level = 0;
 }
 //-------------------------------------------------------------------------------------
 bool Game::openSettingsMenu(const CEGUI::EventArgs &e)
@@ -354,9 +355,18 @@ bool Game::playKeysSCS(const CEGUI::EventArgs &e)
 bool Game::nextLevel(const CEGUI::EventArgs &e)
 {
   sheet->removeChild(complete);
-  sheet->addChild(scoreBox);
   sheet->addChild(pause);
-  state = GAMEST_SINGLE;
+  if(state == GAMEST_SINGLE_MENU)
+  {
+  	sheet->addChild(scoreBox);
+  	state = GAMEST_SINGLE;
+  }
+  else if(state == GAMEST_MULTI_MENU)
+  {
+  	sheet->addChild(scoreBox1);
+  	sheet->addChild(scoreBox2);
+  	state = GAMEST_MULTI;
+  }
 
   level++;
   mscore=0;
