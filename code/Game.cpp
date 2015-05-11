@@ -211,12 +211,21 @@ void Game::collission(GameObject *o0, GameObject *o1) {
 		scoreBox1->setText("Player One Score: " + std::to_string(score[1]));
 		scoreBox2->setText("Player Two Score: " + std::to_string(score[2]));
 
-		if (mscore == maxScore){
-            level++;
-            mscore=0;
-            reset();
-        	oBall->setPosition(Ogre::Vector3(0,0,0));
-        	oBall->rigidBody->setLinearVelocity(oBall->bDirection * oBall->bSpeed);
+		if (mscore == maxScore)
+		{
+		  sheet->removeChild(pause);
+		  sheet->addChild(complete);
+		  if(state == GAMEST_SINGLE)
+		  {
+		    sheet->removeChild(scoreBox);
+		  	state = GAMEST_SINGLE_MENU;
+		  }
+		  else if(state == GAMEST_MULTI)
+		  {
+		  	sheet->removeChild(scoreBox1);
+		  	sheet->removeChild(scoreBox2);
+		  	state = GAMEST_MULTI_MENU;
+		  }		
 		}
 		if (soundOn) mSndMgr->getSound("sndScore")->play();
 		break;

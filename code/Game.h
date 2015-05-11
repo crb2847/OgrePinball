@@ -68,6 +68,8 @@ class Game : public BaseApplication, public GyroListener
     bool playKeysMCS(const CEGUI::EventArgs &e);
     bool goBackSCS(const CEGUI::EventArgs &e);
     bool playKeysSCS(const CEGUI::EventArgs &e);
+    bool nextLevel(const CEGUI::EventArgs &e);
+    bool changeSound(const CEGUI::EventArgs &e);
 
 	int state, mscore;
 	bool soundOn;
@@ -96,6 +98,8 @@ class Game : public BaseApplication, public GyroListener
     CEGUI::Window *multiPlayerConnection;
     CEGUI::Window *scoreBox1;
     CEGUI::Window *scoreBox2;
+    CEGUI::Window *complete;
+
 
 	private:
 	uint64_t lastHit, gameStart;
