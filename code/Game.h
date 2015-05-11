@@ -20,6 +20,7 @@
 #include <cstdint>
 #include <stdlib.h>
 #include <map>
+#include <vector>
 
 class GameObject;
 
@@ -100,6 +101,7 @@ class Game : public BaseApplication, public GyroListener
 
 	private:
 	uint64_t lastHit, gameStart;
+	std::vector<GameObject*> deleteMe;
 	void cleanWorld(void);
 	void initCEGUI(void);
 };

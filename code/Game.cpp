@@ -139,6 +139,7 @@ void Game::reset(){
 	lastHit = 0;
 	gameStart = clock();
 	mscore = 0;
+	deleteMe.clear();
 	if (state == GAMEST_SINGLE) {
 		if (!mPaddle0) entities.insert(mPaddle0 = new Paddle(this, 0));
 		if (mPaddle1) { entities.erase(mPaddle1); delete mPaddle1; mPaddle1 = nullptr; }
@@ -197,8 +198,9 @@ void Game::collission(GameObject *o0, GameObject *o1) {
 		if (brick->points == 0) {
 			if (brick->hasCoin)
 				entities.insert(new Coin(this, brick->position));
-			entities.erase(brick);
-			delete brick;
+			deleteMe.push_back(brick);
+			//entities.erase(brick);
+			//delete brick;
 		}
 		break;
 	case K::COIN:
@@ -326,6 +328,12 @@ bool Game::frameRenderingQueued(const Ogre::FrameEvent& evt){
 
     if (state != GAMEST_SINGLE && state != GAMEST_MULTI) return true;
 
+    for(GameObject *obj : deleteMe) {
+    	if(entities.erase(obj))
+    		delete obj;
+    }
+    deleteMe.clear();
+
 	for(GameObject *obj : entities)
 		obj->update(evt);
 
@@ -383,6 +391,8 @@ bool Game::keyPressed( const OIS::KeyEvent& evt ){
 	} else if (evt.key == OIS::KC_0) {
 	    mCamera->setPosition(Ogre::Vector3(0,-1100,900));
 	    mCamera->lookAt(Ogre::Vector3(0,0,84));
+	} else if (evt.key == OIS::KC_1) {
+		if(level <5) {level++; reset();}
 	} else BaseApplication::keyPressed(evt);
     return true;
 }
