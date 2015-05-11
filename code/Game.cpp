@@ -319,11 +319,9 @@ bool Game::frameRenderingQueued(const Ogre::FrameEvent& evt){
     CEGUI::System::getSingleton().injectTimePulse(evt.timeSinceLastFrame);
 
     if (state == GAMEST_CONN_SINGLE && mGyroInput->connect() >= 1) {
-    	if (singlePlayerConnection) sheet->removeChild(singlePlayerConnection);
-    	state = GAMEST_SINGLE; reset();
+    	startGame(GAMEST_SINGLE);
     } else if (state == GAMEST_CONN_MULTI && mGyroInput->connect() >= 2) {
-    	if (multiPlayerConnection) sheet->removeChild(multiPlayerConnection);
-    	state = GAMEST_MULTI; reset();
+    	startGame(GAMEST_MULTI);
     }
 
     if (state != GAMEST_SINGLE && state != GAMEST_MULTI) return true;
@@ -332,6 +330,21 @@ bool Game::frameRenderingQueued(const Ogre::FrameEvent& evt){
 		obj->update(evt);
 
     return true;
+}
+
+void Game::startGame(int newState) {
+	state = newState;
+	if (newState == GAMEST_MULTI) {
+		sheet->removeChild(multiPlayerConnection);
+		sheet->addChild(scoreBox1);
+		sheet->addChild(scoreBox2);
+		sheet->addChild(pause);
+	} else if (newState == GAMEST_SINGLE) {
+		sheet->removeChild(singlePlayerConnection);
+		sheet->addChild(scoreBox);
+		sheet->addChild(pause);
+	}
+	reset();
 }
 
 bool Game::keyPressed( const OIS::KeyEvent& evt ){
