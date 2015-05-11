@@ -402,8 +402,12 @@ bool Game::keyPressed( const OIS::KeyEvent& evt ){
 	    mCamera->lookAt(Ogre::Vector3(0,0,84));
 	} else if (evt.key == OIS::KC_1) {
 		if(level <5) {level++; reset();}
+	} else if (evt.key == OIS::KC_RETURN) {
+		if(sheet->isChild(complete))
+			nextLevel(CEGUI::EventArgs());
 	} else BaseApplication::keyPressed(evt);
-    return true;
+
+	return true;
 }
 
 bool Game::keyReleased( const OIS::KeyEvent& evt ){
@@ -452,6 +456,9 @@ void Game::gyroKeyPressed(int dev, int keycode) {
 	} else if (keycode == GK_MUTE) {
 		if (!soundOn) { soundOn = true; mSndMgr->getSound("sndBg")->play(); }
 		else if (soundOn) { soundOn = false; mSndMgr->getSound("sndBg")->pause(); }
+	} else if (keycode == GK_ENTER){
+		if(sheet->isChild(complete))
+			nextLevel(CEGUI::EventArgs());
 	}
 }
 
