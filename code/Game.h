@@ -20,6 +20,7 @@
 #include <cstdint>
 #include <stdlib.h>
 #include <map>
+#include <vector>
 
 class GameObject;
 
@@ -47,6 +48,7 @@ class Game : public BaseApplication, public GyroListener
 	void gyroMoved(int dev, double x, double y, double raw_x, double raw_y);
 	void gyroKeyPressed(int dev, int keycode);
 	void gyroKeyReleased(int dev, int keycode);
+	void startGame(int newState);
 
 	// OIS::MouseListener
     virtual bool mouseMoved( const OIS::MouseEvent &arg );
@@ -103,6 +105,7 @@ class Game : public BaseApplication, public GyroListener
 
 	private:
 	uint64_t lastHit, gameStart;
+	std::vector<GameObject*> deleteMe;
 	void cleanWorld(void);
 	void initCEGUI(void);
 };

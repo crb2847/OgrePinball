@@ -139,6 +139,7 @@ void Game::reset(){
 	lastHit = 0;
 	gameStart = clock();
 	mscore = 0;
+	deleteMe.clear();
 	if (state == GAMEST_SINGLE) {
 		if (!mPaddle0) entities.insert(mPaddle0 = new Paddle(this, 0));
 		if (mPaddle1) { entities.erase(mPaddle1); delete mPaddle1; mPaddle1 = nullptr; }
@@ -197,8 +198,9 @@ void Game::collission(GameObject *o0, GameObject *o1) {
 		if (brick->points == 0) {
 			if (brick->hasCoin)
 				entities.insert(new Coin(this, brick->position));
-			entities.erase(brick);
-			delete brick;
+			deleteMe.push_back(brick);
+			//entities.erase(brick);
+			//delete brick;
 		}
 		break;
 	case K::COIN:
@@ -247,7 +249,7 @@ void Game::createScene(void){
 	mGyroInput->setEventCallback(this);
 	mGyroInput->connect();
 	// Init Bullet
-	Ogre::Vector3 gravityVector(0,0,0); //Ogre::Vector3 gravityVector(0,-70,0);
+	Ogre::Vector3 gravityVector(0,-70,0); //Ogre::Vector3 gravityVector(0,-70,0);
 	Ogre::AxisAlignedBox bounds (Ogre::Vector3 (-10000, -10000, -10000), Ogre::Vector3 (10000,  10000,  10000));
 	mWorld = new OgreBulletDynamics::DynamicsWorld(mSceneMgr, bounds, gravityVector);
 	gContactProcessedCallback = (ContactProcessedCallback) HandleContacts;
@@ -328,19 +330,38 @@ bool Game::frameRenderingQueued(const Ogre::FrameEvent& evt){
     CEGUI::System::getSingleton().injectTimePulse(evt.timeSinceLastFrame);
 
     if (state == GAMEST_CONN_SINGLE && mGyroInput->connect() >= 1) {
-    	if (singlePlayerConnection) sheet->removeChild(singlePlayerConnection);
-    	state = GAMEST_SINGLE; reset();
+    	startGame(GAMEST_SINGLE);
     } else if (state == GAMEST_CONN_MULTI && mGyroInput->connect() >= 2) {
-    	if (multiPlayerConnection) sheet->removeChild(multiPlayerConnection);
-    	state = GAMEST_MULTI; reset();
+    	startGame(GAMEST_MULTI);
     }
 
     if (state != GAMEST_SINGLE && state != GAMEST_MULTI) return true;
+
+    for(GameObject *obj : deleteMe) {
+    	if(entities.erase(obj))
+    		delete obj;
+    }
+    deleteMe.clear();
 
 	for(GameObject *obj : entities)
 		obj->update(evt);
 
     return true;
+}
+
+void Game::startGame(int newState) {
+	state = newState;
+	if (newState == GAMEST_MULTI) {
+		sheet->removeChild(multiPlayerConnection);
+		sheet->addChild(scoreBox1);
+		sheet->addChild(scoreBox2);
+		sheet->addChild(pause);
+	} else if (newState == GAMEST_SINGLE) {
+		sheet->removeChild(singlePlayerConnection);
+		sheet->addChild(scoreBox);
+		sheet->addChild(pause);
+	}
+	reset();
 }
 
 bool Game::keyPressed( const OIS::KeyEvent& evt ){
@@ -379,6 +400,8 @@ bool Game::keyPressed( const OIS::KeyEvent& evt ){
 	} else if (evt.key == OIS::KC_0) {
 	    mCamera->setPosition(Ogre::Vector3(0,-1100,900));
 	    mCamera->lookAt(Ogre::Vector3(0,0,84));
+	} else if (evt.key == OIS::KC_1) {
+		if(level <5) {level++; reset();}
 	} else BaseApplication::keyPressed(evt);
     return true;
 }

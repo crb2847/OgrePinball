@@ -333,12 +333,7 @@ bool Game::startMultiPlayer(const CEGUI::EventArgs &e)
 //-------------------------------------------------------------------------------------
 bool Game::playKeysMCS(const CEGUI::EventArgs &e)
 {
-  sheet->removeChild(multiPlayerConnection);
-  sheet->addChild(scoreBox1);
-  sheet->addChild(scoreBox2);
-  sheet->addChild(pause);
-  state = GAMEST_MULTI;
-  reset();
+  startGame(GAMEST_MULTI);
   return true;
 }
 //-------------------------------------------------------------------------------------
@@ -352,11 +347,7 @@ bool Game::goBackSCS(const CEGUI::EventArgs &e)
 //-------------------------------------------------------------------------------------
 bool Game::playKeysSCS(const CEGUI::EventArgs &e)
 {
-  sheet->removeChild(singlePlayerConnection);
-  sheet->addChild(scoreBox);
-  sheet->addChild(pause);
-  state = GAMEST_SINGLE;
-  reset();
+  startGame(GAMEST_SINGLE);
   return true;
 }
 //-------------------------------------------------------------------------------------
