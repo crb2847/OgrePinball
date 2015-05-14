@@ -28,7 +28,7 @@ void Game::setLevel(){
 		std::vector<Ogre::Vector3> coinPos { 
 			Ogre::Vector3(100,100,0), Ogre::Vector3(-100,400,0), Ogre::Vector3(-100,150,0), 
 			Ogre::Vector3(-50,200,0), Ogre::Vector3(-250,300,0), Ogre::Vector3(280,400,0), 
-			Ogre::Vector3(-250,0,0), Ogre::Vector3(-300,100,0), Ogre::Vector3(-300,-400,0), 
+			Ogre::Vector3(-450,0,0), Ogre::Vector3(400,50,0), Ogre::Vector3(-300,-400,0), 
 			Ogre::Vector3(-100,-300,0), Ogre::Vector3(0,-350,0), Ogre::Vector3(100,-270,0), Ogre::Vector3(200,-340,0)};
 	    for (Ogre::Vector3 p : coinPos)
 	    	entities.insert(new Coin(this, p));
@@ -36,13 +36,21 @@ void Game::setLevel(){
 	    	Ogre::Vector3(-250,150,0), Ogre::Vector3(250,150,0) };
 	    for (Ogre::Vector3 p : obstaclePos)
 	    	entities.insert(new Obstacle(this, p));
+	    int random = rand()%3;
+		switch(random){
+			case 0: oBall->bDirection = Ogre::Vector3(-1.0f, 1.0f, 0.0f);break;
+			case 1: oBall->bDirection = Ogre::Vector3(1.0f, 1.0f, 0.0f); break;
+			case 2: oBall->bDirection = Ogre::Vector3(0.0f, 1.0f, 0.0f); break;
+			case 3: oBall->bDirection = Ogre::Vector3(1.0f, 0.0f, 0.0f); break;
+		}
+		oBall->rigidBody->setLinearVelocity(oBall->bDirection * oBall->bSpeed);
 	}
 	if(level==1){
 		maxScore = 13;
-    	std::vector<Ogre::Vector3> coinPos { Ogre::Vector3(100,100,0), Ogre::Vector3(-100,400,0), Ogre::Vector3(-100,150,0), 
-    		Ogre::Vector3(-50,200,0), Ogre::Vector3(-250,300,0), Ogre::Vector3(280,400,0), Ogre::Vector3(-250,0,0), 
-    		Ogre::Vector3(-300,100,0), Ogre::Vector3(-300,-400,0), Ogre::Vector3(-100,-300,0), Ogre::Vector3(0,-350,0), 
-    		Ogre::Vector3(100,-270,0), Ogre::Vector3(200,-340,0)}; //13 coins
+    	std::vector<Ogre::Vector3> coinPos { Ogre::Vector3(-350,0,0), Ogre::Vector3(0,400,0), Ogre::Vector3(-50,150,0), 
+    		Ogre::Vector3(-450,200,0), Ogre::Vector3(-250,300,0), Ogre::Vector3(280,400,0), Ogre::Vector3(-250,0,0), 
+    		Ogre::Vector3(-300,100,0), Ogre::Vector3(-500,-400,0), Ogre::Vector3(480,-100,0), Ogre::Vector3(175,-300,0), 
+    		Ogre::Vector3(450,270,0), Ogre::Vector3(200,-240,0)}; //13 coins
 	    for (Ogre::Vector3 p : coinPos)
 	    	entities.insert(new Coin(this, p));
 
@@ -55,12 +63,20 @@ void Game::setLevel(){
 	    	Ogre::Vector3(-350,250,0),Ogre::Vector3(350,250,0)};
 	    for (Ogre::Vector3 p : brickPos)
     	entities.insert(new Brick(this, p,2,false));
-
+    	int random = rand()%3;
+		switch(random){
+			case 0: oBall->bDirection = Ogre::Vector3(-1.0f, 1.0f, 0.0f);break;
+			case 1: oBall->bDirection = Ogre::Vector3(1.0f, 1.0f, 0.0f); break;
+			case 2: oBall->bDirection = Ogre::Vector3(0.0f, 1.0f, 0.0f); break;
+			case 3: oBall->bDirection = Ogre::Vector3(1.0f, 0.0f, 0.0f); break;
+		}
+		oBall->rigidBody->setLinearVelocity(oBall->bDirection * oBall->bSpeed);
     } else if(level==2){
-		maxScore = 10;
+		maxScore = 14;
     	std::vector<Ogre::Vector3> coinPos { 
-    		Ogre::Vector3(100,100,0), Ogre::Vector3(-100,400,0), Ogre::Vector3(-100,150,0), 
-    		Ogre::Vector3(-50,200,0), Ogre::Vector3(-250,300,0), Ogre::Vector3(280,400,0)};
+    		Ogre::Vector3(-500,100,0), Ogre::Vector3(500,100,0), Ogre::Vector3(500,-200,0), 
+    		Ogre::Vector3(-500,-200,0), Ogre::Vector3(0,75,0), Ogre::Vector3(0,-75,0), Ogre::Vector3(200,425,0), Ogre::Vector3(-200,425,0)
+    		, Ogre::Vector3(200,-425,0), Ogre::Vector3(-200,-425,0)};
 	    for (Ogre::Vector3 p : coinPos)
 	    	entities.insert(new Coin(this, p));
 
@@ -79,6 +95,14 @@ void Game::setLevel(){
     		Ogre::Vector3(0,-250,0),  Ogre::Vector3(100,-250,0),Ogre::Vector3(-100,-250,0),Ogre::Vector3(200,-250,0)};
 	    for (Ogre::Vector3 p : brickPosC)
     		entities.insert(new Brick(this, p,1,true));
+    	int random = rand()%3;
+		switch(random){
+			case 0: oBall->bDirection = Ogre::Vector3(-1.0f, 1.0f, 0.0f);break;
+			case 1: oBall->bDirection = Ogre::Vector3(1.0f, 1.0f, 0.0f); break;
+			case 2: oBall->bDirection = Ogre::Vector3(0.0f, 1.0f, 0.0f); break;
+			case 3: oBall->bDirection = Ogre::Vector3(1.0f, 0.0f, 0.0f); break;
+		}
+		oBall->rigidBody->setLinearVelocity(oBall->bDirection * oBall->bSpeed);
     }
     else if(level==3){
 		maxScore = 3;
@@ -99,6 +123,14 @@ void Game::setLevel(){
 	    std::vector<Ogre::Vector3> brickPosC { Ogre::Vector3(0,0,0),Ogre::Vector3(200,0,0),Ogre::Vector3(-200,0,0)};
 	    for (Ogre::Vector3 p : brickPosC)
     	entities.insert(new Brick(this, p,1,true));
+    	int random = rand()%3;
+		switch(random){
+			case 0: oBall->bDirection = Ogre::Vector3(-1.0f, 1.0f, 0.0f);break;
+			case 1: oBall->bDirection = Ogre::Vector3(1.0f, 1.0f, 0.0f); break;
+			case 2: oBall->bDirection = Ogre::Vector3(0.0f, 1.0f, 0.0f); break;
+			case 3: oBall->bDirection = Ogre::Vector3(1.0f, 0.0f, 0.0f); break;
+		}
+		oBall->rigidBody->setLinearVelocity(oBall->bDirection * oBall->bSpeed);
     }
     else if(level==4){
 		maxScore = 5;
@@ -119,6 +151,14 @@ void Game::setLevel(){
 	    	Ogre::Vector3(350,400,0),Ogre::Vector3(150,350,0) };
 	    for (Ogre::Vector3 p : brickPosC)
     	entities.insert(new Brick(this, p,2,true));
+    	int random = rand()%3;
+		switch(random){
+			case 0: oBall->bDirection = Ogre::Vector3(-1.0f, 1.0f, 0.0f);break;
+			case 1: oBall->bDirection = Ogre::Vector3(1.0f, 1.0f, 0.0f); break;
+			case 2: oBall->bDirection = Ogre::Vector3(0.0f, 1.0f, 0.0f); break;
+			case 3: oBall->bDirection = Ogre::Vector3(1.0f, 0.0f, 0.0f); break;
+		}
+		oBall->rigidBody->setLinearVelocity(oBall->bDirection * oBall->bSpeed);
     }
     else if(level==5){
 		maxScore = 10;
@@ -130,6 +170,14 @@ void Game::setLevel(){
 	    std::vector<Ogre::Vector3> brickPosC { Ogre::Vector3(-350,-250,0) };
 	    for (Ogre::Vector3 p : brickPosC)
     	entities.insert(new Brick(this, p,1,true));
+    	int random = rand()%3;
+		switch(random){
+			case 0: oBall->bDirection = Ogre::Vector3(-1.0f, 1.0f, 0.0f);break;
+			case 1: oBall->bDirection = Ogre::Vector3(1.0f, 1.0f, 0.0f); break;
+			case 2: oBall->bDirection = Ogre::Vector3(0.0f, 1.0f, 0.0f); break;
+			case 3: oBall->bDirection = Ogre::Vector3(1.0f, 0.0f, 0.0f); break;
+		}
+		oBall->rigidBody->setLinearVelocity(oBall->bDirection * oBall->bSpeed);
     }
 }
 
@@ -186,7 +234,7 @@ void Game::collission(GameObject *o0, GameObject *o1) {
 	case K::PADDLE:
 		if (soundOn) mSndMgr->getSound("sndPaddle")->play();
 		oBall->rigidBody->setLinearVelocity(
-			oBall->rigidBody->getLinearVelocity().normalisedCopy() * 450.0);
+			oBall->rigidBody->getLinearVelocity().normalisedCopy() * 545.0);
 		player = (o1 == mPaddle0) ? 0 : ((o1 == mPaddle1) ? 1 : 2);
 		break;
 	case K::PIT:
@@ -249,7 +297,7 @@ void Game::createScene(void){
 	mGyroInput->setEventCallback(this);
 	mGyroInput->connect();
 	// Init Bullet
-	Ogre::Vector3 gravityVector(0,-70,0); //Ogre::Vector3 gravityVector(0,-70,0);
+	Ogre::Vector3 gravityVector(0,-140,0); //Ogre::Vector3 gravityVector(0,-70,0);
 	Ogre::AxisAlignedBox bounds (Ogre::Vector3 (-10000, -10000, -10000), Ogre::Vector3 (10000,  10000,  10000));
 	mWorld = new OgreBulletDynamics::DynamicsWorld(mSceneMgr, bounds, gravityVector);
 	gContactProcessedCallback = (ContactProcessedCallback) HandleContacts;
@@ -280,7 +328,7 @@ void Game::createScene(void){
     Ogre::MeshManager::getSingleton().createPlane("ground", Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME,
         plane, 1000, 1000, 20, 20, true, 1, 5.0, 5.0, Ogre::Vector3::UNIT_X);
 
-    PitPlane* pit = new PitPlane(this, Ogre::Vector3::UNIT_Y, Ogre::Real(-510));
+    PitPlane* pit = new PitPlane(this, Ogre::Vector3::UNIT_Y, Ogre::Real(-610));
     entities.insert(pit); // Bottom
 
     Wall *p = new Wall(this, Ogre::Vector3(1.4f,1.0f,1.0f),
@@ -371,7 +419,7 @@ bool Game::keyPressed( const OIS::KeyEvent& evt ){
 	} 
 	else if(evt.key == OIS::KC_SPACE){
 		int random = rand()%4;
-		oBall->rigidBody->setLinearVelocity(oBall->bDirection * 150);
+		//oBall->rigidBody->setLinearVelocity(oBall->bDirection * 150);
 		switch(random){
 			case 0: oBall->bDirection = Ogre::Vector3(-1.0f, 1.0f, 0.0f);break;
 			case 1: oBall->bDirection = Ogre::Vector3(-1.0f, -1.0f, 0.0f); break;
@@ -380,6 +428,7 @@ bool Game::keyPressed( const OIS::KeyEvent& evt ){
 			case 4: oBall->bDirection = Ogre::Vector3(0.0f, 1.0f, 0.0f); break;
 			case 5: oBall->bDirection = Ogre::Vector3(1.0f, 0.0f, 0.0f); break;
 		}
+		oBall->rigidBody->setLinearVelocity(oBall->bDirection * 150);
 	}
 	else if (evt.key == OIS::KC_RIGHT) {
 		if (state == GAMEST_SINGLE && mPaddle0) mPaddle0->motion |= 2;
@@ -405,7 +454,28 @@ bool Game::keyPressed( const OIS::KeyEvent& evt ){
 	} else if (evt.key == OIS::KC_RETURN) {
 		if(sheet->isChild(complete))
 			nextLevel(CEGUI::EventArgs());
-	} else BaseApplication::keyPressed(evt);
+	}
+	else if (evt.key == OIS::KC_UP) {
+		if (state == GAMEST_SINGLE && mPaddle0) mPaddle0->tilt(-1);
+		else if (state == GAMEST_MULTI && mPaddle1) mPaddle2->tilt(-1);
+		else if (state == GAMEST_MULTI && mPaddle2) mPaddle1->tilt(-1);
+	}
+	else if (evt.key == OIS::KC_DOWN) {
+		if (state == GAMEST_SINGLE && mPaddle0) mPaddle0->tilt(1);
+		else if (state == GAMEST_MULTI && mPaddle1) mPaddle2->tilt(1);
+		else if (state == GAMEST_MULTI && mPaddle2) mPaddle1->tilt(1);
+	}
+	else if (evt.key == OIS::KC_W) {
+		if (state == GAMEST_SINGLE && mPaddle0) mPaddle0->tilt(-1);
+		else if (state == GAMEST_MULTI && mPaddle1) mPaddle1->tilt(-1);
+		else if (state == GAMEST_MULTI && mPaddle2) mPaddle2->tilt(-1);
+	}
+	else if (evt.key == OIS::KC_S) {
+		if (state == GAMEST_SINGLE && mPaddle0) mPaddle0->tilt(1);
+		else if (state == GAMEST_MULTI && mPaddle1) mPaddle1->tilt(1);
+		else if (state == GAMEST_MULTI && mPaddle2) mPaddle2->tilt(1);
+	}
+	else BaseApplication::keyPressed(evt);
 
 	return true;
 }
@@ -421,7 +491,28 @@ bool Game::keyReleased( const OIS::KeyEvent& evt ){
 		if (state == GAMEST_MULTI && mPaddle1) mPaddle1->motion &= ~1;
 	} else if (evt.key == OIS::KC_D) {
 		if (state == GAMEST_MULTI && mPaddle1) mPaddle1->motion &= ~2;
-	} else BaseApplication::keyReleased(evt);
+	}
+	else if (evt.key == OIS::KC_UP) {
+		if (state == GAMEST_SINGLE && mPaddle0) mPaddle0->tilt(0);
+		else if (state == GAMEST_MULTI && mPaddle1) mPaddle2->tilt(0);
+		else if (state == GAMEST_MULTI && mPaddle2) mPaddle1->tilt(0);
+	}
+	else if (evt.key == OIS::KC_DOWN) {
+		if (state == GAMEST_SINGLE && mPaddle0) mPaddle0->tilt(0);
+		else if (state == GAMEST_MULTI && mPaddle1) mPaddle2->tilt(0);
+		else if (state == GAMEST_MULTI && mPaddle2) mPaddle1->tilt(0);
+	}
+	else if (evt.key == OIS::KC_W) {
+		if (state == GAMEST_SINGLE && mPaddle0) mPaddle0->tilt(0);
+		else if (state == GAMEST_MULTI && mPaddle1) mPaddle1->tilt(0);
+		else if (state == GAMEST_MULTI && mPaddle2) mPaddle2->tilt(0);
+	}
+	else if (evt.key == OIS::KC_S) {
+		if (state == GAMEST_SINGLE && mPaddle0) mPaddle0->tilt(0);
+		else if (state == GAMEST_MULTI && mPaddle1) mPaddle1->tilt(0);
+		else if (state == GAMEST_MULTI && mPaddle2) mPaddle2->tilt(0);
+	}
+	else BaseApplication::keyReleased(evt);
 	return true;
 }
 
