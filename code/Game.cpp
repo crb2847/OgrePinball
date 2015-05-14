@@ -75,7 +75,7 @@ void Game::setLevel(){
 		maxScore = 14;
     	std::vector<Ogre::Vector3> coinPos { 
     		Ogre::Vector3(-500,100,0), Ogre::Vector3(500,100,0), Ogre::Vector3(500,-200,0), 
-    		Ogre::Vector3(-500,-200,0), Ogre::Vector3(0,75,0), Ogre::Vector3(0,-75,0), Ogre::Vector3(200,425,0), Ogre::Vector3(-200,425,0)
+    		Ogre::Vector3(-500,-200,0), Ogre::Vector3(0,90,0), Ogre::Vector3(0,-90,0), Ogre::Vector3(200,425,0), Ogre::Vector3(-200,425,0)
     		, Ogre::Vector3(200,-425,0), Ogre::Vector3(-200,-425,0)};
 	    for (Ogre::Vector3 p : coinPos)
 	    	entities.insert(new Coin(this, p));
@@ -161,7 +161,7 @@ void Game::setLevel(){
 		oBall->rigidBody->setLinearVelocity(oBall->bDirection * oBall->bSpeed);
     }
     else if(level==5){
-		maxScore = 10;
+		maxScore = 1;
 
 	    std::vector<Ogre::Vector3> brickPos { Ogre::Vector3(-350,-250,0) };
 	    for (Ogre::Vector3 p : brickPos)
