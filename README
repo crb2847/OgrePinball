@@ -1,0 +1,7 @@
+To compile and run:
+
+1) Go to the project root and type: cmake -G"Unix Makefiles"
+2) Type: make -j8
+3) Run the game, one instance on each of two computers on the same network: 
+   ./OgrePinball
+

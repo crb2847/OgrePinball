@@ -11,7 +11,18 @@ Ball::Ball(Game *game) : GameObject(game, K::BALL){
 	rootNode->scale(0.5f,0.5f,0.5f);
 	
 	bRadius = 40.0f;
+
+	int random = rand()%3;
+	switch(random){
+		case 0: bDirection = Ogre::Vector3(-1.0f, 1.0f, 0.0f);break;
+		case 1: bDirection = Ogre::Vector3(1.0f, 1.0f, 0.0f); break;
+		case 2: bDirection = Ogre::Vector3(0.0f, 1.0f, 0.0f); break;
+		case 3: bDirection = Ogre::Vector3(1.0f, 0.0f, 0.0f); break;
+	}
 	bDirection = Ogre::Vector3(1.0f, 2.0f, 0.0f);
+
+
+
 	bDirection.normalise();
 	bSpeed = 300.0f;
 
