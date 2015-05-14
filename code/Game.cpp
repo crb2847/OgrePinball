@@ -121,7 +121,7 @@ void Game::setLevel(){
     	entities.insert(new Brick(this, p,2,true));
     }
     else if(level==5){
-		maxScore = 10;
+		maxScore = 1;
 
 	    std::vector<Ogre::Vector3> brickPos { Ogre::Vector3(-350,-250,0) };
 	    for (Ogre::Vector3 p : brickPos)
@@ -215,19 +215,40 @@ void Game::collission(GameObject *o0, GameObject *o1) {
 
 		if (mscore == maxScore)
 		{
-		  sheet->removeChild(pause);
-		  sheet->addChild(complete);
-		  if(state == GAMEST_SINGLE)
+		  if(level == 5)
 		  {
-		    sheet->removeChild(scoreBox);
-		  	state = GAMEST_SINGLE_MENU;
+		  	  sheet->removeChild(pause);
+			  sheet->addChild(winScreen);
+			  if(state == GAMEST_SINGLE)
+			  {
+			    sheet->removeChild(scoreBox);
+			  	state = GAMEST_MENU;
+			  }
+			  else if(state == GAMEST_MULTI)
+			  {
+			  	sheet->removeChild(scoreBox1);
+			  	sheet->removeChild(scoreBox2);
+			  	state = GAMEST_MENU;
+			  }	
+			  level = 0;
+			  reset();
 		  }
-		  else if(state == GAMEST_MULTI)
+		  else
 		  {
-		  	sheet->removeChild(scoreBox1);
-		  	sheet->removeChild(scoreBox2);
-		  	state = GAMEST_MULTI_MENU;
-		  }		
+			  sheet->removeChild(pause);
+			  sheet->addChild(complete);
+			  if(state == GAMEST_SINGLE)
+			  {
+			    sheet->removeChild(scoreBox);
+			  	state = GAMEST_SINGLE_MENU;
+			  }
+			  else if(state == GAMEST_MULTI)
+			  {
+			  	sheet->removeChild(scoreBox1);
+			  	sheet->removeChild(scoreBox2);
+			  	state = GAMEST_MULTI_MENU;
+			  }	
+		  }	
 		}
 		if (soundOn) mSndMgr->getSound("sndScore")->play();
 		break;

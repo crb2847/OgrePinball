@@ -208,6 +208,25 @@ void Game::initCEGUI(void){
 	continueBut->setPosition(CEGUI::Vector2<CEGUI::UDim>(CEGUI::UDim(0.125,0), CEGUI::UDim(0.1,0)));
 	complete->addChild(continueBut);
 
+	//the end game screen
+	winScreen = wmgr.createWindow("TaharezLook/FrameWindow", "OgrePinball/Menu/Multiplayer/winScreen");
+	winScreen->setSize(CEGUI::USize(CEGUI::UDim(0.4, 0), CEGUI::UDim(0.5, 0)));
+	winScreen->setPosition(CEGUI::Vector2<CEGUI::UDim>(CEGUI::UDim(0.3,0), CEGUI::UDim(0.25,0)));
+
+	//winner info
+	CEGUI::Window *win = wmgr.createWindow("TaharezLook/StaticText", "OgrePinball/Menu/howToPlayMenu/Info");
+	win->setText("You Win!");
+	win->setSize(CEGUI::USize(CEGUI::UDim(0.96, 0), CEGUI::UDim(0.2, 0)));
+	win->setPosition(CEGUI::Vector2<CEGUI::UDim>(CEGUI::UDim(0.02,0), CEGUI::UDim(0.02,0)));
+	winScreen->addChild(win);
+
+	//the main menu button (in the end game menu)
+	CEGUI::Window *mainAgain = wmgr.createWindow("TaharezLook/Button", "OgrePinball/Pause/PauseMenu/MainMenu");
+	mainAgain->setText("Main Menu");
+	mainAgain->setSize(CEGUI::USize(CEGUI::UDim(0.75, 0), CEGUI::UDim(0.2, 0)));
+	mainAgain->setPosition(CEGUI::Vector2<CEGUI::UDim>(CEGUI::UDim(0.125,0), CEGUI::UDim(0.78,0)));
+	winScreen->addChild(mainAgain);
+
 	CEGUI::System::getSingleton().getDefaultGUIContext().setRootWindow(sheet);
 	onePlayer->   subscribeEvent(CEGUI::PushButton::EventClicked, CEGUI::Event::Subscriber(&Game::startSinglePlayer, this));
 	twoPlayer->   subscribeEvent(CEGUI::PushButton::EventClicked, CEGUI::Event::Subscriber(&Game::startMultiPlayer,  this));
@@ -226,6 +245,7 @@ void Game::initCEGUI(void){
 	continueBut-> subscribeEvent(CEGUI::PushButton::EventClicked, CEGUI::Event::Subscriber(&Game::nextLevel,       	 this));
 	sound-> 	  subscribeEvent(CEGUI::PushButton::EventClicked, CEGUI::Event::Subscriber(&Game::changeSound,       this));
 	soundPause->  subscribeEvent(CEGUI::PushButton::EventClicked, CEGUI::Event::Subscriber(&Game::changeSound,       this));
+	mainAgain->   subscribeEvent(CEGUI::PushButton::EventClicked, CEGUI::Event::Subscriber(&Game::mainAgain,         this));
 }
 //-------------------------------------------------------------------------------------
 bool Game::quit(const CEGUI::EventArgs &e)
@@ -397,7 +417,14 @@ bool Game::changeSound(const CEGUI::EventArgs &e)
   return true;
 }
 //-------------------------------------------------------------------------------------
+bool Game::mainAgain(const CEGUI::EventArgs &e)
+{
+  sheet->addChild(menu);
+  sheet->removeChild(winScreen);
 
+  return true;
+}
+//-------------------------------------------------------------------------------------
 CEGUI::MouseButton convertButton(OIS::MouseButtonID buttonID)
 {
     switch (buttonID) {
